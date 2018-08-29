@@ -1,0 +1,1 @@
+HW1: Implement and train a neural network from scratch in Python for the MNIST dataset (no PyTorch). Due September 7.
