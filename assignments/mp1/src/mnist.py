@@ -17,3 +17,14 @@ class nn():
         self.W = np.random.randn(hiddenSize, outputSize)
         self.e = np.random.randn(hiddenSize)
         self.f = np.random.randn(outputSize)
+
+
+
+
+    def train():
+        pass
+
+
+
+    def test():
+        pass
