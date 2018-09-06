@@ -15,8 +15,8 @@ from mnist import *
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--dataroot', type=str, default="../MNISTdata.hdf5", help='path to dataset')
-parser.add_argument('--epochs', type=int, default=500, help='number of epochs to train')
-parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
+parser.add_argument('--epochs', type=int, default=3, help='number of epochs to train')
+parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
 parser.add_argument('--inputSize', type=int, default=784, help='input dimension')
 parser.add_argument('--hiddenSize', type=int, default=256, help='the size of hidden units')
 parser.add_argument('--outputSize', type=int, default=10, help='size of the latent z vector')
@@ -36,19 +36,15 @@ def main():
     x_test  = np.float32(MNIST_data['x_test'][:])
     y_test  = np.int32(np.array( MNIST_data['y_test'][:,0])).reshape(len(MNIST_data['y_test'][:,0]), 1)
     MNIST_data.close()
+    print('>>> Import duration ' + str(round((time.time() - START_TIME), 2)) + 's')
 
-    print('> Import duration ' + str(round((time.time() - START_TIME), 2)) + 's')
 
-
-    nn = Network([opt.inputSize, opt.hiddenSize, opt.outputSize], opt.lr, opt.epochs)
+    nn = Network([opt.inputSize, opt.hiddenSize, opt.outputSize], opt.lr, opt.epochs, opt.batchSize)
 
     # train network using stochastic gradient descent
-    # over 30 epochs, with a mini-batch size of 10, and a learning rate of n=3.0
-    nn.SGD(x_train, y_train)
-
-    nn.train(x_train, y_train)
-    nn.test(x_test, y_test)
-
+    nn.SGD(np.hstack((x_train, y_train)), np.hstack((x_test, y_test)))
+    acc = nn.evaluate(np.hstack((x_test, y_test)))
+    print("Accuracy: ", acc)
 
 if __name__ == '__main__':
     main()
