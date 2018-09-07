@@ -18,7 +18,7 @@ import numpy as np
 import random
 
 from activations import *
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report
 
 
 class Network(object):
@@ -115,6 +115,7 @@ class Network(object):
                 self.V_db2 = (self.beta * self.V_db2 +
                               (1. - self.beta) * grads["db2"])
 
+                # this is not working!!!! never update parameters
                 self.params["W1"] -= self.learning_rate * self.V_dW1
                 self.params["b1"] -= self.learning_rate * self.V_db1
                 self.params["W2"] -= self.learning_rate * self.V_dW2

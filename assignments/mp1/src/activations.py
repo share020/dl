@@ -4,10 +4,9 @@ Helper module to provide activation to network layers.
 
 @author: Zhenye Na
 
-Four types of activations with their derivates are available:
+activations with their derivates are available:
     - Sigmoid
     - Softmax
-    - Tanh
     - ReLU
 """
 
