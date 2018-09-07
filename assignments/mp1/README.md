@@ -1,17 +1,103 @@
-HW1: Implement and train a neural network from scratch in Python for the MNIST dataset (no PyTorch).
+# HW1: Implement and train a neural network from scratch in Python for the MNIST dataset (no PyTorch).
 
-The neural network should be trained on the Training Set using stochastic gradient descent.
-It should achieve 97-98% accuracy on the Test Set.
-
-For full credit, submit via Compass (1) the code and (2) a paragraph (in a PDF document)
-which states the Test Accuracy and briefly describes the implementation.
-
-Due September 7 at 5:00 PM.
-
-
-Result:
+> The neural network should be trained on the Training Set using Stochastic Gradient Descent.
+> It should achieve 97-98% accuracy on the Test Set.
+> 
+> For full credit, submit via Compass (1) the code and (2) a paragraph (in a PDF document) which states the Test Accuracy and briefly describes the implementation.
+> 
+> **Due September 7 at 5:00 PM.**
 
 
+## Implementation
+
+
+> If you have already taken `Coursera Deep Learning Specialization`, you would e familiar with the detailed implementation here.
+
+
+Notice that in the process we introduce three dictionaries: `params`, `cache`, and `grads`. These are for conveniently passing information back and forth between the forward and backward passes.
+
+
+I used `sigmoid` activation function for hidden units and `softmax` for output layer
+
+```python
+def sigmoid(z):
+    """
+    sigmoid activation function.
+
+    inputs: z
+    outputs: sigmoid(z)
+    """
+    s = 1. / (1. + np.exp(-z))
+    return s
+```
+
+Foward pass and Back peopagation is the most important and also interesting implementation here. THe assignment of Coursera course is implemented in this way, which is very pretty.
+
+```python
+def feed_forward(X, params):
+    """
+    feed forward network: 2 - layer neural net
+
+    inputs:
+        params: dictionay a dictionary contains all the weights and biases
+
+    return:
+        cache: dictionay a dictionary contains all the fully connected units and activations
+    """
+    cache = {}
+
+    # Z1 = W1.dot(x) + b1
+    cache["Z1"] = np.matmul(params["W1"], X) + params["b1"]
+
+    # A1 = sigmoid(Z1)
+    cache["A1"] = sigmoid(cache["Z1"])
+
+    # Z2 = W2.dot(A1) + b2
+    cache["Z2"] = np.matmul(params["W2"], cache["A1"]) + params["b2"]
+
+    # A2 = softmax(Z2)
+    cache["A2"] = np.exp(cache["Z2"]) / np.sum(np.exp(cache["Z2"]), axis=0)
+
+    return cache
+
+
+def back_propagate(X, Y, params, cache, m_batch):
+    """
+    back propagation
+
+    inputs:
+        params: dictionay a dictionary contains all the weights and biases
+        cache: dictionay a dictionary contains all the fully connected units and activations
+
+    return:
+        grads: dictionay a dictionary contains the gradients of corresponding weights and biases
+    """
+    # error at last layer
+    dZ2 = cache["A2"] - Y
+
+    # gradients at last layer (Py2 need 1. to transform to float)
+    dW2 = (1. / m_batch) * np.matmul(dZ2, cache["A1"].T)
+    db2 = (1. / m_batch) * np.sum(dZ2, axis=1, keepdims=True)
+
+    # back propgate through first layer
+    dA1 = np.matmul(params["W2"].T, dZ2)
+    dZ1 = dA1 * sigmoid(cache["Z1"]) * (1 - sigmoid(cache["Z1"]))
+
+    # gradients at first layer (Py2 need 1. to transform to float)
+    dW1 = (1. / m_batch) * np.matmul(dZ1, X.T)
+    db1 = (1. / m_batch) * np.sum(dZ1, axis=1, keepdims=True)
+
+    grads = {"dW1": dW1, "db1": db1, "dW2": dW2, "db2": db2}
+
+    return grads
+```
+
+Without scale the input or stick to the hyperparamenters in the code, youe will get a 98% of accuracy on test set!
+
+
+## Result
+
+```c
 $ python main.py
 Epoch 1: training cost = 0.265081961482, test cost = 0.263101067507
 Epoch 2: training cost = 0.192257499837, test cost = 0.192460479053
@@ -79,3 +165,4 @@ Epoch 50: training cost = 0.0083409802008, test cost = 0.0792101188431
           9       0.96      0.97      0.97      1003
 
 avg / total       0.98      0.98      0.98     10000
+```
