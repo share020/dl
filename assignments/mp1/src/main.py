@@ -20,10 +20,10 @@ np.random.seed(138)
 
 # load MNIST data
 MNIST_data = h5py.File("../MNISTdata.hdf5", 'r')
-x_train    = np.float32(MNIST_data['x_train'][:])
-y_train    = np.int32(np.array(MNIST_data['y_train'][:, 0])).reshape(-1, 1)
-x_test     = np.float32(MNIST_data['x_test'][:])
-y_test     = np.int32(np.array(MNIST_data['y_test'][:, 0])).reshape(-1, 1)
+x_train = np.float32(MNIST_data['x_train'][:])
+y_train = np.int32(np.array(MNIST_data['y_train'][:, 0])).reshape(-1, 1)
+x_test  = np.float32(MNIST_data['x_test'][:])
+y_test  = np.int32(np.array(MNIST_data['y_test'][:, 0])).reshape(-1, 1)
 MNIST_data.close()
 
 
@@ -40,10 +40,11 @@ Y_new = np.eye(digits)[y.astype('int32')]
 Y_new = Y_new.T.reshape(digits, examples)
 
 
+# number of training set
 m = 60000
 m_test = X.shape[0] - m
 X_train, X_test = X[:m].T, X[m:].T
-Y_train, Y_test = Y_new[:,:m], Y_new[:,m:]
+Y_train, Y_test = Y_new[:, :m], Y_new[:, m:]
 
 
 # shuffle training set
@@ -55,11 +56,15 @@ parser = argparse.ArgumentParser()
 
 # hyperparameters setting
 parser.add_argument('--lr', type=float, default=0.5, help='learning rate')
-parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
+parser.add_argument('--epochs', type=int, default=50,
+                    help='number of epochs to train')
 parser.add_argument('--n_x', type=int, default=784, help='number of inputs')
-parser.add_argument('--n_h', type=int, default=64, help='number of hidden units')
-parser.add_argument('--beta', type=float, default=0.9, help='number of hidden units')
-parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
+parser.add_argument('--n_h', type=int, default=64,
+                    help='number of hidden units')
+parser.add_argument('--beta', type=float, default=0.9,
+                    help='number of hidden units')
+parser.add_argument('--batch_size', type=int,
+                    default=64, help='input batch size')
 
 # parse the arguments
 opt = parser.parse_args()
@@ -67,17 +72,18 @@ opt = parser.parse_args()
 # number of batches
 batches = m // opt.batch_size
 
-# initialize parameter
-params = { "W1": np.random.randn(opt.n_h, opt.n_x) * np.sqrt(1. / opt.n_x),
-           "b1": np.zeros((opt.n_h, 1)) * np.sqrt(1. / opt.n_x),
-           "W2": np.random.randn(digits, opt.n_h) * np.sqrt(1. / opt.n_h),
-           "b2": np.zeros((digits, 1)) * np.sqrt(1. / opt.n_h) }
+# initialize weights and biases
+params = {"W1": np.random.randn(opt.n_h, opt.n_x) * np.sqrt(1. / opt.n_x),
+          "b1": np.zeros((opt.n_h, 1)) * np.sqrt(1. / opt.n_x),
+          "W2": np.random.randn(digits, opt.n_h) * np.sqrt(1. / opt.n_h),
+          "b2": np.zeros((digits, 1)) * np.sqrt(1. / opt.n_h)}
 
 # derivative of corresponding parameters
 V_dW1 = np.zeros(params["W1"].shape)
 V_db1 = np.zeros(params["b1"].shape)
 V_dW2 = np.zeros(params["W2"].shape)
 V_db2 = np.zeros(params["b2"].shape)
+
 
 def feed_forward(X, params):
     """
@@ -104,6 +110,7 @@ def feed_forward(X, params):
     cache["A2"] = np.exp(cache["Z2"]) / np.sum(np.exp(cache["Z2"]), axis=0)
 
     return cache
+
 
 def back_propagate(X, Y, params, cache):
     """
@@ -172,7 +179,8 @@ for i in range(opt.epochs):
     # forward pass on test set
     cache = feed_forward(X_test, params)
     test_cost = compute_loss(Y_test, cache["A2"])
-    print("Epoch {}: training cost = {}, test cost = {}".format(i+1 ,train_cost, test_cost))
+    print("Epoch {}: training cost = {}, test cost = {}".format(
+        i + 1, train_cost, test_cost))
 
 
 # test accuracy using sklearn confusion matrix

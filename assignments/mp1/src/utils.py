@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def sigmoid(z):
     """
     sigmoid activation function.
@@ -9,6 +10,7 @@ def sigmoid(z):
     """
     s = 1. / (1. + np.exp(-z))
     return s
+
 
 def compute_loss(Y, Y_hat):
     """

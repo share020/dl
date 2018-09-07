@@ -65,7 +65,8 @@ class Network(object):
 
         cache["Z1"] = np.matmul(self.params["W1"], X) + self.params["b1"]
         cache["A1"] = self.sigmoid(cache["Z1"])
-        cache["Z2"] = np.matmul(self.params["W2"], cache["A1"]) + self.params["b2"]
+        cache["Z2"] = np.matmul(
+            self.params["W2"], cache["A1"]) + self.params["b2"]
         cache["A2"] = np.exp(cache["Z2"]) / np.sum(np.exp(cache["Z2"]), axis=0)
 
         return cache
@@ -105,10 +106,14 @@ class Network(object):
                 cache = self.feed_forward(X)
                 grads = self.back_propagate(X, Y, cache)
 
-                self.V_dW1 = (self.beta * self.V_dW1 + (1. - self.beta) * grads["dW1"])
-                self.V_db1 = (self.beta * self.V_db1 + (1. - self.beta) * grads["db1"])
-                self.V_dW2 = (self.beta * self.V_dW2 + (1. - self.beta) * grads["dW2"])
-                self.V_db2 = (self.beta * self.V_db2 + (1. - self.beta) * grads["db2"])
+                self.V_dW1 = (self.beta * self.V_dW1 +
+                              (1. - self.beta) * grads["dW1"])
+                self.V_db1 = (self.beta * self.V_db1 +
+                              (1. - self.beta) * grads["db1"])
+                self.V_dW2 = (self.beta * self.V_dW2 +
+                              (1. - self.beta) * grads["dW2"])
+                self.V_db2 = (self.beta * self.V_db2 +
+                              (1. - self.beta) * grads["db2"])
 
                 self.params["W1"] -= self.learning_rate * self.V_dW1
                 self.params["b1"] -= self.learning_rate * self.V_db1
@@ -119,10 +124,10 @@ class Network(object):
             train_cost = self.compute_loss(Y_train, cache["A2"])
             cache = self.feed_forward(X_test)
             test_cost = self.compute_loss(Y_test, cache["A2"])
-            print("Epoch {}: training cost = {}, test cost = {}".format(i + 1, train_cost, test_cost))
+            print("Epoch {}: training cost = {}, test cost = {}".format(
+                i + 1, train_cost, test_cost))
 
         print("Done.")
-
 
     def test(self, X_test, Y_test):
         """test"""
