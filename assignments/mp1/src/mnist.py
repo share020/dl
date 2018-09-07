@@ -1,6 +1,9 @@
 """
 Implementation of Neural Network from scratch in Python for the MNIST dataset.
 
+The neural network should be trained on the Training Set using SGD.
+It should achieve 97-98% accuracy on the Test Set.
+
 @author: Zhenye Na
 """
 
@@ -18,141 +21,101 @@ class Network(object):
         self.lr = lr
         self.epochs = epochs
         self.batch_size = batch_size
-        self.input_size = layers[0]
+
         self.num_layers = len(layers)
         self.layers  = layers
-        self.biases  = [np.random.randn(self.batch_size, x) for x in layers[1:]]
-        self.weights = [np.random.randn(x, y)
-                        for x, y in zip(layers[:-1], layers[1:])]
+        self.weights = [np.array([0])] + [np.random.randn(x, y) for y, x in zip(layers[1:], layers[:-1])]
 
-        for w in self.weights:
-            print("w: ", w.shape)
+        # self.biases = [np.random.randn(y, 1) for y in layers[1:]]
+        self.biases = [np.random.randn(1, y) for y in layers]
 
-        for b in self.biases:
-            print("b: ", b.shape)
+        self._zs = [np.zeros(bias.shape) for bias in self.biases]
+        self._activations = [np.zeros(bias.shape) for bias in self.biases]
 
-    def feedforward(self, a):
+    def fit(self, training_data, validation_data=None):
         """
-        Return the output of the network if ``a`` is input.
+        Training process.
         """
-        for b, w in zip(self.biases, self.weights):
-            print("w", w.shape)
-            print("a", a.shape)
-            print("b", b.shape)
-            a = sigmoid(np.dot(a, w) + b)
-            i = 0
-            print(i)
-            i += 1
-        return a
-
-    def SGD(self, training_data, test_data=None):
-        """
-        Train the neural network using SGD.
-
-        """
-        N = len(training_data)
-
-        for j in xrange(self.epochs):
-
-            if j % 10 == 0:
-                print("Epoch: ", j)
-
+        for epoch in xrange(self.epochs):
             random.shuffle(training_data)
             mini_batches = [
-                training_data[k:k + self.batch_size]
-                for k in xrange(0, N - self.batch_size - 1, self.batch_size)]
-            # mini_batches = np.copy(training_data)
+                training_data[k:k + self.batch_size] for k in
+                xrange(0, len(training_data), self.batch_size)]
 
             for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch)
+                nabla_b = [np.zeros(bias.shape) for bias in self.biases]
+                nabla_w = [np.zeros(weight.shape) for weight in self.weights]
+                for x, y in mini_batch:
+                # x, y = mini_batch[:,0:-1], mini_batch[:,-1]
+                    x = x.reshape(1,-1)
+                    self._forward_prop(x)
+                    delta_nabla_b, delta_nabla_w = self._back_prop(x, y)
+                    nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+                    nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
 
-            # if test_data is not None:
-            #     print("Epoch {0}: {1} / {2}".format(
-            #         j, self.evaluate(test_data), n_test))
-            # else:
-            print("Epoch {0} complete".format(j))
+                self.weights = [
+                    w - (self.lr / self.batch_size) * dw for w, dw in
+                    zip(self.weights, nabla_w)]
+                self.biases = [
+                    b - (self.lr / self.batch_size) * db for b, db in
+                    zip(self.biases, nabla_b)]
 
-    def update_mini_batch(self, mini_batch):
+            print("Processed epoch {0}.".format(epoch))
+            acc = self.metrics(training_data)
+            print("Accuray {0}.".format(acc))
+
+
+    def predict(self, x):
         """
-        Update the network's weights and biases by applying
-        gradient descent using backpropagation to a single mini batch.
-
-        """
-        nabla_b = [np.zeros(b.shape) for b in self.biases]
-        nabla_w = [np.zeros(w.shape) for w in self.weights]
-
-        x, y = np.array(mini_batch[:,0:-1]).reshape(-1, self.input_size), np.array(mini_batch[:,-1]).reshape(-1, 1)
-        print("x shape", x.shape)
-        print("y shape", y.shape)
-
-
-        delta_nabla_b, delta_nabla_w = self.backprop(x, y)
-        nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
-        nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-
-        self.weights = [w - (self.lr / len(mini_batch)) * nw
-                        for w, nw in zip(self.weights, nabla_w)]
-        self.biases  = [b - (self.lr / len(mini_batch)) * nb
-                        for b, nb in zip(self.biases, nabla_b)]
-
-    def backprop(self, x, y):
+        prediction
         """
 
-        """
-        nabla_b = [np.zeros(b.shape) for b in self.biases]
-        nabla_w = [np.zeros(w.shape) for w in self.weights]
+        self._forward_prop(x)
+        return np.argmax(self._activations[-1])
 
-        # feedforward
-        activation  = x
-        activations = [x] # list to store all the activations, layer by layer
-        zs = []           # list to store all the z vectors, layer by layer
+    def _forward_prop(self, x):
+        self._activations[0] = x
+        for i in xrange(1, self.num_layers):
+            # self._activations[i-1] = np.array(self._activations[i-1])
+            self._zs[i] = (
+                self._activations[i-1].dot(self.weights[i]) + self.biases[i]
+            )
+            self._activations[i] = sigmoid(self._zs[i])
 
-        for b, w in zip(self.biases, self.weights):
-            z = np.dot(activation, w) + b
-            zs.append(z)
-            activation = sigmoid(z)
-            activations.append(activation)
+    def _back_prop(self, x, y):
+        nabla_b = [np.zeros(bias.shape) for bias in self.biases]
+        nabla_w = [np.zeros(weight.shape) for weight in self.weights]
 
-        # backward pass
-        delta = self.d_loss_o(activations[-1], y) * sigmoid_prime(zs[-1])
-        nabla_b[-1] = delta
-        nabla_w[-1] = np.dot(delta, activations[-2])
+        error = (self._activations[-1] - y) * sigmoid_prime(self._zs[-1])
+        nabla_b[-1] = error
+        nabla_w[-1] = self._activations[-2].transpose().dot(error)
+
+        for l in range(self.num_layers - 2, 0, -1):
+            error = np.multiply(
+                error.dot(self.weights[l + 1].transpose()),
+                sigmoid_prime(self._zs[l])
+            )
+            nabla_b[l] = error
+            nabla_w[l] = self._activations[l - 1].transpose().dot(error)
+
+        return nabla_b, nabla_w
 
 
-        for l in xrange(2, self.num_layers):
-            z = zs[-l]
-            sp = sigmoid_prime(z)
-            delta = np.dot(self.weights[-l+1], delta) * sp
-            nabla_b[-l] = delta
-            nabla_w[-l] = np.dot(delta, activations[-l-1])
-        return (nabla_b, nabla_w)
-
-    def evaluate(self, test_data):
+    def metrics(self, test_data):
         """
         calculate accuracy
         """
-        # print(test_data.shape)
-        # test_results = np.argmax(self.feedforward(test_data[:,0:-1]))
-        # return np.sum(np.equal(test_results, test_data[:,-1]))
-        N = len(test_data)
         mini_batches = [
-            test_data[k:k+self.batch_size]
-            for k in xrange(0, N - self.batch_size - 1, self.batch_size)]
+            test_data[k:k + self.batch_size] for k in
+            xrange(0, len(test_data), self.batch_size)]
+        print(len(mini_batches))
 
-        acc = 0
+        n = 0.
+        acc = 0.
         for mini_batch in mini_batches:
-            acc += np.sum(np.equal(np.argmax(self.feedforward(test_data[:,0:-1])), test_data[:,-1]))
+            for x, y in mini_batch:
+                n += 1
+                if  y == self.predict(x):
+                    acc += 1
 
-        return acc
-
-    def d_loss_o(self, o, gt):
-        """
-        computes the derivative of the L2 loss with respect to
-        the network's output.
-        """
-        return (o - gt)
-
-    def predict(self, test_data):
-        n_test = len(test_data)
-        print("Epoch {0}: {1} / {2}".format(
-            j, self.evaluate(test_data)))
+        return (acc / n)

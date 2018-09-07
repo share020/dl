@@ -58,28 +58,6 @@ def softmax_prime(z):
     return softmax(z) * (1 - softmax(z))
 
 
-def tanh(z):
-    """
-    tanh activation function.
-
-    inputs: z
-    outputs: tanh(z)
-    """
-    return np.tanh(z)
-
-
-def tanh_prime(z):
-    """
-    derivative of tanh
-
-    inputs:
-        z = tanh(z)
-    outputs:
-        derivative of tanh(z)
-    """
-    return 1 - tanh(z) * tanh(z)
-
-
 def relu(z):
     """
     ReLU activation function.
