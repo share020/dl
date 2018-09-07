@@ -24,9 +24,9 @@ class Network(object):
 
         self.num_layers = len(layers)
         self.layers  = layers
-        self.weights = [np.array([0])] + [np.random.randn(x, y) for y, x in zip(layers[1:], layers[:-1])]
 
-        # self.biases = [np.random.randn(y, 1) for y in layers[1:]]
+        # Initialize weights and biases
+        self.weights = [np.array([0])] + [np.random.randn(x, y) for y, x in zip(layers[1:], layers[:-1])]
         self.biases = [np.random.randn(1, y) for y in layers]
 
         self._zs = [np.zeros(bias.shape) for bias in self.biases]
