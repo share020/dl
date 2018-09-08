@@ -12,9 +12,9 @@ Due September 14 at 5:00 PM.
 import h5py
 import argparse
 import numpy as np
-import skimage
 
 
+from cnn import *
 from utils import *
 
 parser = argparse.ArgumentParser()
@@ -28,35 +28,40 @@ parser.add_argument('--n_h', type=int, default=64, help='number of hidden units'
 parser.add_argument('--beta', type=float, default=0.9, help='parameter for momentum')
 parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
 
+# filter parameters
+parser.add_argument('--n_filter', type=int, default=32, help='number of filters')
+parser.add_argument('--h_filter', type=int, default=3, help='height of filters')
+parser.add_argument('--w_filter', type=int, default=3, help='width of filters')
+parser.add_argument('--stride', type=int, default=1, help='stride')
+parser.add_argument('--padding', type=int, default=1, help='zero padding')
+
 # parse the arguments
 opt = parser.parse_args()
 
 
-# load MNIST data
-MNIST_data = h5py.File("../MNISTdata.hdf5", 'r')
-x_train = np.float32(MNIST_data['x_train'][:])
-y_train = np.int32(np.array(MNIST_data['y_train'][:, 0])).reshape(-1, 1)
-x_test  = np.float32(MNIST_data['x_test'][:])
-y_test  = np.int32(np.array(MNIST_data['y_test'][:, 0])).reshape(-1, 1)
-MNIST_data.close()
+def build_layers(X_dim, num_class):
+    conv = Conv(X_dim, n_filter=opt.n_filter, h_filter=opt.h_filter, w_filter=opt.w_filter, stride=opt.stride, padding=opt.padding)
+    relu_conv = ReLU()
+    flat = Flatten()
+    fc = FullyConnected(np.prod(maxpool.out_dim), num_class)
+    return [conv, relu_conv, maxpool, flat, fc]
 
-np.random.seed(231)
 
-num_train = 100
-small_data = {
-  'X_train': data['X_train'][:num_train],
-  'y_train': data['y_train'][:num_train],
-  'X_val': data['X_val'],
-  'y_val': data['y_val'],
-}
 
-model = ThreeLayerConvNet(weight_scale=1e-2)
+if __name__ == '__main__':
+    """
+    pipepline of convolution neural network from scratch in Python for the MNIST dataset
+    """
+    # load dataset
+    training_set, test_set = mnist_loader(opt.dataroot)
+    X, y = training_set
+    X_test, y_test = test_set
 
-solver = Solver(model, small_data,
-                num_epochs=15, batch_size=50,
-                update_rule='adam',
-                optim_config={
-                  'learning_rate': 1e-3,
-                },
-                verbose=True, print_every=1)
-solver.train()
+    # mnist image dims
+    mnist_dims = (1, 28, 28)
+
+
+
+    cnn = CNN(build_layers(mnist_dims, num_class=10))
+    cnn = sgd_momentum(cnn, X, y, minibatch_size=35, epoch=20,
+                       learning_rate=0.01, X_test=X_test, y_test=y_test)

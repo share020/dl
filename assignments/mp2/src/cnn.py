@@ -13,118 +13,157 @@ Due September 14 at 5:00 PM.
 import numpy as np
 
 
-class NeuralNetwork(object):
-    """
-    A three-layer convolutional network with the following architecture.
+class CNN:
 
-    conv - relu - 2x2 max pool - affine - relu - affine - softmax
+    def __init__(self, layers, loss_func=SoftmaxLoss):
+        self.layers = layers
+        self.params = []
+        for layer in self.layers:
+            self.params.append(layer.params)
+        self.loss_func = loss_func
 
-    The network operates on minibatches of data that have shape (N, C, H, W)
-    consisting of N images, each with height H and width W and with C input
-    channels.
+    def forward(self, X):
+        for layer in self.layers:
+            X = layer.forward(X)
+        return X
 
-    """
-    def __init__(self, input_dim=(1, 28, 28), num_filters=32, filter_size=7,
-                 hidden_dim=100, num_classes=10, weight_scale=1e-3, reg=0.0,
-                 dtype=np.float32):
-        """
-        Initialize a new network.
-        Inputs:
-            - input_dim: Tuple (C, H, W) giving size of input data
-            - num_filters: Number of filters to use in the convolutional layer
-            - filter_size: Size of filters to use in the convolutional layer
-            - hidden_dim: Number of units to use in the fully-connected hidden layer
-            - num_classes: Number of scores to produce from the final affine layer.
-            - weight_scale: Scalar giving standard deviation for random initialization
-              of weights.
-            - reg: Scalar giving L2 regularization strength
-            - dtype: numpy datatype to use for computation.
+    def backward(self, dout):
+        grads = []
+        for layer in reversed(self.layers):
+            dout, grad = layer.backward(dout)
+            grads.append(grad)
+        return grads
 
-        Initialize weights and biases for the three-layer convolutional network.
-        Weights should be initialized from a Gaussian with standard deviation equal to weight_scale.
-        biases should be initialized to zero.
-        All weights and biases should be stored in the dictionary self.params.
-        """
-        self.params = {}
-        self.reg = reg
-        self.dtype = dtype
-
-
-        # no. of channels, height and width
-        C, H, W = input_dim
-
-        # weights and biases for the convolutional layer
-        self.params['W1'] = weight_scale * np.random.randn(num_filters, C, filter_size, filter_size)
-        self.params['b1'] = np.zeros(num_filters)
-
-        # weights and biases of the hidden affine layer
-        self.params['W2'] = weight_scale * np.random.randn(num_filters * H * W // 4, hidden_dim)
-        self.params['b2'] = np.zeros(hidden_dim)
-
-        # weights and biases of the output affine layer
-        self.params['W3'] = weight_scale * np.random.randn(hidden_dim, num_classes)
-        self.params['b3'] = np.zeros(num_classes)
-
-
-        for k, v in self.params.items():
-            self.params[k] = v.astype(dtype)
-
-
-    def loss(self, X, y=None):
-        """
-        Evaluate loss and gradient for the three-layer convolutional network.
-        Input / output: Same API as TwoLayerNet in fc_net.py.
-        """
-        W1, b1 = self.params['W1'], self.params['b1']
-        W2, b2 = self.params['W2'], self.params['b2']
-        W3, b3 = self.params['W3'], self.params['b3']
-
-        # pass conv_param to the forward pass for the convolutional layer
-        filter_size = W1.shape[2]
-        conv_param = {'stride': 1, 'pad': (filter_size - 1) // 2}
-
-        # pass pool_param to the forward pass for the max-pooling layer
-        pool_param = {'pool_height': 2, 'pool_width': 2, 'stride': 2}
-
-        scores = None
-        ############################################################################
-        # TODO: Implement the forward pass for the three-layer convolutional net,  #
-        # computing the class scores for X and storing them in the scores          #
-        # variable.                                                                #
-        ############################################################################
-
-        # Forward Pass: conv - relu - 2x2 max pool - affine - relu - affine - softmax
-        out1, cache1 = conv_relu_pool_forward(X, self.params['W1'], self.params['b1'], conv_param, pool_param)
-        out2, cache2 = affine_relu_forward(out1, self.params['W2'], self.params['b2'])
-        out3, cache3 = affine_forward(out2, self.params['W3'], self.params['b3'])
-        scores = out3
-
-        ############################################################################
-        #                             END OF YOUR CODE                             #
-        ############################################################################
-
-        if y is None:
-            return scores
-
-        loss, grads = 0, {}
-        ############################################################################
-        # TODO: Implement the backward pass for the three-layer convolutional net, #
-        # storing the loss and gradients in the loss and grads variables. Compute  #
-        # data loss using softmax, and make sure that grads[k] holds the gradients #
-        # for self.params[k]. Don't forget to add L2 regularization!               #
-        ############################################################################
-
-        loss, dout = softmax_loss(out3, y)
-        loss += self.reg * np.sum([np.sum(self.params['W%d' % i] ** 2) for i in [1, 2, 3]])
-        dout, grads['W3'], grads['b3'] = affine_backward(dout, cache3)
-        grads['W3'] += 2 * self.reg * self.params['W3']
-        dout, grads['W2'], grads['b2'] = affine_relu_backward(dout, cache2)
-        grads['W2'] += 2 * self.reg * self.params['W2']
-        _, grads['W1'], grads['b1'] = conv_relu_pool_backward(dout, cache1)
-        grads['W1'] += 2 * self.reg * self.params['W1']
-
-        ############################################################################
-        #                             END OF YOUR CODE                             #
-        ############################################################################
-
+    def train_step(self, X, y):
+        out = self.forward(X)
+        loss, dout = self.loss_func(out, y)
+        loss += l2_regularization(self.layers)
+        grads = self.backward(dout)
+        grads = delta_l2_regularization(self.layers, grads)
         return loss, grads
+
+    def predict(self, X):
+        X = self.forward(X)
+        return np.argmax(softmax(X), axis=1)
+
+
+
+
+
+class Conv():
+
+    def __init__(self, X_dim, n_filter, h_filter, w_filter, stride, padding):
+
+        self.d_X, self.h_X, self.w_X = X_dim
+
+        self.n_filter, self.h_filter, self.w_filter = n_filter, h_filter, w_filter
+        self.stride, self.padding = stride, padding
+
+        self.W = np.random.randn(n_filter, self.d_X, h_filter, w_filter) / np.sqrt(n_filter / 2.)
+        self.b = np.zeros((self.n_filter, 1))
+        self.params = [self.W, self.b]
+
+        self.h_out = (self.h_X - h_filter + 2 * padding) / stride + 1
+        self.w_out = (self.w_X - w_filter + 2 * padding) / stride + 1
+
+        if not self.h_out.is_integer() or not self.w_out.is_integer():
+            raise Exception("Invalid dimensions!")
+
+        self.h_out, self.w_out = int(self.h_out), int(self.w_out)
+        self.out_dim = (self.n_filter, self.h_out, self.w_out)
+
+    def forward(self, X):
+
+        self.n_X = X.shape[0]
+
+        self.X_col = im2col_indices(
+            X, self.h_filter, self.w_filter, stride=self.stride, padding=self.padding)
+        W_row = self.W.reshape(self.n_filter, -1)
+
+        out = W_row @ self.X_col + self.b
+        out = out.reshape(self.n_filter, self.h_out, self.w_out, self.n_X)
+        out = out.transpose(3, 0, 1, 2)
+        return out
+
+    def backward(self, dout):
+
+        dout_flat = dout.transpose(1, 2, 3, 0).reshape(self.n_filter, -1)
+
+        dW = dout_flat @ self.X_col.T
+        dW = dW.reshape(self.W.shape)
+
+        db = np.sum(dout, axis=(0, 2, 3)).reshape(self.n_filter, -1)
+
+        W_flat = self.W.reshape(self.n_filter, -1)
+
+        dX_col = W_flat.T @ dout_flat
+        shape = (self.n_X, self.d_X, self.h_X, self.w_X)
+        dX = col2im_indices(dX_col, shape, self.h_filter,
+                            self.w_filter, self.padding, self.stride)
+
+        return dX, [dW, db]
+
+
+class Flatten():
+
+    def __init__(self):
+        self.params = []
+
+    def forward(self, X):
+        self.X_shape = X.shape
+        self.out_shape = (self.X_shape[0], -1)
+        out = X.ravel().reshape(self.out_shape)
+        self.out_shape = self.out_shape[1]
+        return out
+
+    def backward(self, dout):
+        out = dout.reshape(self.X_shape)
+        return out, ()
+
+
+class FullyConnected():
+
+    def __init__(self, in_size, out_size):
+
+        self.W = np.random.randn(in_size, out_size) / np.sqrt(in_size / 2.)
+        self.b = np.zeros((1, out_size))
+        self.params = [self.W, self.b]
+
+    def forward(self, X):
+        self.X = X
+        out = self.X @ self.W + self.b
+        return out
+
+    def backward(self, dout):
+        dW = self.X.T @ dout
+        db = np.sum(dout, axis=0)
+        dX = dout @ self.W.T
+        return dX, [dW, db]
+
+
+
+
+class ReLU():
+    def __init__(self):
+        self.params = []
+
+    def forward(self, X):
+        self.X = X
+        return np.maximum(X, 0)
+
+    def backward(self, dout):
+        dX = dout.copy()
+        dX[self.X <= 0] = 0
+        return dX, []
+
+
+class sigmoid():
+
+    def forward(self, X):
+        out = 1.0 / (1.0 + np.exp(X))
+        self.out = out
+        return out
+
+    def backward(self, dout):
+        dX = dout * self.out * (1 - self.out)
+        return dX, []
