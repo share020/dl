@@ -53,7 +53,8 @@ class CNN:
         # loss function
         self.loss_func = loss_func
 
-    def build_layers(self, mnist_dims, n_filter, h_filter, w_filter, stride, padding, num_class):
+    def build_layers(self, mnist_dims, n_filter, h_filter,
+                     w_filter, stride, padding, num_class):
         """
         Build layers of CNN model
         """
@@ -84,11 +85,17 @@ class CNN:
         return grads
 
     def train_step(self, X, y):
+        """
+        """
+        # forward pass
         out = self.forward(X)
+
+        # compute loss
         loss, dout = self.loss_func(out, y)
-        loss += l2_regularization(self.layers)
+
+        # back propagation
         grads = self.backward(dout)
-        grads = delta_l2_regularization(self.layers, grads)
+
         return loss, grads
 
     def predict(self, X):
