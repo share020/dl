@@ -70,7 +70,6 @@ if __name__ == '__main__':
               w_filter=opt.w_filter,
               stride=opt.stride,
               padding=opt.padding)
-    print(">>> Initialize CNN model Done...")
 
     print(">>> Initialize GradientDescentOptimizer ...")
     # create GradientDescentOptimizer

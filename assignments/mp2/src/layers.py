@@ -15,7 +15,7 @@ from utils import *
 
 
 class Conv():
-
+    """Convolutional layer"""
     def __init__(self, X_dim, n_filter, h_filter, w_filter, stride, padding):
         """
         Initialize a Convolutional layer
@@ -35,20 +35,15 @@ class Conv():
         self.params = [self.W, self.b]
 
         # spatial size of output
-        self.h_out = (self.h_X - h_filter + 2 * padding) / stride + 1
-        self.w_out = (self.w_X - w_filter + 2 * padding) / stride + 1
-
-        # if not self.h_out.is_integer() or not self.w_out.is_integer():
-        #     raise Exception("Invalid dimensions!")
-
-        self.h_out, self.w_out = int(self.h_out), int(self.w_out)
+        self.h_out = int((self.h_X - h_filter + 2 * padding) / stride + 1)
+        self.w_out = int((self.w_X - w_filter + 2 * padding) / stride + 1)
 
         # output dimension
         self.out_dim = (self.n_filter, self.h_out, self.w_out)
 
     def forward(self, X):
         """
-        forward pass of conv layer
+        Forward pass of conv layer
         """
         self.n_X = X.shape[0]
 
@@ -62,6 +57,7 @@ class Conv():
 
     def backward(self, dout):
         """
+        Back propagation of conv layer
         """
         dout_flat = dout.transpose(1, 2, 3, 0).reshape(self.n_filter, -1)
 
@@ -78,25 +74,8 @@ class Conv():
         return dX, [dW, db]
 
 
-class Flatten():
-
-    def __init__(self):
-        self.params = []
-
-    def forward(self, X):
-        self.X_shape = X.shape
-        self.out_shape = (self.X_shape[0], -1)
-        out = X.ravel().reshape(self.out_shape)
-        self.out_shape = self.out_shape[1]
-        return out
-
-    def backward(self, dout):
-        out = dout.reshape(self.X_shape)
-        return out, ()
-
-
 class FullyConnected():
-
+    """Fully Connected layer"""
     def __init__(self, in_size, out_size):
         """
         Initialize a Fully Connected Layer
@@ -106,18 +85,48 @@ class FullyConnected():
         self.params = [self.W, self.b]
 
     def forward(self, X):
+        """
+        Forward pass of fc layer
+        """
         self.X = X
         out = self.X.dot(self.W) + self.b
         return out
 
     def backward(self, dout):
+        """
+        Back propagation of fc layer
+        """
         dW = self.X.T.dot(dout)
         db = np.sum(dout, axis=0)
         dX = dout.dot(self.W.T)
         return dX, [dW, db]
 
 
+class Flatten():
+
+    def __init__(self):
+        self.params = []
+
+    def forward(self, X):
+        """
+        Forward pass of flatten layer
+        """
+        self.X_shape = X.shape
+        self.out_shape = (self.X_shape[0], -1)
+        out = X.ravel().reshape(self.out_shape)
+        self.out_shape = self.out_shape[1]
+        return out
+
+    def backward(self, dout):
+        """
+        Back propagation of flatten layer
+        """
+        out = dout.reshape(self.X_shape)
+        return out, ()
+
+
 class ReLU():
+    """Rectified Linear Units (ReLU)"""
     def __init__(self):
         """
         Initialize a ReLU Layer
@@ -125,10 +134,16 @@ class ReLU():
         self.params = []
 
     def forward(self, X):
+        """
+        Forward pass of ReLU layer
+        """
         self.X = X
         return np.maximum(X, 0)
 
     def backward(self, dout):
+        """
+        Back propagation of ReLU layer
+        """
         dX = dout.copy()
         dX[self.X <= 0] = 0
         return dX, []
@@ -142,10 +157,16 @@ class sigmoid():
         self.params = []
 
     def forward(self, X):
+        """
+        Forward pass of Sigmoid layer
+        """
         out = 1.0 / (1.0 + np.exp(X))
         self.out = out
         return out
 
     def backward(self, dout):
+        """
+        Back propagation of sigmoid layer
+        """
         dX = dout * self.out * (1 - self.out)
         return dX, []

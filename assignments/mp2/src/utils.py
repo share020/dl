@@ -30,7 +30,6 @@ def mnist_loader(path, one_hot=False, debug=True):
     x_test  = np.float32(MNIST_data['x_test'][:])
     y_test  = np.int32(np.array(MNIST_data['y_test'][:, 0]))
     MNIST_data.close()
-    print(">>> Loading MNIST dataset Done!")
 
     # reshape to input shape
     shape = (-1, 1, 28, 28)
@@ -42,7 +41,7 @@ def mnist_loader(path, one_hot=False, debug=True):
         y_test  = one_hot_encode(y_test, 10)
 
     if debug:
-        num_training, num_test = 2500, 1000
+        num_training, num_test = 20480, 10000
         x_train, y_train = x_train[range(num_training)], y_train[range(num_training)]
         x_test, y_test = x_test[range(num_test)], y_test[range(num_test)]
 
@@ -50,6 +49,16 @@ def mnist_loader(path, one_hot=False, debug=True):
 
 
 def one_hot_encode(y, num_class):
+    """
+    One-Hot Encoding
+
+    inputs:
+        y: ground truth label
+        num_class: number of classes
+
+    return:
+        onehot: one-hot encoded labels
+    """
     m = y.shape[0]
     onehot = np.zeros((m, num_class), dtype="int32")
     for i in range(m):
@@ -58,6 +67,12 @@ def one_hot_encode(y, num_class):
 
 
 def softmax(x):
+    """
+    Perform Softmax
+
+    return:
+        np.exp(x) / np.sum(np.exp(x))
+    """
     exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))
     return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
@@ -65,8 +80,6 @@ def softmax(x):
 def get_im2col_indices(x_shape, field_height=3, field_width=3, padding=1, stride=1):
     # First figure out what the size of the output should be
     N, C, H, W = x_shape
-    assert (H + 2 * padding - field_height) % stride == 0
-    assert (W + 2 * padding - field_height) % stride == 0
     out_height = (H + 2 * padding - field_height) / stride + 1
     out_width = (W + 2 * padding - field_width) / stride + 1
 

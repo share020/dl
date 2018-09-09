@@ -27,15 +27,15 @@ class GradientDescentOptimizer(object):
         Stochastic Gradient Descent Optimizer.
 
         inputs
-            nnet
-            X_train
-            y_train
-            minibatch_size
-            epochs
-            learning_rate
-            verbose
-            X_test
-            y_test
+            nnet: CNN model
+            X_train: training images
+            y_train: training labels (ground truth)
+            minibatch_size: size of mini-batches
+            epochs: training epochs
+            learning_rate: learning rate
+            verbose: whether print logs
+            X_test: test images
+            y_test: test labels (ground truth)
         """
         # neural net model
         self.nnet = nnet
@@ -58,7 +58,7 @@ class GradientDescentOptimizer(object):
 
     def minimize(self):
         """
-        minimize loss
+        Optimizer minimize step
         """
         # permute minibatches
         minibatches = self.get_minibatches()
@@ -78,12 +78,20 @@ class GradientDescentOptimizer(object):
     def get_minibatches(self, isShuffle=True):
         """
         get mini batches
+
+        inputs:
+            isShuffle: bool whether shuffle dataset
+
+        return:
+            minibatches: list list of tuple of minibatches of dataset
         """
         m = self.X_train.shape[0]
         minibatches = []
 
+        # make a copy of X_train and y_train
         X, y = self.X_train.copy(), self.y_train.copy()
 
+        # shuffle data
         if isShuffle:
             X, y = shuffle(X, y)
 
@@ -96,7 +104,10 @@ class GradientDescentOptimizer(object):
 
     def update_params(self, grads):
         """
-        update parameters
+        Perform weights and biases update
+
+        inputs:
+            grads: gradients of weights and biases
         """
         for param, grad in zip(self.nnet.params, reversed(grads)):
             for i in range(len(grad)):
@@ -104,6 +115,10 @@ class GradientDescentOptimizer(object):
 
     def accuracy(self, y_true, y_pred):
         """
-        accuracy
+        Calculate accuracy
+
+        inputs:
+            y_true: grounf truth labels
+            y_pred: prediction of labels
         """
         return np.mean(y_pred == y_true)
