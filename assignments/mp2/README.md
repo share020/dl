@@ -1,6 +1,6 @@
 # HW2: Implement and train a convolution neural network from scratch in Python for the MNIST dataset (no PyTorch).
 
->The convolution network should have a single hidden layer with multiple channels.
+> The convolution network should have a single hidden layer with multiple channels.
 >
 > Due September 14 at 5:00 PM.
 

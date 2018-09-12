@@ -21,6 +21,7 @@ from loss import *
 
 class GradientDescentOptimizer(object):
     """Stochastic Gradient Descent Optimizer."""
+
     def __init__(self, nnet, X_train, y_train, minibatch_size, epochs,
                  learning_rate, verbose=True, X_test=None, y_test=None):
         """
@@ -71,9 +72,12 @@ class GradientDescentOptimizer(object):
                 self.update_params(grads)
 
             if self.verbose:
-                train_acc = self.accuracy(self.y_train, self.nnet.predict(self.X_train))
-                test_acc  = self.accuracy(self.y_test, self.nnet.predict(self.X_test))
-                print("Epoch {0}, Loss = {1}, Training Accuracy = {2}, Test Accuracy = {3}".format(i + 1, loss, train_acc, test_acc))
+                train_acc = self.accuracy(
+                    self.y_train, self.nnet.predict(self.X_train))
+                test_acc = self.accuracy(
+                    self.y_test, self.nnet.predict(self.X_test))
+                print("Epoch {0}, Loss = {1}, Training Accuracy = {2}, Test Accuracy = {3}".format(
+                    i + 1, loss, train_acc, test_acc))
 
     def get_minibatches(self, isShuffle=True):
         """

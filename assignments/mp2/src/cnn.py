@@ -21,6 +21,7 @@ class CNN:
     """
     Convolutional Neural Network model
     """
+
     def __init__(self, mnist_dims, num_class, n_filter, h_filter,
                  w_filter, stride, padding, loss_func=SoftmaxLoss):
         """
