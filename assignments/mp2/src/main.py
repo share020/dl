@@ -23,9 +23,11 @@ from layers import *
 
 parser = argparse.ArgumentParser()
 
-# hyperparameters setting
+# dataroot
 parser.add_argument('--dataroot', type=str,
                     default="../MNISTdata.hdf5", help='path to dataset')
+
+# hyperparameters setting
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
 parser.add_argument('--epochs', type=int, default=50,
                     help='number of epochs to train')
@@ -73,7 +75,7 @@ if __name__ == '__main__':
 
     print(">>> Initialize CNN model ...")
 
-    # create cnn class
+    # create CNN model
     cnn = CNN(mnist_dims,
               num_class=opt.num_class,
               n_filter=opt.n_filter,
@@ -97,3 +99,5 @@ if __name__ == '__main__':
 
     # minimize loss
     optim.minimize()
+
+    print(">>> Done!")

@@ -14,9 +14,9 @@ import numpy as np
 from sklearn.utils import shuffle
 
 from cnn import *
+from loss import *
 from utils import *
 from layers import *
-from loss import *
 
 
 class GradientDescentOptimizer(object):
@@ -46,9 +46,9 @@ class GradientDescentOptimizer(object):
         self.y_train = y_train
 
         # hyper-parameters
-        self.minibatch_size = minibatch_size
         self.epochs = epochs
-        self.learning_rate = learning_rate
+        self.minibatch_size = minibatch_size
+        self.learning_rate  = learning_rate
 
         # print logs
         self.verbose = verbose

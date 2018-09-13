@@ -1,11 +1,53 @@
 # HW2: Implement and train a convolution neural network from scratch in Python for the MNIST dataset (no PyTorch).
 
-> The convolution network should have a single hidden layer with multiple channels.
->
+> You should write your own code for convolutions (e.g., do not use SciPy's convolution function). The convolution network should have a single hidden layer with multiple channels.
+> 
+> It should achieve 97-98% accuracy on the Test Set. For full credit, submit via Compass (1) the code and (2) a paragraph (in a PDF document) which states the Test Accuracy and briefly describes the implementation.
+> 
 > Due September 14 at 5:00 PM.
 
 
+## Project files structure
+
+```
+.
+├── MNISTdata.hdf5
+├── README.md
+├── fig
+│   └── conv.jpg
+└── src
+    ├── cnn.py    (CNN model file)
+    ├── layers.py (different layer definition)
+    ├── loss.py   (loss function)
+    ├── main.py   (main pipeline)
+    ├── optim.py  (Gradient Descent Optimizer)
+    └── utils.py  (util funtions)
+```
+
+
 ## Implementation
+
+### Hyper-parameters
+
+
+|   Hyper-parameters  	|    Description    	|
+|:-------------------:	|:-----------------:	|
+|      lr = 0.01      	|   learning rate   	|
+|     epochs = 50     	|  epochs to train  	|
+| minibatch_size = 64 	|  input batch size 	|
+|    n_filter = 32    	| number of filters 	|
+|     h_filter = 7    	|  height of filter 	|
+|     w_filter = 7    	|  width of filter  	|
+|      stride = 1     	|       stride      	|
+|     padding = 1     	|      padding      	|
+
+
+### Convolution
+
+![](fig/conv.jpg)
+
+The idea I implemented convolution is based on the lecture from CS446 in Spring 2018. We can stretch the image, gather all the "locations" which need convolution operations, which is kind of more efficient than just compute convolution on the image. I heavily used the [*"im2col"*](http://cs231n.github.io/assignments2018/assignment2/) util function provided by Stanford CS231n: Convolutional Neural Networks for Visual Recognition course to realize the functionality of convolution.
+
 
 
 ## How to run?
@@ -17,9 +59,9 @@ python3 main.py
 ```
 
 
-## Result
+## Test Result
 
-- 2500 training images and 1000 test images
+- Training on 2500 training images and test on 1000 test images
 
 ```
 $ python3 main.py
@@ -79,7 +121,7 @@ Epoch 49, Loss = 0.004423210988131275, Training Accuracy = 0.9984, Test Accuracy
 Epoch 50, Loss = 0.004311327279999733, Training Accuracy = 0.9984, Test Accuracy = 0.908
 ```
 
-- Training on the entire dataset. **TOO LONG; DON'T TRAIN**
+- Training on half of the training set and test on the entire test set. **TOO LONG; DON'T TRAIN**
 
 ```
 $ python3 main.py
@@ -112,4 +154,26 @@ Epoch 22, Loss = 0.09140489178262742, Training Accuracy = 0.990966796875, Test A
 Epoch 23, Loss = 0.08894719924826124, Training Accuracy = 0.991748046875, Test Accuracy = 0.9766
 Epoch 24, Loss = 0.0865887475084566, Training Accuracy = 0.99228515625, Test Accuracy = 0.9769
 Epoch 25, Loss = 0.0844930027634586, Training Accuracy = 0.99263453985, Test Accuracy = 0.9771
+
+// Training time is too long, so I abort the training process
+^CTraceback (most recent call last):
+  File "main.py", line 101, in <module>
+    optim.minimize()
+  File "/Users/macbookpro/Desktop/cs598/assignments/mp2/src/optim.py", line 71, in minimize
+    loss, grads = self.nnet.train_step(X_mini, y_mini)
+  File "/Users/macbookpro/Desktop/cs598/assignments/mp2/src/cnn.py", line 133, in train_step
+    grads = self.backward(dout)
+  File "/Users/macbookpro/Desktop/cs598/assignments/mp2/src/cnn.py", line 110, in backward
+    dout, grad = layer.backward(dout)
+  File "/Users/macbookpro/Desktop/cs598/assignments/mp2/src/layers.py", line 76, in backward
+    self.w_filter, self.padding, self.stride)
+  File "/Users/macbookpro/Desktop/cs598/assignments/mp2/src/utils.py", line 126, in col2im_indices
+    np.add.at(x_padded, (slice(None), k, i, j), cols_reshaped)
+KeyboardInterrupt
 ```
+
+
+## References
+
+[1] Stanford CS231n: Convolutional Neural Networks for Visual Recognition, [*"Assignment2 instructions"*](http://cs231n.github.io/assignments2018/assignment2/)  
+[2] DeepNotes, [*"Convolution Layer - The core idea behind CNNs"*](https://deepnotes.io/convlayer)

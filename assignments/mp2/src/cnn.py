@@ -96,6 +96,7 @@ class CNN:
             X: result of fprward pass
         """
         for layer in self.layers:
+            # perform forward pass in each layer
             X = layer.forward(X)
         return X
 
@@ -105,13 +106,14 @@ class CNN:
         """
         grads = []
         for layer in reversed(self.layers):
+            # perform back propagation in each layer
             dout, grad = layer.backward(dout)
             grads.append(grad)
         return grads
 
     def train_step(self, X, y):
         """
-        Train.
+        Training process.
 
         inputs:
             X: training / test images
@@ -134,7 +136,9 @@ class CNN:
 
     def predict(self, X):
         """
-        Predict
+        Predict.
+
+        Given a new image, predict the label
 
         inputs:
             X: training / test images

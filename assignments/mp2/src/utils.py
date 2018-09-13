@@ -31,20 +31,19 @@ def mnist_loader(path, one_hot=False, debug=True):
     y_test = np.int32(np.array(MNIST_data['y_test'][:, 0]))
     MNIST_data.close()
 
-    # reshape to input shape
+    # reshape input images
     shape = (-1, 1, 28, 28)
     x_train = x_train.reshape(shape)
-    x_test = x_test.reshape(shape)
+    x_test  = x_test.reshape(shape)
 
     if one_hot:
         y_train = one_hot_encode(y_train, 10)
-        y_test = one_hot_encode(y_test, 10)
+        y_test  = one_hot_encode(y_test, 10)
 
     if debug:
         num_training, num_test = 20480, 10000
-        x_train, y_train = x_train[range(
-            num_training)], y_train[range(num_training)]
-        x_test, y_test = x_test[range(num_test)], y_test[range(num_test)]
+        x_train, y_train = x_train[range(num_training)], y_train[range(num_training)]
+        x_test, y_test   = x_test[range(num_test)], y_test[range(num_test)]
 
     return (x_train, y_train), (x_test, y_test)
 
@@ -81,6 +80,8 @@ def softmax(x):
 def get_im2col_indices(x_shape, field_height=3, field_width=3, padding=1, stride=1):
     # First figure out what the size of the output should be
     N, C, H, W = x_shape
+    assert (H + 2 * padding - field_height) % stride == 0
+    assert (W + 2 * padding - field_height) % stride == 0
     out_height = (H + 2 * padding - field_height) / stride + 1
     out_width = (W + 2 * padding - field_width) / stride + 1
 
@@ -100,7 +101,7 @@ def get_im2col_indices(x_shape, field_height=3, field_width=3, padding=1, stride
 
 def im2col_indices(x, field_height=3, field_width=3, padding=1, stride=1):
     """
-    An implementation of im2col based on some fancy indexing
+    Implement im2col util function
     """
     # Zero-pad the input
     p = padding
@@ -117,10 +118,9 @@ def im2col_indices(x, field_height=3, field_width=3, padding=1, stride=1):
 
 def col2im_indices(cols, x_shape, field_height=3, field_width=3, padding=1, stride=1):
     """
-    An implementation of col2im based on fancy indexing and np.add.at
+    Implement col2im based on fancy indexing and np.add.at
     """
     N, C, H, W = x_shape
-
     H_padded, W_padded = H + 2 * padding, W + 2 * padding
     x_padded = np.zeros((N, C, H_padded, W_padded), dtype=cols.dtype)
     k, i, j = get_im2col_indices(
