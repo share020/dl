@@ -46,13 +46,13 @@
 
 ![](fig/conv.jpg)
 
-The idea I implemented convolution is based on the lecture from CS446 in Spring 2018. We can stretch the image, gather all the "locations" which need convolution operations, which is kind of more efficient than just compute convolution on the image. I heavily used the [*"im2col"*](http://cs231n.github.io/assignments2018/assignment2/) util function provided by Stanford CS231n: Convolutional Neural Networks for Visual Recognition course to realize the functionality of convolution.
+The idea I implemented convolution is based on the lecture from CS446 in Spring 2018. We can stretch the image, gather all the "locations" which need convolution operations, which is kind of more efficient than just compute convolution on the image. I heavily used the [*"im2col"*](http://cs231n.github.io/assignments2018/assignment2/) util function provided by Stanford CS231n: Convolutional Neural Networks for Visual Recognition course to realize the functionality of efficient and fast convolution operations.
 
 
 
 ## How to run?
 
-in `src/` directory, run the follow command in terminal:
+in `src/` directory, copy & paste the following command in terminal:
 
 ```sh
 python3 main.py
@@ -175,5 +175,6 @@ KeyboardInterrupt
 
 ## References
 
-[1] Stanford CS231n: Convolutional Neural Networks for Visual Recognition, [*"Assignment2 instructions"*](http://cs231n.github.io/assignments2018/assignment2/)  
-[2] DeepNotes, [*"Convolution Layer - The core idea behind CNNs"*](https://deepnotes.io/convlayer)
+[1] Stanford CS231n: Convolutional Neural Networks for Visual Recognition, Lecture notes, [*"Convolutional Neural Networks (CNNs / ConvNets)"*](http://cs231n.github.io/convolutional-networks/)  
+[2] Stanford CS231n: Convolutional Neural Networks for Visual Recognition, assignment instruction, [*"Assignment2 instructions"*](http://cs231n.github.io/assignments2018/assignment2/)  
+[3] DeepNotes, [*"Convolution Layer - The core idea behind CNNs"*](https://deepnotes.io/convlayer)
