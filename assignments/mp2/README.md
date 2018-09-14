@@ -121,7 +121,7 @@ Epoch 49, Loss = 0.004423210988131275, Training Accuracy = 0.9984, Test Accuracy
 Epoch 50, Loss = 0.004311327279999733, Training Accuracy = 0.9984, Test Accuracy = 0.908
 ```
 
-- Training on half of the training set and test on the entire test set. **TOO LONG; DON'T TRAIN**
+- Training on the training set and test on the test set. **TOO LONG; DON'T TRAIN**
 
 ```
 $ python3 main.py
