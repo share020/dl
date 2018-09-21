@@ -27,7 +27,6 @@ import os
 import argparse
 
 from cnn import *
-from utils import *
 
 parser = argparse.ArgumentParser()
 
@@ -40,16 +39,17 @@ parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
 parser.add_argument('--weight_decay', type=float, default=5e-4, help='weight decay')
 parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
 parser.add_argument('--batch_size_train', type=int, default=128, help='training set input batch size')
-parser.add_argument('--batch_size_test', type=int, default=32, help='test set input batch size')
+parser.add_argument('--batch_size_test', type=int, default=64, help='test set input batch size')
 
 
 # training settings
 parser.add_argument('--resume', type=bool, default=False, help='whether training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
+parser.add_argument('--is_gpu', type=bool, default=False, help='whether training using GPU')
 
 # parse the arguments
 opt = parser.parse_args()
 
+TOTAL_CLASSES = 10
 
 # set the seeds
 np.random.seed(233)
@@ -64,7 +64,6 @@ print("==> Data Augmentation ...")
 transform_train = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(3),
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
@@ -94,7 +93,7 @@ print("==> Initialize CNN model ...")
 if opt.resume:
     # Load checkpoint
     print('==> Resuming from checkpoint ...')
-    assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
+    assert os.path.isdir('../checkpoint'), 'Error: no checkpoint directory found!'
     checkpoint = torch.load(opt.ckptroot)
     net = checkpoint['net']
     start_epoch = checkpoint['epoch']
@@ -118,6 +117,47 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(net.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
 
 
+def calculate_test_accuracy(testloader, is_gpu):
+    """Util function to calculate test set accuracy.
+
+    both overall and per class accuracy
+
+    Args:
+        testloader (torch.utils.data.DataLoader): test set
+        is_gpu (bool): whether to run on GPU
+    Returns:
+        tuple: (overall accuracy, class level accuracy)
+    """
+
+    correct = 0.
+    total = 0.
+    predictions = []
+
+    class_correct = list(0. for i in range(TOTAL_CLASSES))
+    class_total = list(0. for i in range(TOTAL_CLASSES))
+
+    for data in testloader:
+        images, labels = data
+        if is_gpu:
+            images = images.cuda()
+            labels = labels.cuda()
+        outputs = net(Variable(images))
+        _, predicted = torch.max(outputs.data, 1)
+        predictions.extend(list(predicted.cpu().numpy()))
+        total += labels.size(0)
+        correct += (predicted == labels).sum()
+
+        c = (predicted == labels).squeeze()
+        for i in range(len(labels)):
+            label = labels[i]
+            class_correct[label] += c[i]
+            class_total[label] += 1
+
+    class_accuracy = 100 * np.divide(class_correct, class_total)
+    return 100 * correct / total, class_accuracy
+
+
+print("==> Start training ...")
 
 for epoch in range(start_epoch, opt.epochs + start_epoch):
 
@@ -151,9 +191,9 @@ for epoch in range(start_epoch, opt.epochs + start_epoch):
 
     # Scale of 0.0 to 100.0
     # Calculate validation set accuracy of the existing model
-    val_accuracy, val_classwise_accuracy = \
-        calculate_val_accuracy(testloader, opt.is_gpu)
-    print('Accuracy of the network on the val images: %d %%' % (val_accuracy))
+    test_accuracy, test_classwise_accuracy = \
+        calculate_test_accuracy(testloader, opt.is_gpu)
+    print('Accuracy of the network on the test images: %d %%' % (test_accuracy))
 
     if epoch % 50 == 0:
         print('==>  Saving model..')
