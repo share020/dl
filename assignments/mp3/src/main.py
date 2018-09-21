@@ -43,12 +43,10 @@ parser.add_argument('--batch_size_test', type=int, default=64, help='test set in
 
 # training settings
 parser.add_argument('--resume', type=bool, default=False, help='whether training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
+parser.add_argument('--is_gpu', type=bool, default=False, help='whether training using GPU')
 
 # parse the arguments
 opt = parser.parse_args()
-
-TOTAL_CLASSES = 10
 
 # set the seeds
 # np.random.seed(233)
@@ -91,6 +89,8 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 
 print("==> Initialize CNN model ...")
 
+start_epoch = 0
+
 # resume training from the last time
 if opt.resume:
     # Load checkpoint
@@ -100,10 +100,9 @@ if opt.resume:
     net = checkpoint['net']
     start_epoch = checkpoint['epoch']
 else:
-    # re-start training
+    # start over
     print('==> Building new CNN model ...')
     net = CNN()
-    start_epoch = 0
 
 
 # For training on GPU, we need to transfer net and data onto the GPU
@@ -119,44 +118,30 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.RMSprop(net.parameters(), lr=opt.lr, weight_decay=opt.wd)
 
 
-def calculate_accuracy(testloader, is_gpu):
-    """Util function to calculate test set accuracy.
-
-    both overall and per class accuracy
+def calculate_accuracy(loader, is_gpu):
+    """Calculate accuracy.
 
     Args:
-        testloader (torch.utils.data.DataLoader): test set
+        loader (torch.utils.data.DataLoader): training / test set loader
         is_gpu (bool): whether to run on GPU
     Returns:
         tuple: (overall accuracy, class level accuracy)
     """
-
     correct = 0.
     total = 0.
-    predictions = []
 
-    class_correct = list(0. for i in range(TOTAL_CLASSES))
-    class_total = list(0. for i in range(TOTAL_CLASSES))
-
-    for data in testloader:
+    for data in loader:
         images, labels = data
         if is_gpu:
             images = images.cuda()
             labels = labels.cuda()
         outputs = net(Variable(images))
         _, predicted = torch.max(outputs.data, 1)
-        predictions.extend(list(predicted.cpu().numpy()))
+
         total += labels.size(0)
         correct += (predicted == labels).sum()
 
-        # c = (predicted == labels).squeeze()
-        # for i in range(len(labels)):
-        #     label = labels[i]
-        #     class_correct[label] += c[i]
-        #     class_total[label] += 1
-
-    # class_accuracy = 100 * np.divide(class_correct, class_total)
-    return 100 * correct / total #, class_accuracy
+    return 100 * correct / total
 
 
 print("==> Start training ...")
@@ -189,19 +174,16 @@ for epoch in range(start_epoch, opt.epochs + start_epoch):
 
     # Normalizing the loss by the total number of train batches
     running_loss /= len(trainloader)
-    # print('[%d] loss: %.3f' % (epoch + 1, running_loss))
 
-    # Scale of 0.0 to 100.0
     # Calculate training/test set accuracy of the existing model
-    test_accuracy = calculate_accuracy(testloader, opt.is_gpu)
     train_accuracy = calculate_accuracy(trainloader, opt.is_gpu)
+    test_accuracy = calculate_accuracy(testloader, opt.is_gpu)
 
-    # print('Accuracy of the network on the test images: %d %%' % (test_accuracy))
+    print("Training iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(epoch+1, running_loss, train_accuracy, test_accuracy))
 
-    print("Training iteration: {0} | Loss: {1} | Training accuracy: {2} | Test accuracy: {3}".format(epoch+1, running_loss, train_accuracy, test_accuracy))
-
+    # save model
     if epoch % 50 == 0:
-        print('==>  Saving model..')
+        print('==> Saving model ...')
         state = {
             'net': net.module if opt.is_gpu else net,
             'epoch': epoch,
