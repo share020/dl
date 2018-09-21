@@ -30,21 +30,20 @@ from cnn import *
 
 parser = argparse.ArgumentParser()
 
-# data root
+# directory
 parser.add_argument('--dataroot', type=str, default="../data", help='path to dataset')
 parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", help='path to checkpoint')
 
 # hyperparameters settings
-parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
-parser.add_argument('--weight_decay', type=float, default=5e-4, help='weight decay')
-parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
+parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
+parser.add_argument('--wd', type=float, default=5e-4, help='weight decay')
+parser.add_argument('--epochs', type=int, default=250, help='number of epochs to train')
 parser.add_argument('--batch_size_train', type=int, default=128, help='training set input batch size')
 parser.add_argument('--batch_size_test', type=int, default=64, help='test set input batch size')
 
-
 # training settings
 parser.add_argument('--resume', type=bool, default=False, help='whether training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=False, help='whether training using GPU')
+parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
 
 # parse the arguments
 opt = parser.parse_args()
@@ -52,9 +51,9 @@ opt = parser.parse_args()
 TOTAL_CLASSES = 10
 
 # set the seeds
-np.random.seed(233)
-torch.cuda.manual_seed_all(233)
-torch.manual_seed(233)
+# np.random.seed(233)
+# torch.cuda.manual_seed_all(233)
+# torch.manual_seed(233)
 
 
 # Data augmentation
@@ -77,15 +76,18 @@ transform_test = transforms.Compose([
 
 # Loading CIFAR10
 
-print("==> Downloading CIFAR10 dataset ...")
+print("==> Preparing CIFAR10 dataset ...")
 
 trainset    = torchvision.datasets.CIFAR10(root=opt.dataroot, train=True, download=True, transform=transform_train)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=opt.batch_size_train, shuffle=True, num_workers=4)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=opt.batch_size_train, shuffle=True, num_workers=2)
 
 testset     = torchvision.datasets.CIFAR10(root=opt.dataroot, train=False, download=True, transform=transform_test)
-testloader  = torch.utils.data.DataLoader(testset, batch_size=opt.batch_size_test, shuffle=False, num_workers=4)
+testloader  = torch.utils.data.DataLoader(testset, batch_size=opt.batch_size_test, shuffle=False, num_workers=2)
 
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
+
+# Initialize CNN model
 
 print("==> Initialize CNN model ...")
 
@@ -100,9 +102,9 @@ if opt.resume:
 else:
     # re-start training
     print('==> Building new CNN model ...')
-    # Create an instance of the nn.module class defined above:
     net = CNN()
     start_epoch = 0
+
 
 # For training on GPU, we need to transfer net and data onto the GPU
 # http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#training-on-gpu
@@ -114,10 +116,10 @@ if opt.is_gpu:
 
 # Loss function and optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(net.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
+optimizer = optim.RMSprop(net.parameters(), lr=opt.lr, weight_decay=opt.wd)
 
 
-def calculate_test_accuracy(testloader, is_gpu):
+def calculate_accuracy(testloader, is_gpu):
     """Util function to calculate test set accuracy.
 
     both overall and per class accuracy
@@ -147,14 +149,14 @@ def calculate_test_accuracy(testloader, is_gpu):
         total += labels.size(0)
         correct += (predicted == labels).sum()
 
-        c = (predicted == labels).squeeze()
-        for i in range(len(labels)):
-            label = labels[i]
-            class_correct[label] += c[i]
-            class_total[label] += 1
+        # c = (predicted == labels).squeeze()
+        # for i in range(len(labels)):
+        #     label = labels[i]
+        #     class_correct[label] += c[i]
+        #     class_total[label] += 1
 
-    class_accuracy = 100 * np.divide(class_correct, class_total)
-    return 100 * correct / total, class_accuracy
+    # class_accuracy = 100 * np.divide(class_correct, class_total)
+    return 100 * correct / total #, class_accuracy
 
 
 print("==> Start training ...")
@@ -187,13 +189,16 @@ for epoch in range(start_epoch, opt.epochs + start_epoch):
 
     # Normalizing the loss by the total number of train batches
     running_loss /= len(trainloader)
-    print('[%d] loss: %.3f' % (epoch + 1, running_loss))
+    # print('[%d] loss: %.3f' % (epoch + 1, running_loss))
 
     # Scale of 0.0 to 100.0
-    # Calculate validation set accuracy of the existing model
-    test_accuracy, test_classwise_accuracy = \
-        calculate_test_accuracy(testloader, opt.is_gpu)
-    print('Accuracy of the network on the test images: %d %%' % (test_accuracy))
+    # Calculate training/test set accuracy of the existing model
+    test_accuracy = calculate_accuracy(testloader, opt.is_gpu)
+    train_accuracy = calculate_accuracy(trainloader, opt.is_gpu)
+
+    # print('Accuracy of the network on the test images: %d %%' % (test_accuracy))
+
+    print("Training iteration: {0} | Loss: {1} | Training accuracy: {2} | Test accuracy: {3}".format(epoch+1, running_loss, train_accuracy, test_accuracy))
 
     if epoch % 50 == 0:
         print('==>  Saving model..')
@@ -204,3 +209,5 @@ for epoch in range(start_epoch, opt.epochs + start_epoch):
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
         torch.save(state, '../checkpoint/ckpt.t7')
+
+print('==> Finished Training ...')
