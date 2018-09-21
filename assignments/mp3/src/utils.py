@@ -1,10 +1,25 @@
+"""
+HW3: Train a deep convolution network on a GPU with PyTorch for the CIFAR10 dataset.
+
+The convolution network should use
+    (A) dropout
+    (B) trained with RMSprop or ADAM, and
+    (C) data augmentation. 
+
+@author: Zhenye Na
+"""
+
+
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 
 from cnn import *
 
-TOTAL_CLASSES = 10
 
 def calculate_val_accuracy(testloader, is_gpu):
     """Util function to calculate val set accuracy.
@@ -17,6 +32,9 @@ def calculate_val_accuracy(testloader, is_gpu):
     Returns:
         tuple: (overall accuracy, class level accuracy)
     """
+
+    TOTAL_CLASSES = 10
+
     correct = 0.
     total = 0.
     predictions = []

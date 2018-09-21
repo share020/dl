@@ -1,20 +1,27 @@
 """
 HW3: Train a deep convolution network on a GPU with PyTorch for the CIFAR10 dataset.
 
+The convolution network should use
+    (A) dropout
+    (B) trained with RMSprop or ADAM, and
+    (C) data augmentation. 
 
 @author: Zhenye Na
 """
 
+import numpy as np
+import os.path
+import sys
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torch.backends.cudnn as cudnn
-
+import torch.utils.data
 import torchvision
 import torchvision.transforms as transforms
 
 from torch.autograd import Variable
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import torch.backends.cudnn as cudnn
 
 import os
 import argparse
@@ -25,24 +32,35 @@ from utils import *
 parser = argparse.ArgumentParser()
 
 # data root
-parser.add_argument('--dataroot', type=str, default="../MNISTdata.hdf5", help='path to dataset')
+parser.add_argument('--dataroot', type=str, default="../data", help='path to dataset')
+parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", help='path to checkpoint')
 
 # hyperparameters settings
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
+parser.add_argument('--weight_decay', type=float, default=5e-4, help='weight decay')
 parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
-parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
+parser.add_argument('--batch_size_train', type=int, default=128, help='training set input batch size')
+parser.add_argument('--batch_size_test', type=int, default=32, help='test set input batch size')
+
 
 # training settings
 parser.add_argument('--resume', type=bool, default=False, help='whether training from ckpt')
 parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
 
-
 # parse the arguments
 opt = parser.parse_args()
 
-print(">>> Data Augmentation ...")
+
+# set the seeds
+np.random.seed(233)
+torch.cuda.manual_seed_all(233)
+torch.manual_seed(233)
+
 
 # Data augmentation
+
+print("==> Data Augmentation ...")
+
 transform_train = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
@@ -57,31 +75,32 @@ transform_test = transforms.Compose([
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
 
-print(">>> Downloading CIFAR10 dataset ...")
 
-# get the dataset
-trainset    = torchvision.datasets.CIFAR10(root='../data', train=True, download=True, transform=transform_train)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=opt.batch_size, shuffle=True, num_workers=2)
+# Loading CIFAR10
 
-testset    = torchvision.datasets.CIFAR10(root='../data', train=False, download=True, transform=transform_test)
-testloader = torch.utils.data.DataLoader(testset, batch_size=opt.batch_size, shuffle=False, num_workers=2)
+print("==> Downloading CIFAR10 dataset ...")
 
-# classes
+trainset    = torchvision.datasets.CIFAR10(root=opt.dataroot, train=True, download=True, transform=transform_train)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=opt.batch_size_train, shuffle=True, num_workers=4)
+
+testset     = torchvision.datasets.CIFAR10(root=opt.dataroot, train=False, download=True, transform=transform_test)
+testloader  = torch.utils.data.DataLoader(testset, batch_size=opt.batch_size_test, shuffle=False, num_workers=4)
+
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
+print("==> Initialize CNN model ...")
 
-print(">>> Initialize CNN model ...")
-
-
+# resume training from the last time
 if opt.resume:
-    # Load checkpoint.
-    print('==> Resuming from checkpoint..')
+    # Load checkpoint
+    print('==> Resuming from checkpoint ...')
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
-    checkpoint = torch.load('../checkpoint/ckpt.t7')
+    checkpoint = torch.load(opt.ckptroot)
     net = checkpoint['net']
     start_epoch = checkpoint['epoch']
 else:
-    print('==> Building model..')
+    # re-start training
+    print('==> Building new CNN model ...')
     # Create an instance of the nn.module class defined above:
     net = CNN()
     start_epoch = 0
@@ -94,20 +113,13 @@ if opt.is_gpu:
     cudnn.benchmark = True
 
 
-# 3. Define a Loss function and optimizer
-# Here I use Cross-Entropy loss and Adam algorithm.
-# The CrossEntropyLoss criterion already includes softmax within its
-# implementation.
-
+# Loss function and optimizer
 criterion = nn.CrossEntropyLoss()
-
-# Tune the learning rate.
-# See whether the momentum is useful or not
-optimizer = optim.Adam(net.parameters(), lr=0.01, weight_decay=5e-4)
+optimizer = optim.Adam(net.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
 
 
 
-for epoch in range(start_epoch, EPOCHS + start_epoch):  # loop over the dataset multiple times
+for epoch in range(start_epoch, opt.epochs + start_epoch):
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
@@ -140,23 +152,15 @@ for epoch in range(start_epoch, EPOCHS + start_epoch):  # loop over the dataset 
     # Scale of 0.0 to 100.0
     # Calculate validation set accuracy of the existing model
     val_accuracy, val_classwise_accuracy = \
-        calculate_val_accuracy(testloader, IS_GPU)
+        calculate_val_accuracy(testloader, opt.is_gpu)
     print('Accuracy of the network on the val images: %d %%' % (val_accuracy))
-
-    # # Optionally print classwise accuracies
-    # for c_i in range(TOTAL_CLASSES):
-    #     print('Accuracy of %5s : %2d %%' % (
-    #         classes[c_i], 100 * val_classwise_accuracy[c_i]))
-
-    train_loss_over_epochs.append(running_loss)
-    val_accuracy_over_epochs.append(val_accuracy)
 
     if epoch % 50 == 0:
         print('==>  Saving model..')
         state = {
-            'net': net.module if IS_GPU else net,
+            'net': net.module if opt.is_gpu else net,
             'epoch': epoch,
         }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
-        torch.save(state, './checkpoint/ckpt.t7')
+        torch.save(state, '../checkpoint/ckpt.t7')
