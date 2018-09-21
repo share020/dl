@@ -43,7 +43,7 @@ parser.add_argument('--batch_size_test', type=int, default=64, help='test set in
 
 # training settings
 parser.add_argument('--resume', type=bool, default=False, help='whether training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=False, help='whether training using GPU')
+parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
 
 # parse the arguments
 opt = parser.parse_args()
@@ -115,7 +115,7 @@ if opt.is_gpu:
 
 # Loss function and optimizer
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.RMSprop(net.parameters(), lr=opt.lr, weight_decay=opt.wd)
+optimizer = optim.Adam(net.parameters(), lr=opt.lr, weight_decay=opt.wd)
 
 
 def calculate_accuracy(loader, is_gpu):
@@ -167,7 +167,15 @@ for epoch in range(start_epoch, opt.epochs + start_epoch):
         outputs = net(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
+
+        if epoch > 16:
+            for group in optimizer.param_groups:
+                for p in group['params']:
+                    state = optimizer.state[p]
+                    if state['step'] >= 1024:
+                        state['step'] = 1000
         optimizer.step()
+
 
         # print statistics
         running_loss += loss.data[0]
