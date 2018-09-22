@@ -75,7 +75,7 @@ self.fc_layer = nn.Sequential(
 |:----------------------:	|:--------------------------:	|
 |       lr = 0.001       	|        learning rate       	|
 |        wd = 5e-4       	|        weight decay        	|
-|       epochs = 70      	|       training epochs      	|
+|       epochs = 50      	|       training epochs      	|
 | batch\_size_train = 128 	| batch size of training set 	|
 |  batch\_size_test = 64  	|   batch size of test set   	|
 
