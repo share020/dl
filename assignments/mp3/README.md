@@ -14,7 +14,58 @@
 
 ### Model Architecture
 
+#### Convolutional Layers
 
+<img src="fig/cnn.png">
+
+
+```python
+self.conv_layer = nn.Sequential(
+
+    # Conv Layer block 1
+    nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1),
+    nn.BatchNorm2d(32),
+    nn.ReLU(inplace=True),
+    nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1),
+    nn.ReLU(inplace=True),
+    nn.MaxPool2d(kernel_size=2, stride=2),
+
+    # Conv Layer block 2
+    nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1),
+    nn.BatchNorm2d(128),
+    nn.ReLU(inplace=True),
+    nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding=1),
+    nn.ReLU(inplace=True),
+    nn.MaxPool2d(kernel_size=2, stride=2),
+    nn.Dropout2d(p=0.05),
+
+    # Conv Layer block 3
+    nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1),
+    nn.BatchNorm2d(256),
+    nn.ReLU(inplace=True),
+    nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding=1),
+    nn.ReLU(inplace=True),
+    nn.MaxPool2d(kernel_size=2, stride=2),
+)
+```
+
+
+#### Fully Connected Layers
+
+<img src="fig/fc.png" width="50%">
+
+
+```python
+self.fc_layer = nn.Sequential(
+    nn.Dropout(p=0.1),
+    nn.Linear(4096, 1024),
+    nn.ReLU(inplace=True),
+    nn.Linear(1024, 512),
+    nn.ReLU(inplace=True),
+    nn.Dropout(p=0.1),
+    nn.Linear(512, 10)
+)
+```
 
 
 ### Hyper-parameters
@@ -31,16 +82,41 @@
 
 ### Loss function and Optimizer
 
-- Loss funtion: [torch.nn.CrossEntropyLoss](https://pytorch.org/docs/stable/nn.html#torch.nn.CrossEntropyLoss)
-- Optimizer: [torch.optim.RMSprop](https://pytorch.org/docs/stable/optim.html?highlight=rmsprop#torch.optim.RMSprop)
+#### Loss funtion
+
+- [torch.nn.CrossEntropyLoss](https://pytorch.org/docs/stable/nn.html#torch.nn.CrossEntropyLoss)
 
 
+#### Optimizer
+
+- [torch.optim.RMSprop](https://pytorch.org/docs/stable/optim.html?#torch.optim.RMSprop)
+- [torch.optim.Adam](https://pytorch.org/docs/stable/optim.html?#torch.optim.Adam)
+
+### Data Augmentation
+
+```python
+transform_train = transforms.Compose([
+    transforms.RandomCrop(32, padding=4),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+])
+
+# Normalize the test set same as training set without augmentation
+transform_test = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+])
+```
 
 ### Result
 
-- Adam
 
-```
+#### torch.optim.Adam
+
+With Adam Optimizer, in 50 Epochs, I reached 84% ~ 85% accuracy on test set.
+
+```c
 $ python3 main.py
 ==> Data Augmentation ...
 ==> Preparing CIFAR10 dataset ...
@@ -49,83 +125,64 @@ Files already downloaded and verified
 ==> Initialize CNN model ...
 ==> Building new CNN model ...
 ==> Start training ...
-Training iteration: 1 | Loss: 1.5323889981145444 | Training accuracy: 57.582% | Test accuracy: 56.94%
+Iteration: 1 | Loss: 1.5150132923175001 | Training accuracy: 56.916% | Test accuracy: 55.62%
 ==> Saving model ...
-Training iteration: 2 | Loss: 1.0421151851144288 | Training accuracy: 65.088% | Test accuracy: 64.73%
-Training iteration: 3 | Loss: 0.8457517165052312 | Training accuracy: 72.624% | Test accuracy: 70.18%
-Training iteration: 4 | Loss: 0.7301152282206299 | Training accuracy: 76.964% | Test accuracy: 75.73%
-Training iteration: 5 | Loss: 0.6541929283105504 | Training accuracy: 79.444% | Test accuracy: 77.75%
-Training iteration: 6 | Loss: 0.6053130389631861 | Training accuracy: 81.21% | Test accuracy: 77.82%
-Training iteration: 7 | Loss: 0.5568247298755304 | Training accuracy: 81.68% | Test accuracy: 79.69%
-Training iteration: 8 | Loss: 0.52486945441007 | Training accuracy: 83.646% | Test accuracy: 80.73%
-Training iteration: 9 | Loss: 0.4971955487185427 | Training accuracy: 83.458% | Test accuracy: 80.6%
-Training iteration: 10 | Loss: 0.4710853740077494 | Training accuracy: 85.372% | Test accuracy: 82.03%
-Training iteration: 11 | Loss: 0.4472699467178501 | Training accuracy: 84.04% | Test accuracy: 80.45%
-Training iteration: 12 | Loss: 0.43344204893807314 | Training accuracy: 85.534% | Test accuracy: 81.45%
-Training iteration: 13 | Loss: 0.41458634952145157 | Training accuracy: 87.286% | Test accuracy: 83.81%
-Training iteration: 14 | Loss: 0.40417786453233656 | Training accuracy: 87.408% | Test accuracy: 83.95%
-Training iteration: 15 | Loss: 0.3919767485097851 | Training accuracy: 87.632% | Test accuracy: 84.45%
-Training iteration: 16 | Loss: 0.38060398681846724 | Training accuracy: 87.962% | Test accuracy: 84.4%
-Training iteration: 17 | Loss: 0.3765119556956889 | Training accuracy: 88.126% | Test accuracy: 83.74%
-Training iteration: 18 | Loss: 0.3386370863603509 | Training accuracy: 89.328% | Test accuracy: 84.72%
-Training iteration: 19 | Loss: 0.3283725881286899 | Training accuracy: 89.348% | Test accuracy: 85.64%
-Training iteration: 20 | Loss: 0.31794708426041374 | Training accuracy: 89.94% | Test accuracy: 85.46%
-Training iteration: 21 | Loss: 0.3099242390497871 | Training accuracy: 89.884% | Test accuracy: 85.86%
-Training iteration: 22 | Loss: 0.306663738111096 | Training accuracy: 90.072% | Test accuracy: 85.18%
-Training iteration: 23 | Loss: 0.29838040646384745 | Training accuracy: 90.27% | Test accuracy: 85.77%
-Training iteration: 24 | Loss: 0.2974954615239902 | Training accuracy: 90.752% | Test accuracy: 85.79%
-Training iteration: 25 | Loss: 0.2925728217834402 | Training accuracy: 90.312% | Test accuracy: 84.82%
-Training iteration: 26 | Loss: 0.2845494441897668 | Training accuracy: 91.51% | Test accuracy: 86.29%
-Training iteration: 27 | Loss: 0.27851614777160727 | Training accuracy: 91.114% | Test accuracy: 85.61%
-Training iteration: 28 | Loss: 0.2783391854304182 | Training accuracy: 90.108% | Test accuracy: 85.45%
-Training iteration: 29 | Loss: 0.2784235685530221 | Training accuracy: 90.908% | Test accuracy: 85.92%
-Training iteration: 30 | Loss: 0.27332179284537844 | Training accuracy: 91.622% | Test accuracy: 86.86%
-Training iteration: 31 | Loss: 0.26298992027102225 | Training accuracy: 91.722% | Test accuracy: 85.76%
-Training iteration: 32 | Loss: 0.2599798788499954 | Training accuracy: 91.376% | Test accuracy: 85.69%
-Training iteration: 33 | Loss: 0.25894931983917263 | Training accuracy: 91.72% | Test accuracy: 85.59%
-Training iteration: 34 | Loss: 0.2549937529789517 | Training accuracy: 92.59% | Test accuracy: 86.84%
-Training iteration: 35 | Loss: 0.2572657864378846 | Training accuracy: 91.864% | Test accuracy: 85.66%
-Training iteration: 36 | Loss: 0.25173514092441107 | Training accuracy: 92.08% | Test accuracy: 86.24%
-Training iteration: 37 | Loss: 0.24927788639388732 | Training accuracy: 91.174% | Test accuracy: 85.56%
-Training iteration: 38 | Loss: 0.24359948014664223 | Training accuracy: 91.89% | Test accuracy: 86.18%
-Training iteration: 39 | Loss: 0.24330893989719088 | Training accuracy: 91.932% | Test accuracy: 85.81%
-Training iteration: 40 | Loss: 0.2397751587888469 | Training accuracy: 92.314% | Test accuracy: 86.2%
-Training iteration: 41 | Loss: 0.238324614341759 | Training accuracy: 91.85% | Test accuracy: 86.08%
-Training iteration: 42 | Loss: 0.24105099491451099 | Training accuracy: 91.928% | Test accuracy: 86.0%
-Training iteration: 43 | Loss: 0.23592464890702605 | Training accuracy: 92.296% | Test accuracy: 85.67%
-Training iteration: 44 | Loss: 0.23125881768401016 | Training accuracy: 92.01% | Test accuracy: 85.88%
-Training iteration: 45 | Loss: 0.22848401388243947 | Training accuracy: 93.162% | Test accuracy: 87.34%
-Training iteration: 46 | Loss: 0.22769540380638884 | Training accuracy: 92.756% | Test accuracy: 86.17%
-Training iteration: 47 | Loss: 0.22363920161105177 | Training accuracy: 92.352% | Test accuracy: 86.12%
-Training iteration: 48 | Loss: 0.22299208850278268 | Training accuracy: 93.486% | Test accuracy: 86.86%
-Training iteration: 49 | Loss: 0.22150263645688592 | Training accuracy: 92.578% | Test accuracy: 86.6%
-Training iteration: 50 | Loss: 0.223169733172335 | Training accuracy: 91.788% | Test accuracy: 86.16%
-Training iteration: 51 | Loss: 0.2241714222504355 | Training accuracy: 93.1% | Test accuracy: 86.82%
-==> Saving model ...
-Training iteration: 52 | Loss: 0.21908805309735296 | Training accuracy: 92.622% | Test accuracy: 87.43%
-Training iteration: 53 | Loss: 0.22072116489453084 | Training accuracy: 93.44% | Test accuracy: 86.9%
-Training iteration: 54 | Loss: 0.21635687779015897 | Training accuracy: 92.54% | Test accuracy: 86.44%
-Training iteration: 55 | Loss: 0.21950814571908062 | Training accuracy: 92.348% | Test accuracy: 85.79%
-Training iteration: 56 | Loss: 0.2159109424675822 | Training accuracy: 93.508% | Test accuracy: 86.93%
-Training iteration: 57 | Loss: 0.21192567698333575 | Training accuracy: 93.418% | Test accuracy: 87.18%
-Training iteration: 58 | Loss: 0.21296871674563878 | Training accuracy: 93.478% | Test accuracy: 87.24%
-Training iteration: 59 | Loss: 0.21153371205643925 | Training accuracy: 93.754% | Test accuracy: 87.34%
-Training iteration: 60 | Loss: 0.21222362855968574 | Training accuracy: 92.93% | Test accuracy: 85.86%
-Training iteration: 61 | Loss: 0.20870164570296207 | Training accuracy: 92.498% | Test accuracy: 86.51%
-Training iteration: 62 | Loss: 0.21015779104302912 | Training accuracy: 92.91% | Test accuracy: 86.36%
-Training iteration: 63 | Loss: 0.20486266531831468 | Training accuracy: 93.146% | Test accuracy: 87.06%
-Training iteration: 64 | Loss: 0.20721056550512534 | Training accuracy: 92.972% | Test accuracy: 87.09%
-Training iteration: 65 | Loss: 0.2011126854059184 | Training accuracy: 93.788% | Test accuracy: 86.96%
-Training iteration: 66 | Loss: 0.20017541058914132 | Training accuracy: 93.404% | Test accuracy: 86.71%
-Training iteration: 67 | Loss: 0.20333445058835437 | Training accuracy: 93.918% | Test accuracy: 87.34%
-Training iteration: 68 | Loss: 0.20105336539809357 | Training accuracy: 93.52% | Test accuracy: 86.39%
-Training iteration: 69 | Loss: 0.20030613959102375 | Training accuracy: 93.608% | Test accuracy: 87.24%
-Training iteration: 70 | Loss: 0.19524423560827894 | Training accuracy: 93.408% | Test accuracy: 87.01%
+Iteration: 2 | Loss: 1.0681475259154045 | Training accuracy: 65.806% | Test accuracy: 65.71%
+Iteration: 3 | Loss: 0.8781394674954817 | Training accuracy: 72.002% | Test accuracy: 68.09%
+Iteration: 4 | Loss: 0.7657369798254174 | Training accuracy: 75.442% | Test accuracy: 74.27%
+Iteration: 5 | Loss: 0.6928338831495446 | Training accuracy: 78.476% | Test accuracy: 77.28%
+Iteration: 6 | Loss: 0.6400617288658991 | Training accuracy: 79.514% | Test accuracy: 77.55%
+Iteration: 7 | Loss: 0.5916749586534622 | Training accuracy: 80.572% | Test accuracy: 78.0%
+Iteration: 8 | Loss: 0.5629336702091919 | Training accuracy: 81.942% | Test accuracy: 79.65%
+Iteration: 9 | Loss: 0.534895096136176 | Training accuracy: 82.888% | Test accuracy: 80.74%
+Iteration: 10 | Loss: 0.5094442191483725 | Training accuracy: 84.09% | Test accuracy: 81.1%
+Iteration: 11 | Loss: 0.4911502740724617 | Training accuracy: 84.454% | Test accuracy: 80.49%
+Iteration: 12 | Loss: 0.47165061491529653 | Training accuracy: 84.668% | Test accuracy: 81.35%
+Iteration: 13 | Loss: 0.45937477761064954 | Training accuracy: 85.416% | Test accuracy: 81.92%
+Iteration: 14 | Loss: 0.44968167156971933 | Training accuracy: 84.942% | Test accuracy: 81.6%
+Iteration: 15 | Loss: 0.43403286450659223 | Training accuracy: 86.026% | Test accuracy: 81.17%
+Iteration: 16 | Loss: 0.4290188334863204 | Training accuracy: 86.078% | Test accuracy: 81.39%
+Iteration: 17 | Loss: 0.41906910223881605 | Training accuracy: 86.942% | Test accuracy: 83.0%
+Iteration: 18 | Loss: 0.3833522180004803 | Training accuracy: 87.782% | Test accuracy: 83.78%
+Iteration: 19 | Loss: 0.36290439978584915 | Training accuracy: 87.938% | Test accuracy: 83.99%
+Iteration: 20 | Loss: 0.3600675714061693 | Training accuracy: 88.308% | Test accuracy: 83.61%
+Iteration: 21 | Loss: 0.35304753722437204 | Training accuracy: 88.604% | Test accuracy: 83.65%
+Iteration: 22 | Loss: 0.35058872626565607 | Training accuracy: 88.724% | Test accuracy: 83.7%
+Iteration: 23 | Loss: 0.34309560704566633 | Training accuracy: 88.334% | Test accuracy: 83.85%
+Iteration: 24 | Loss: 0.3361902222075426 | Training accuracy: 89.46% | Test accuracy: 84.2%
+Iteration: 25 | Loss: 0.3339634421460159 | Training accuracy: 88.41% | Test accuracy: 83.24%
+Iteration: 26 | Loss: 0.32874407811695355 | Training accuracy: 89.402% | Test accuracy: 84.45%
+Iteration: 27 | Loss: 0.3276860989496836 | Training accuracy: 89.31% | Test accuracy: 84.01%
+Iteration: 28 | Loss: 0.32246214124705175 | Training accuracy: 89.548% | Test accuracy: 83.81%
+Iteration: 29 | Loss: 0.3193482501656198 | Training accuracy: 90.224% | Test accuracy: 84.62%
+Iteration: 30 | Loss: 0.3137577373886962 | Training accuracy: 89.948% | Test accuracy: 84.03%
+Iteration: 31 | Loss: 0.3102418626741985 | Training accuracy: 89.98% | Test accuracy: 84.64%
+Iteration: 32 | Loss: 0.30676858275747665 | Training accuracy: 89.834% | Test accuracy: 84.36%
+Iteration: 33 | Loss: 0.3054589622694513 | Training accuracy: 90.044% | Test accuracy: 84.58%
+Iteration: 34 | Loss: 0.30346839354776056 | Training accuracy: 89.932% | Test accuracy: 83.74%
+Iteration: 35 | Loss: 0.30111074965933093 | Training accuracy: 90.748% | Test accuracy: 85.13%
+Iteration: 36 | Loss: 0.2959785862347049 | Training accuracy: 90.24% | Test accuracy: 83.49%
+Iteration: 37 | Loss: 0.2921854796083382 | Training accuracy: 90.958% | Test accuracy: 85.63%
+Iteration: 38 | Loss: 0.29025346581893197 | Training accuracy: 91.074% | Test accuracy: 85.14%
+Iteration: 39 | Loss: 0.29113843897953057 | Training accuracy: 90.886% | Test accuracy: 85.32%
+Iteration: 40 | Loss: 0.28360521976295333 | Training accuracy: 90.016% | Test accuracy: 84.31%
+Iteration: 41 | Loss: 0.28354978530913055 | Training accuracy: 90.644% | Test accuracy: 85.01%
+Iteration: 42 | Loss: 0.2766315230094563 | Training accuracy: 91.252% | Test accuracy: 85.22%
+Iteration: 43 | Loss: 0.2846868697868284 | Training accuracy: 91.206% | Test accuracy: 85.06%
+Iteration: 44 | Loss: 0.2699394336403788 | Training accuracy: 91.408% | Test accuracy: 85.33%
+Iteration: 45 | Loss: 0.28177465668038637 | Training accuracy: 91.906% | Test accuracy: 85.76%
+Iteration: 46 | Loss: 0.2756738036375521 | Training accuracy: 91.722% | Test accuracy: 85.32%
+Iteration: 47 | Loss: 0.27103444339369265 | Training accuracy: 90.7% | Test accuracy: 84.69%
+Iteration: 48 | Loss: 0.26857548944480586 | Training accuracy: 90.816% | Test accuracy: 84.79%
+Iteration: 49 | Loss: 0.2688227419734306 | Training accuracy: 91.46% | Test accuracy: 84.27%
+Iteration: 50 | Loss: 0.2649988779402755 | Training accuracy: 91.822% | Test accuracy: 85.09%
 ```
 
-- RMSProp
+#### torch.optim.RMSProp
 
-```
+With RMSProp Optimizer, in 50 Epochs, I reached 84% ~ 85% accuracy on test set.
+
+```c
 $ python3 main.py
 ==> Data Augmentation ...
 ==> Downloading CIFAR10 dataset ...
@@ -235,45 +292,4 @@ Accuracy of the network on the test images: 84 %
 Accuracy of the network on the test images: 84 %
 [50] loss: 0.186
 Accuracy of the network on the test images: 81 %
-[51] loss: 0.182
-Accuracy of the network on the test images: 82 %
-==>  Saving model..
-[52] loss: 0.183
-Accuracy of the network on the test images: 84 %
-[53] loss: 0.181
-Accuracy of the network on the test images: 84 %
-[54] loss: 0.175
-Accuracy of the network on the test images: 84 %
-[55] loss: 0.172
-Accuracy of the network on the test images: 84 %
-[56] loss: 0.171
-Accuracy of the network on the test images: 81 %
-[57] loss: 0.168
-Accuracy of the network on the test images: 84 %
-[58] loss: 0.168
-Accuracy of the network on the test images: 83 %
-[59] loss: 0.162
-Accuracy of the network on the test images: 83 %
-[60] loss: 0.163
-Accuracy of the network on the test images: 83 %
-[61] loss: 0.157
-Accuracy of the network on the test images: 83 %
-[62] loss: 0.157
-Accuracy of the network on the test images: 84 %
-[63] loss: 0.153
-Accuracy of the network on the test images: 81 %
-[64] loss: 0.154
-Accuracy of the network on the test images: 82 %
-[65] loss: 0.154
-Accuracy of the network on the test images: 84 %
-[66] loss: 0.148
-Accuracy of the network on the test images: 84 %
-[67] loss: 0.146
-Accuracy of the network on the test images: 84 %
-[68] loss: 0.147
-Accuracy of the network on the test images: 84 %
-[69] loss: 0.143
-Accuracy of the network on the test images: 83 %
-[70] loss: 0.142
-Accuracy of the network on the test images: 84 %
 ```
