@@ -48,11 +48,6 @@ parser.add_argument('--is_gpu', type=bool, default=True, help='whether training 
 # parse the arguments
 opt = parser.parse_args()
 
-# set the seeds
-# np.random.seed(233)
-# torch.cuda.manual_seed_all(233)
-# torch.manual_seed(233)
-
 
 # Data augmentation
 
@@ -187,7 +182,7 @@ for epoch in range(start_epoch, opt.epochs + start_epoch):
     train_accuracy = calculate_accuracy(trainloader, opt.is_gpu)
     test_accuracy = calculate_accuracy(testloader, opt.is_gpu)
 
-    print("Training iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(epoch+1, running_loss, train_accuracy, test_accuracy))
+    print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(epoch+1, running_loss, train_accuracy, test_accuracy))
 
     # save model
     if epoch % 50 == 0:
