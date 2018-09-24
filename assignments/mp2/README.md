@@ -24,6 +24,13 @@
     └── utils.py  (util funtions)
 ```
 
+## Dependencies
+
+```
+numpy==1.15.1
+h5py==2.8.0
+```
+
 
 ## Implementation
 
