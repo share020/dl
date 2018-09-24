@@ -9,6 +9,14 @@
 > Due September 28 at 5:00 PM.
 
 
+## Dependencies
+
+```
+torchvision==0.2.1
+numpy==1.15.1
+torch==0.4.1
+```
+
 
 ## Implementation
 
