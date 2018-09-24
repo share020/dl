@@ -8,6 +8,15 @@
 > **Due September 7 at 5:00 PM.**
 
 
+## Dependencies
+
+```
+h5py==2.8.0
+numpy==1.14.5
+scikit-learn==0.19.2
+```
+
+
 ## Implementation
 
 
