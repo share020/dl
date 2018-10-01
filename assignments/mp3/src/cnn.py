@@ -4,7 +4,7 @@ HW3: Train a deep convolution network on a GPU with PyTorch for the CIFAR10 data
 The convolution network should use
     (A) dropout
     (B) trained with RMSprop or ADAM, and
-    (C) data augmentation. 
+    (C) data augmentation.
 
 @author: Zhenye Na
 """
@@ -48,7 +48,6 @@ class CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
-
         self.fc_layer = nn.Sequential(
             nn.Dropout(p=0.1),
             nn.Linear(4096, 1024),
@@ -62,13 +61,13 @@ class CNN(nn.Module):
 
     def forward(self, x):
         """Perform forward."""
-        
+
         # conv layers
         x = self.conv_layer(x)
-        
+
         # flatten
         x = x.view(x.size(0), -1)
-        
+
         # fc layer
         x = self.fc_layer(x)
 

@@ -9,41 +9,48 @@ The convolution network should use
 @author: Zhenye Na
 """
 
-import numpy as np
-import os.path
-import sys
+
 import torch
-import torch.utils.data
 import torchvision
+import torch.utils.data
 import torchvision.transforms as transforms
 
-from torch.autograd import Variable
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
 import os
+import os.path
 import argparse
 
+
+from torch.autograd import Variable
 from cnn import *
+
 
 parser = argparse.ArgumentParser()
 
 # directory
-parser.add_argument('--dataroot', type=str, default="../data", help='path to dataset')
-parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", help='path to checkpoint')
+parser.add_argument('--dataroot', type=str,
+                    default="../data", help='path to dataset')
+parser.add_argument('--ckptroot', type=str,
+                    default="../checkpoint/ckpt.t7", help='path to checkpoint')
 
 # hyperparameters settings
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
 parser.add_argument('--wd', type=float, default=5e-4, help='weight decay')
-parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
-parser.add_argument('--batch_size_train', type=int, default=128, help='training set input batch size')
-parser.add_argument('--batch_size_test', type=int, default=64, help='test set input batch size')
+parser.add_argument('--epochs', type=int, default=50,
+                    help='number of epochs to train')
+parser.add_argument('--batch_size_train', type=int,
+                    default=128, help='training set input batch size')
+parser.add_argument('--batch_size_test', type=int,
+                    default=64, help='test set input batch size')
 
 # training settings
-parser.add_argument('--resume', type=bool, default=False, help='whether training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
+parser.add_argument('--resume', type=bool, default=False,
+                    help='whether training from ckpt')
+parser.add_argument('--is_gpu', type=bool, default=True,
+                    help='whether training using GPU')
 
 # parse the arguments
 opt = parser.parse_args()
@@ -71,13 +78,18 @@ transform_test = transforms.Compose([
 
 print("==> Preparing CIFAR10 dataset ...")
 
-trainset    = torchvision.datasets.CIFAR10(root=opt.dataroot, train=True, download=True, transform=transform_train)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=opt.batch_size_train, shuffle=True, num_workers=2)
+trainset = torchvision.datasets.CIFAR10(
+    root=opt.dataroot, train=True, download=True, transform=transform_train)
+trainloader = torch.utils.data.DataLoader(
+    trainset, batch_size=opt.batch_size_train, shuffle=True, num_workers=2)
 
-testset     = torchvision.datasets.CIFAR10(root=opt.dataroot, train=False, download=True, transform=transform_test)
-testloader  = torch.utils.data.DataLoader(testset, batch_size=opt.batch_size_test, shuffle=False, num_workers=2)
+testset = torchvision.datasets.CIFAR10(
+    root=opt.dataroot, train=False, download=True, transform=transform_test)
+testloader = torch.utils.data.DataLoader(
+    testset, batch_size=opt.batch_size_test, shuffle=False, num_workers=2)
 
-classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+classes = ('plane', 'car', 'bird', 'cat', 'deer',
+           'dog', 'frog', 'horse', 'ship', 'truck')
 
 
 # Initialize CNN model
@@ -90,7 +102,8 @@ start_epoch = 0
 if opt.resume:
     # Load checkpoint
     print('==> Resuming from checkpoint ...')
-    assert os.path.isdir('../checkpoint'), 'Error: no checkpoint directory found!'
+    assert os.path.isdir(
+        '../checkpoint'), 'Error: no checkpoint directory found!'
     checkpoint = torch.load(opt.ckptroot)
     net = checkpoint['net']
     start_epoch = checkpoint['epoch']
@@ -104,7 +117,8 @@ else:
 # http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#training-on-gpu
 if opt.is_gpu:
     net = net.cuda()
-    net = torch.nn.DataParallel(net, device_ids=range(torch.cuda.device_count()))
+    net = torch.nn.DataParallel(
+        net, device_ids=range(torch.cuda.device_count()))
     cudnn.benchmark = True
 
 
@@ -171,7 +185,6 @@ for epoch in range(start_epoch, opt.epochs + start_epoch):
                         state['step'] = 1000
         optimizer.step()
 
-
         # print statistics
         running_loss += loss.data[0]
 
@@ -182,7 +195,8 @@ for epoch in range(start_epoch, opt.epochs + start_epoch):
     train_accuracy = calculate_accuracy(trainloader, opt.is_gpu)
     test_accuracy = calculate_accuracy(testloader, opt.is_gpu)
 
-    print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(epoch+1, running_loss, train_accuracy, test_accuracy))
+    print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(
+        epoch+1, running_loss, train_accuracy, test_accuracy))
 
     # save model
     if epoch % 50 == 0:
