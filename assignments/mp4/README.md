@@ -1,4 +1,4 @@
-# HW4: Implement a deep residual neural network for CIFAR100.
+# HW4: Implement a Deep Residual Neural Network for CIFAR100
 
 > Due October 5 at 5:00 PM.
 
@@ -30,7 +30,9 @@ For the second part of your homework, you need to load the pre-trained model, an
 /projects/training/bauh/CIFAR100/model/
 ```
 
-<img src="fig/fig1.png" width="80%">
+<div style="text-align:center">
+    <img src="fig/fig1.png" width="80%">
+</div>
 
 
 Copy the pre-trained model file into your code directory and you can load the pre-trained model with the following command
@@ -49,9 +51,9 @@ def resnet18(pretrained = True) :
 
 Note that the input size for the pre-trained model is $224 \times 224$, and you have to up-sample the images in CIFAR100 dataset.
 
-
-<img src="fig/fig2.png" width="80%">
-
+<div style="text-align:center">
+    <img src="fig/fig2.png" width="80%">
+</div>
 
 ## Computational Time
 
@@ -62,12 +64,5 @@ For Bluewater users, a reasonable running time for the first part is about **3**
 ## References
 
 1. Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun - Deep Residual Learning for Image Recognition (2015)
-
 2. Pytorch torchvision.models [https://pytorch.org/docs/stable/torchvision/models.html](https://pytorch.org/docs/stable/torchvision/models.html)
 
-
-
-## Implementation
-
-
-<img src="fig/resnet.png" width="80%">
