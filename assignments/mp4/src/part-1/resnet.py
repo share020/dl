@@ -154,3 +154,11 @@ class ResNet(nn.Module):
         x = self.fc(x)
 
         return x
+
+
+
+
+
+def resnet_cifar(**kwargs):
+    model = ResNet(BasicBlock, [3, 3, 3], **kwargs)
+    return model

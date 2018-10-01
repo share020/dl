@@ -8,6 +8,7 @@ Due October 5 at 5:00 PM.
 @author: Zhenye Na
 """
 
+import os
 import torch
 import torchvision
 import torch.optim
@@ -18,8 +19,8 @@ import torchvision.transforms as transforms
 
 import argparse
 
-from resnet import ResNet
-from utils import *
+from resnet import resnet_cifar
+from utils import data_loader
 
 parser = argparse.ArgumentParser()
 
@@ -28,10 +29,10 @@ parser.add_argument('--dataroot', type=str, default="../data", help='path to dat
 parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", help='path to checkpoint')
 
 # hyperparameters settings
-parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
+parser.add_argument('--lr', type=float, default=0.1, help='learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum factor')
 parser.add_argument('--weight_decay', type=float, default=1e-5, help='weight decay (L2 penalty)')
-parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train')
+parser.add_argument('--epochs', type=int, default=200, help='number of epochs to train')
 parser.add_argument('--batch_size_train', type=int, default=256, help='training set input batch size')
 parser.add_argument('--batch_size_test', type=int, default=256, help='test set input batch size')
 
@@ -76,7 +77,7 @@ def main():
     else:
         # start over
         print('==> Building new CNN model ...')
-        net = ResNet()
+        net = resnet_cifar()
 
 
     # For training on GPU, we need to transfer net and data onto the GPU
