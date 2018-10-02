@@ -32,7 +32,7 @@ parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", hel
 parser.add_argument('--lr', type=float, default=0.1, help='learning rate')
 parser.add_argument('--momentum', type=float, default=0.9, help='momentum factor')
 parser.add_argument('--weight_decay', type=float, default=1e-5, help='weight decay (L2 penalty)')
-parser.add_argument('--epochs', type=int, default=200, help='number of epochs to train')
+parser.add_argument('--epochs', type=int, default=500, help='number of epochs to train')
 parser.add_argument('--batch_size_train', type=int, default=256, help='training set input batch size')
 parser.add_argument('--batch_size_test', type=int, default=256, help='test set input batch size')
 

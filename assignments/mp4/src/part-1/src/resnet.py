@@ -77,7 +77,7 @@ class BasicBlock(nn.Module):
 
         if self.downsample is not None:
             residual = self.downsample(x)
-
+        print(out.size())
         out += residual
         return out
 
