@@ -24,6 +24,7 @@ def initialize_weights(module):
 
 
 def conv3x3(in_channels, out_channels, stride=1):
+    """3x3 kernel size convolutional layers in ResNet BasicBlock."""
     return nn.Conv2d(
         in_channels=in_channels,
         out_channels=out_channels,
@@ -31,6 +32,12 @@ def conv3x3(in_channels, out_channels, stride=1):
         stride=stride,
         padding=1,
         bias=False)
+
+
+def resnet_cifar(**kwargs):
+    """Initialize ResNet model."""
+    model = ResNet(BasicBlock, [2, 4, 4, 2], **kwargs)
+    return model
 
 
 class BasicBlock(nn.Module):
@@ -108,9 +115,9 @@ class ResNet(nn.Module):
         Create Block in ResNet.
 
         Args:
-            block
-            duplicates
-            out_channels
+            block: BasicBlock
+            duplicates: number of BasicBlock
+            out_channels: out channels of the block
 
         Returns:
             nn.Sequential(*layers)
@@ -133,24 +140,19 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         """Forward pass of ResNet."""
-        x = self.conv1(x)
-        x = self.bn(x)
-        x = self.relu(x)
-        x = self.dropout(x)
+        out = self.conv1(x)
+        out = self.bn(out)
+        out = self.relu(out)
+        out = self.dropout(out)
 
         # Stacked Basic Blocks
-        x = self.conv2_x(x)
-        x = self.conv3_x(x)
-        x = self.conv4_x(x)
-        x = self.conv5_x(x)
+        out = self.conv2_x(out)
+        out = self.conv3_x(out)
+        out = self.conv4_x(out)
+        out = self.conv5_x(out)
 
-        x = self.maxpool(x)
-        x = x.view(x.size(0), -1)
-        x = self.fc_layer(x)
+        out = self.maxpool(out)
+        out = out.view(out.size(0), -1)
+        out = self.fc_layer(out)
 
-        return x
-
-
-def resnet_cifar(**kwargs):
-    model = ResNet(BasicBlock, [2, 4, 4, 2], **kwargs)
-    return model
+        return out
