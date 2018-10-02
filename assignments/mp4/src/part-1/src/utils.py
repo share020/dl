@@ -65,12 +65,15 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
 
 
 def calculate_accuracy(loader, is_gpu):
-    """Calculate accuracy.
+    """
+    Calculate accuracy.
+
     Args:
         loader (torch.utils.data.DataLoader): training / test set loader
         is_gpu (bool): whether to run on GPU
+
     Returns:
-        tuple: (overall accuracy, class level accuracy)
+        tuple: overall accuracy
     """
     correct = 0.
     total = 0.
@@ -92,7 +95,7 @@ def calculate_accuracy(loader, is_gpu):
 
 def train(net, criterion, optimizer, trainloader, testloader, start_epoch, epochs, is_gpu):
     """
-    Training.
+    Training process.
 
     Args:
         net: ResNet model
@@ -148,11 +151,11 @@ def train(net, criterion, optimizer, trainloader, testloader, start_epoch, epoch
         if epoch % 50 == 0:
             print('==> Saving model ...')
             state = {
-                'net': net.module if opt.is_gpu else net,
+                'net': net.module if is_gpu else net,
                 'epoch': epoch,
             }
-            if not os.path.isdir('checkpoint'):
-                os.mkdir('checkpoint')
+            if not os.path.isdir('../checkpoint'):
+                os.mkdir('../checkpoint')
             torch.save(state, '../checkpoint/ckpt.t7')
 
     print('==> Finished Training ...')
