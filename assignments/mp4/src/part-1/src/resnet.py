@@ -47,7 +47,7 @@ class BasicBlock(nn.Module):
         self.bn1 = nn.BatchNorm2d(num_features=out_channels)
 
         # ReLU Activation Function
-        self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.ReLU()
 
         # Second conv3x3 layer
         self.conv2 = conv3x3(out_channels, out_channels)
@@ -85,7 +85,7 @@ class ResNet(nn.Module):
         self.in_channels = 32
         self.conv1 = conv3x3(in_channels=3, out_channels=32)
         self.bn = nn.BatchNorm2d(num_features=32)
-        self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.ReLU()
         self.dropout = nn.Dropout2d(p=0.02, inplace=True)
 
         # block of Basic Blocks
