@@ -37,11 +37,10 @@ parser.add_argument('--resume', type=bool, default=False, help='whether re-train
 parser.add_argument('--is_gpu', type=bool, default=False, help='whether training using GPU')
 
 # model_urls
-parser.add_argument('--model_urls', type=str, default="https://download.pytorch.org/models/resnet18-5c106cde.pth", help='model url for pretrained model')
+parser.add_argument('--model_url', type=str, default="https://download.pytorch.org/models/resnet18-5c106cde.pth", help='model url for pretrained model')
 
 # parse the arguments
 args = parser.parse_args()
-
 
 
 # model_urls = {
@@ -64,7 +63,7 @@ def main():
     else:
         # start over
         print('==> Load pre-trained ResNet model ...')
-        net = resnet18(args.model_urls)
+        net = resnet18(args.model_url)
 
 
     # For training on GPU, we need to transfer net and data onto the GPU
@@ -75,17 +74,18 @@ def main():
             net, device_ids=range(torch.cuda.device_count()))
         cudnn.benchmark = True
 
-    # Loss function, optimizer and scheduler
+    # Loss function, optimizer for fine-tune-able params
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(net.parameters(),
+    optimizer = torch.optim.Adam(filter(lambda param: param.requires_grad, net.parameters()),
                                  lr=args.lr,
                                  weight_decay=args.weight_decay)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
-
+    # data loader for cifar100
     trainloader, testloader = data_loader(args.dataroot, args.batch_size_train, args.batch_size_test)
 
 
-    model = train_model(net, optimizer, criterion, trainloader, testloader, start_epoch, args.epochs, args.is_gpu)
+    model = train_model(net, optimizer, scheduler, criterion, trainloader, testloader, start_epoch, args.epochs, args.is_gpu)
 
 
 
