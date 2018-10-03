@@ -38,7 +38,7 @@ parser.add_argument('--batch_size_test', type=int, default=256, help='test set i
 
 # training settings
 parser.add_argument('--resume', type=bool, default=False, help='whether re-training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=False, help='whether training using GPU')
+parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
 
 # parse the arguments
 args = parser.parse_args()
