@@ -35,6 +35,10 @@ For the second part of your homework, you need to load the pre-trained model, an
 </p>
 
 
+<p align="center">
+    <img src="fig/fig2.png" width="80%">
+</p>
+
 Copy the pre-trained model file into your code directory and you can load the pre-trained model with the following command
 
 
@@ -51,9 +55,7 @@ def resnet18(pretrained = True) :
 
 Note that the input size for the pre-trained model is $224 \times 224$, and you have to up-sample the images in CIFAR100 dataset.
 
-<p align="center">
-    <img src="fig/fig2.png" width="80%">
-</p>
+
 
 ## Computational Time
 
