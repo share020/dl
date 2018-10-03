@@ -45,16 +45,9 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
     # Data Augmentation
     print("==> Data Augmentation ...")
 
-    # normalize = transforms.Compose([
-    #     transforms.Resize(size=(224, 224)),
-    #     transforms.ToTensor(),
-    #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    # ])
-
-
     # Normalize training set together with augmentation
     transform_train = transforms.Compose([
-        transforms.RandomSizedCrop(224),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -63,6 +56,7 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
     # Normalize test set same as training set without augmentation
     transform_test = transforms.Compose([
         transforms.Resize(224),
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
@@ -75,13 +69,13 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
                                              train=True,
                                              download=True,
                                              transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size_train, shuffle=True, num_workers=2)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size_train, shuffle=True, num_workers=4, pin_memory=True)
 
     testset = torchvision.datasets.CIFAR100(root=dataroot,
                                             train=False,
                                             download=True,
                                             transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size_test, shuffle=False, num_workers=2)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size_test, shuffle=False, num_workers=4, pin_memory=True)
 
     return trainloader, testloader
 

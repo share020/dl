@@ -81,12 +81,11 @@ def main():
                                  weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
-    # data loader for cifar100
+    # data loader for CIFAR100
     trainloader, testloader = data_loader(args.dataroot, args.batch_size_train, args.batch_size_test)
 
-
+    # train pre-trained model on CIFAR100
     model = train_model(net, optimizer, scheduler, criterion, trainloader, testloader, start_epoch, args.epochs, args.is_gpu)
-
 
 
 

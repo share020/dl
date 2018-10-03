@@ -18,8 +18,9 @@ class FineTune(nn.Module):
 
         # Everything except the last linear layer
         self.features = nn.Sequential(*list(resnet.children())[:-1])
+        num_ftrs = resnet.fc.in_features
         self.classifier = nn.Sequential(
-            nn.Linear(512, num_classes)
+            nn.Linear(num_ftrs, num_classes)
         )
 
         # Freeze those weights
