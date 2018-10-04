@@ -23,9 +23,9 @@ class FineTune(nn.Module):
             nn.Linear(num_ftrs, num_classes)
         )
 
-        # Freeze those weights
-        for param in self.features.parameters():
-            param.requires_grad = False
+        # # Freeze those weights
+        # for param in self.features.parameters():
+        #     param.requires_grad = False
 
 
     def forward(self, x):

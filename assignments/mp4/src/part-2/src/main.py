@@ -34,7 +34,7 @@ parser.add_argument('--batch_size_test', type=int, default=256, help='test set i
 
 # training settings
 parser.add_argument('--resume', type=bool, default=False, help='whether re-training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=False, help='whether training using GPU')
+parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
 
 # model_urls
 parser.add_argument('--model_url', type=str, default="https://download.pytorch.org/models/resnet18-5c106cde.pth", help='model url for pretrained model')
