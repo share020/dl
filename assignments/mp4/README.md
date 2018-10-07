@@ -43,7 +43,7 @@ Copy the pre-trained model file into your code directory and you can load the pr
 
 
 ```python
-def resnet18(pretrained = True) :
+def resnet18(pretrained=True) :
 
     model = torchvision.models.resnet.ResNet(torchvision.models.resnet.BasicBlock, [2,2,2,2])
     
@@ -61,6 +61,14 @@ Note that the input size for the pre-trained model is $224 \times 224$, and you 
 
 For Bluewater users, a reasonable running time for the first part is about **3** hours and the second part is about **3 to 4** hours.
 
+
+## Explanation
+
+Below is the detailed explanation of ResNet architecture.
+
+<p align="center">
+    <img src="fig/explain.png" width="80%">
+</p>
 
 
 ## References
