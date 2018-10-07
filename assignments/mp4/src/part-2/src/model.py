@@ -3,7 +3,7 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-2: Fine-tune a pre-trained ResNet-18
 
-Due October 5 at 5:00 PM.
+Due October 8 at 5:00 PM.
 
 @author: Zhenye Na
 """
@@ -12,8 +12,10 @@ import torch
 import torch.nn as nn
 
 class FineTune(nn.Module):
+    """Fine-tune pre-trained ResNet model."""
 
     def __init__(self, resnet, num_classes):
+        """Initialize Fine-tune ResNet model."""
         super(FineTune, self).__init__()
 
         # Everything except the last linear layer

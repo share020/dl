@@ -3,11 +3,12 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-2: Fine-tune a pre-trained ResNet-18
 
-Due October 5 at 5:00 PM.
+Due October 8 at 5:00 PM.
 
 @author: Zhenye Na
 """
 
+import os
 import torch
 import torchvision
 import torch.nn as nn
@@ -80,7 +81,7 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
     return trainloader, testloader
 
 
-def calculate_accuracy(loader, is_gpu):
+def calculate_accuracy(net, loader, is_gpu):
     """
     Calculate accuracy.
 
@@ -166,8 +167,8 @@ def train_model(net, optimizer, scheduler, criterion, trainloader, testloader, s
         running_loss /= len(trainloader)
 
         # Calculate training/test set accuracy of the existing model
-        train_accuracy = calculate_accuracy(trainloader, is_gpu)
-        test_accuracy = calculate_accuracy(testloader, is_gpu)
+        train_accuracy = calculate_accuracy(net, trainloader, is_gpu)
+        test_accuracy = calculate_accuracy(net, testloader, is_gpu)
 
         print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(epoch+1, running_loss, train_accuracy, test_accuracy))
 

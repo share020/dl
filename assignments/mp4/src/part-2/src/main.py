@@ -3,19 +3,21 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-2: Fine-tune a pre-trained ResNet-18
 
-Due October 5 at 5:00 PM.
+Due October 8 at 5:00 PM.
 
 @author: Zhenye Na
 """
 
+import os
 import torch
 import torchvision
 import torch.optim
 import torch.nn as nn
+import torch.backends.cudnn as cudnn
+import torchvision.transforms as transforms
 
 import argparse
 
-from torch.optim import lr_scheduler
 from utils import *
 
 
@@ -41,11 +43,6 @@ parser.add_argument('--model_url', type=str, default="https://download.pytorch.o
 
 # parse the arguments
 args = parser.parse_args()
-
-
-# model_urls = {
-#     'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth'
-# }
 
 
 def main():
