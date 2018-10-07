@@ -3,11 +3,12 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-1: Build the Residual Network
 
-Due October 5 at 5:00 PM.
+Due October 8 at 5:00 PM.
 
 @author: Zhenye Na
 """
 
+import os
 import torch
 import torchvision
 import torch.utils.data
@@ -27,7 +28,6 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
     Returns:
         trainloader: training set loader
         testloader: test set loader
-        classes: classes names
     """
     # Data Augmentation
     print("==> Data Augmentation ...")
@@ -53,18 +53,18 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
                                              train=True,
                                              download=True,
                                              transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size_train, shuffle=True, num_workers=4, pin_memory=True)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size_train, shuffle=True, num_workers=4)
 
     testset = torchvision.datasets.CIFAR100(root=dataroot,
                                             train=False,
                                             download=True,
                                             transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size_test, shuffle=False, num_workers=4, pin_memory=True)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size_test, shuffle=False, num_workers=4)
 
     return trainloader, testloader
 
 
-def calculate_accuracy(loader, is_gpu):
+def calculate_accuracy(net, loader, is_gpu):
     """
     Calculate accuracy.
 
@@ -99,8 +99,8 @@ def train(net, criterion, optimizer, trainloader, testloader, start_epoch, epoch
 
     Args:
         net: ResNet model
+        criterion: CrossEntropyLoss
         optimizer: SGD with momentum optimizer
-        scheduler:
         trainloader: training set loader
         testloader: test set loader
         start_epoch: checkpoint saved epoch
@@ -114,6 +114,7 @@ def train(net, criterion, optimizer, trainloader, testloader, start_epoch, epoch
 
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
+            print(i)
             # get the inputs
             inputs, labels = data
 
@@ -124,12 +125,12 @@ def train(net, criterion, optimizer, trainloader, testloader, start_epoch, epoch
             # wrap them in Variable
             inputs, labels = Variable(inputs), Variable(labels)
 
-            # zero the parameter gradients
-            optimizer.zero_grad()
-
             # forward + backward + optimize
             outputs = net(inputs)
             loss = criterion(outputs, labels)
+
+            # zero the parameter gradients
+            optimizer.zero_grad()
             loss.backward()
 
             # optimize
@@ -138,12 +139,14 @@ def train(net, criterion, optimizer, trainloader, testloader, start_epoch, epoch
             # print statistics
             running_loss += loss.data[0]
 
+            print("running_loss: ", loss.data[0])
+
         # Normalizing the loss by the total number of train batches
         running_loss /= len(trainloader)
 
         # Calculate training/test set accuracy of the existing model
-        train_accuracy = calculate_accuracy(trainloader, is_gpu)
-        test_accuracy = calculate_accuracy(testloader, is_gpu)
+        train_accuracy = calculate_accuracy(net, trainloader, is_gpu)
+        test_accuracy = calculate_accuracy(net, testloader, is_gpu)
 
         print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(epoch+1, running_loss, train_accuracy, test_accuracy))
 

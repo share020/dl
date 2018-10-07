@@ -3,7 +3,7 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-1: Build the Residual Network
 
-Due October 5 at 5:00 PM.
+Due October 8 at 5:00 PM.
 
 @author: Zhenye Na
 """
@@ -15,7 +15,7 @@ import torch.nn as nn
 def initialize_weights(module):
     """Initialize weights."""
     if isinstance(module, nn.Conv2d):
-        nn.init.xavier_normal_(module.weight.data)
+        nn.init.xavier_normal(module.weight.data)
     elif isinstance(module, nn.BatchNorm2d):
         module.weight.data.fill_(1)
         module.bias.data.zero_()
@@ -24,7 +24,7 @@ def initialize_weights(module):
 
 
 def conv3x3(in_channels, out_channels, stride=1):
-    """3x3 kernel size convolutional layers in ResNet BasicBlock."""
+    """3x3 kernel size with padding convolutional layer in ResNet BasicBlock."""
     return nn.Conv2d(
         in_channels=in_channels,
         out_channels=out_channels,
@@ -54,7 +54,7 @@ class BasicBlock(nn.Module):
         self.bn1 = nn.BatchNorm2d(num_features=out_channels)
 
         # ReLU Activation Function
-        self.relu = nn.ReLU()
+        self.relu = nn.ReLU(inplace=True)
 
         # Second conv3x3 layer
         self.conv2 = conv3x3(out_channels, out_channels)
@@ -64,6 +64,7 @@ class BasicBlock(nn.Module):
 
         # downsample for `residual`
         self.downsample = downsample
+        self.stride = stride
 
     def forward(self, x):
         """Forward Pass of Basic Block."""
@@ -77,7 +78,9 @@ class BasicBlock(nn.Module):
 
         if self.downsample is not None:
             residual = self.downsample(x)
-
+        # print(out.size())
+        # print(residual.size())
+        # print("=======")
         out += residual
         return out
 
@@ -92,23 +95,28 @@ class ResNet(nn.Module):
         self.in_channels = 32
         self.conv1 = conv3x3(in_channels=3, out_channels=32)
         self.bn = nn.BatchNorm2d(num_features=32)
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout2d(p=0.02, inplace=True)
+        self.relu = nn.ReLU(inplace=True)
+        self.dropout = nn.Dropout2d(p=0.02)
 
         # block of Basic Blocks
         self.conv2_x = self._make_block(block, duplicates[0], out_channels=32)
-        self.conv3_x = self._make_block(
-            block, duplicates[1], out_channels=64, stride=2)
-        self.conv4_x = self._make_block(
-            block, duplicates[2], out_channels=128, stride=2)
-        self.conv5_x = self._make_block(
-            block, duplicates[3], out_channels=256, stride=2)
+        self.conv3_x = self._make_block(block, duplicates[1], out_channels=64, stride=2)
+        self.conv4_x = self._make_block(block, duplicates[2], out_channels=128, stride=2)
+        self.conv5_x = self._make_block(block, duplicates[3], out_channels=256, stride=2)
 
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=1)
-        self.fc_layer = nn.Linear(1024, num_classes)
+        self.maxpool = nn.MaxPool2d(kernel_size=4, stride=1)
+        self.fc_layer = nn.Linear(256, num_classes)
 
         # initialize weights
-        self.apply(initialize_weights)
+        # self.apply(initialize_weights)
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal(m.weight.data, mode='fan_out')
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.bias.data.zero_()
 
     def _make_block(self, block, duplicates, out_channels, stride=1):
         """
@@ -130,8 +138,7 @@ class ResNet(nn.Module):
             )
 
         layers = []
-        layers.append(
-            block(self.in_channels, out_channels, stride, downsample))
+        layers.append(block(self.in_channels, out_channels, stride, downsample))
         self.in_channels = out_channels
         for _ in range(1, duplicates):
             layers.append(block(out_channels, out_channels))
