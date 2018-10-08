@@ -31,7 +31,7 @@ parser.add_argument('--ckptroot', type=str,
                     default="../checkpoint/ckpt.t7", help='path to checkpoint')
 
 # hyperparameters settings
-parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
+parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
 parser.add_argument('--momentum', type=float,
                     default=0.9, help='momentum factor')
 parser.add_argument('--weight_decay', type=float,

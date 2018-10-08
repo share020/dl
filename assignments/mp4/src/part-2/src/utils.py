@@ -53,7 +53,7 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
     # Normalize test set same as training set without augmentation
@@ -61,7 +61,7 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
         transforms.Resize(224),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
     # Loading CIFAR100
