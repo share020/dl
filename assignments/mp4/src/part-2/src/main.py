@@ -3,7 +3,7 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-2: Fine-tune a pre-trained ResNet-18
 
-Due October 8 at 5:00 PM.
+Due October 10 at 5:00 PM.
 
 @author: Zhenye Na
 """
@@ -29,13 +29,15 @@ parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", hel
 
 # hyperparameters settings
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
+parser.add_argument('--momentum', type=float,
+                    default=0.9, help='momentum factor')
 parser.add_argument('--weight_decay', type=float, default=1e-5, help='weight decay (L2 penalty)')
 parser.add_argument('--epochs', type=int, default=500, help='number of epochs to train')
-parser.add_argument('--batch_size_train', type=int, default=256, help='training set input batch size')
-parser.add_argument('--batch_size_test', type=int, default=256, help='test set input batch size')
+parser.add_argument('--batch_size_train', type=int, default=64, help='training set input batch size')
+parser.add_argument('--batch_size_test', type=int, default=64, help='test set input batch size')
 
 # training settings
-parser.add_argument('--resume', type=bool, default=False, help='whether re-training from ckpt')
+parser.add_argument('--resume', type=bool, default=True, help='whether re-training from ckpt')
 parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
 
 # model_urls
@@ -62,7 +64,6 @@ def main():
         print('==> Load pre-trained ResNet model ...')
         net = resnet18(args.model_url)
 
-
     # For training on GPU, we need to transfer net and data onto the GPU
     # http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#training-on-gpu
     if args.is_gpu:
@@ -73,7 +74,7 @@ def main():
 
     # Loss function, optimizer for fine-tune-able params
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(filter(lambda param: param.requires_grad, net.parameters()),
+    optimizer = torch.optim.Adam(net.parameters(),
                                  lr=args.lr,
                                  weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)

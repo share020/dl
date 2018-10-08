@@ -3,7 +3,7 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-2: Fine-tune a pre-trained ResNet-18
 
-Due October 8 at 5:00 PM.
+Due October 10 at 5:00 PM.
 
 @author: Zhenye Na
 """
@@ -70,13 +70,13 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
                                              train=True,
                                              download=True,
                                              transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size_train, shuffle=True, num_workers=4, pin_memory=True)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size_train, shuffle=True, num_workers=4)
 
     testset = torchvision.datasets.CIFAR100(root=dataroot,
                                             train=False,
                                             download=True,
                                             transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size_test, shuffle=False, num_workers=4, pin_memory=True)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size_test, shuffle=False, num_workers=4)
 
     return trainloader, testloader
 
@@ -109,7 +109,8 @@ def calculate_accuracy(net, loader, is_gpu):
     return 100 * correct / total
 
 
-def train_model(net, optimizer, scheduler, criterion, trainloader, testloader, start_epoch, epochs, is_gpu):
+def train_model(net, optimizer, scheduler, criterion, trainloader,
+                testloader, start_epoch, epochs, is_gpu):
     """
     Training process.
 
@@ -151,13 +152,6 @@ def train_model(net, optimizer, scheduler, criterion, trainloader, testloader, s
             outputs = net(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
-
-            # if epoch > 16:
-            #     for group in optimizer.param_groups:
-            #         for p in group['params']:
-            #             state = optimizer.state[p]
-            #             if state['step'] >= 1024:
-            #                 state['step'] = 1000
             optimizer.step()
 
             # print statistics
