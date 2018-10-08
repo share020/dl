@@ -3,7 +3,7 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-1: Build the Residual Network
 
-Due October 8 at 5:00 PM.
+Due October 10 at 5:00 PM.
 
 @author: Zhenye Na
 """
@@ -25,20 +25,29 @@ from utils import *
 parser = argparse.ArgumentParser()
 
 # directory
-parser.add_argument('--dataroot', type=str, default="../data", help='path to dataset')
-parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", help='path to checkpoint')
+parser.add_argument('--dataroot', type=str,
+                    default="../data", help='path to dataset')
+parser.add_argument('--ckptroot', type=str,
+                    default="../checkpoint/ckpt.t7", help='path to checkpoint')
 
 # hyperparameters settings
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
-parser.add_argument('--momentum', type=float, default=0.9, help='momentum factor')
-parser.add_argument('--weight_decay', type=float, default=1e-5, help='weight decay (L2 penalty)')
-parser.add_argument('--epochs', type=int, default=500, help='number of epochs to train')
-parser.add_argument('--batch_size_train', type=int, default=256, help='training set input batch size')
-parser.add_argument('--batch_size_test', type=int, default=256, help='test set input batch size')
+parser.add_argument('--momentum', type=float,
+                    default=0.9, help='momentum factor')
+parser.add_argument('--weight_decay', type=float,
+                    default=1e-5, help='weight decay (L2 penalty)')
+parser.add_argument('--epochs', type=int, default=500,
+                    help='number of epochs to train')
+parser.add_argument('--batch_size_train', type=int,
+                    default=256, help='training set input batch size')
+parser.add_argument('--batch_size_test', type=int,
+                    default=256, help='test set input batch size')
 
 # training settings
-parser.add_argument('--resume', type=bool, default=False, help='whether re-training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
+parser.add_argument('--resume', type=bool, default=False,
+                    help='whether re-training from ckpt')
+parser.add_argument('--is_gpu', type=bool, default=True,
+                    help='whether training using GPU')
 
 # parse the arguments
 args = parser.parse_args()
@@ -52,7 +61,8 @@ def main():
     if args.resume:
         # Load checkpoint
         print('==> Resuming from checkpoint ...')
-        assert os.path.isdir('../checkpoint'), 'Error: no checkpoint directory found!'
+        assert os.path.isdir(
+            '../checkpoint'), 'Error: no checkpoint directory found!'
         checkpoint = torch.load(args.ckptroot)
         net = checkpoint['net']
         start_epoch = checkpoint['epoch']
@@ -60,7 +70,6 @@ def main():
         # start over
         print('==> Building new ResNet model ...')
         net = resnet_cifar()
-
 
     print("==> Initialize CUDA support for ResNet model ...")
 
@@ -81,10 +90,19 @@ def main():
                                 weight_decay=args.weight_decay)
 
     # Load CIFAR100
-    trainloader, testloader = data_loader(args.dataroot, args.batch_size_train, args.batch_size_test)
+    trainloader, testloader = data_loader(args.dataroot,
+                                          args.batch_size_train,
+                                          args.batch_size_test)
 
     # training
-    train(net, criterion, optimizer, trainloader, testloader, start_epoch, args.epochs, args.is_gpu)
+    train(net,
+          criterion,
+          optimizer,
+          trainloader,
+          testloader,
+          start_epoch,
+          args.epochs,
+          args.is_gpu)
 
 
 if __name__ == '__main__':

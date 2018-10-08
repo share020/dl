@@ -3,7 +3,7 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-1: Build the Residual Network
 
-Due October 8 at 5:00 PM.
+Due October 10 at 5:00 PM.
 
 @author: Zhenye Na
 """
@@ -15,6 +15,7 @@ import torch.utils.data
 import torchvision.transforms as transforms
 
 from torch.autograd import Variable
+
 
 def data_loader(dataroot, batch_size_train, batch_size_test):
     """
@@ -53,13 +54,15 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
                                              train=True,
                                              download=True,
                                              transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size_train, shuffle=True, num_workers=4)
+    trainloader = torch.utils.data.DataLoader(
+        trainset, batch_size=batch_size_train, shuffle=True, num_workers=4)
 
     testset = torchvision.datasets.CIFAR100(root=dataroot,
                                             train=False,
                                             download=True,
                                             transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size_test, shuffle=False, num_workers=4)
+    testloader = torch.utils.data.DataLoader(
+        testset, batch_size=batch_size_test, shuffle=False, num_workers=4)
 
     return trainloader, testloader
 
@@ -92,8 +95,8 @@ def calculate_accuracy(net, loader, is_gpu):
     return 100 * correct / total
 
 
-
-def train(net, criterion, optimizer, trainloader, testloader, start_epoch, epochs, is_gpu):
+def train(net, criterion, optimizer, trainloader,
+          testloader, start_epoch, epochs, is_gpu):
     """
     Training process.
 
@@ -148,7 +151,8 @@ def train(net, criterion, optimizer, trainloader, testloader, start_epoch, epoch
         train_accuracy = calculate_accuracy(net, trainloader, is_gpu)
         test_accuracy = calculate_accuracy(net, testloader, is_gpu)
 
-        print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(epoch+1, running_loss, train_accuracy, test_accuracy))
+        print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(
+            epoch+1, running_loss, train_accuracy, test_accuracy))
 
         # save model
         if epoch % 50 == 0:

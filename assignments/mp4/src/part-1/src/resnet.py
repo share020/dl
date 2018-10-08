@@ -3,7 +3,7 @@ HW4: Implement a deep residual neural network for CIFAR100.
 
 Part-1: Build the Residual Network
 
-Due October 8 at 5:00 PM.
+Due October 10 at 5:00 PM.
 
 @author: Zhenye Na
 """
@@ -138,7 +138,8 @@ class ResNet(nn.Module):
             )
 
         layers = []
-        layers.append(block(self.in_channels, out_channels, stride, downsample))
+        layers.append(
+            block(self.in_channels, out_channels, stride, downsample))
         self.in_channels = out_channels
         for _ in range(1, duplicates):
             layers.append(block(out_channels, out_channels))
