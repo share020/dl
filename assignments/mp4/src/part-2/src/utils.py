@@ -19,12 +19,14 @@ from torch.autograd import Variable
 from model import *
 
 
-def resnet18(model_urls, pretrained=True) :
+def resnet18(model_urls, pretrained=True):
     """Load pre-trained ResNet-18 model in Pytorch."""
-    model = torchvision.models.resnet.ResNet(torchvision.models.resnet.BasicBlock, [2,2,2,2])
+    model = torchvision.models.resnet.ResNet(
+        torchvision.models.resnet.BasicBlock, [2, 2, 2, 2])
 
     if pretrained:
-        model.load_state_dict(torch.utils.model_zoo.load_url(model_urls, model_dir = '../'))
+        model.load_state_dict(torch.utils.model_zoo.load_url(
+            model_urls, model_dir='../'))
         model = FineTune(model, num_classes=100)
     return model
 
@@ -62,7 +64,6 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
 
-
     # Loading CIFAR100
     print("==> Preparing CIFAR100 dataset ...")
 
@@ -70,13 +71,15 @@ def data_loader(dataroot, batch_size_train, batch_size_test):
                                              train=True,
                                              download=True,
                                              transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size_train, shuffle=True, num_workers=4)
+    trainloader = torch.utils.data.DataLoader(
+        trainset, batch_size=batch_size_train, shuffle=True, num_workers=4)
 
     testset = torchvision.datasets.CIFAR100(root=dataroot,
                                             train=False,
                                             download=True,
                                             transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size_test, shuffle=False, num_workers=4)
+    testloader = torch.utils.data.DataLoader(
+        testset, batch_size=batch_size_test, shuffle=False, num_workers=4)
 
     return trainloader, testloader
 
@@ -164,8 +167,8 @@ def train_model(net, optimizer, scheduler, criterion, trainloader,
         train_accuracy = calculate_accuracy(net, trainloader, is_gpu)
         test_accuracy = calculate_accuracy(net, testloader, is_gpu)
 
-        print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(epoch+1, running_loss, train_accuracy, test_accuracy))
-
+        print("Iteration: {0} | Loss: {1} | Training accuracy: {2}% | Test accuracy: {3}%".format(
+            epoch+1, running_loss, train_accuracy, test_accuracy))
 
         # save model
         if epoch % 50 == 0:

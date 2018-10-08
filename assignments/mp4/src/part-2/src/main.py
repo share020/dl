@@ -24,24 +24,31 @@ from utils import *
 parser = argparse.ArgumentParser()
 
 # directory
-parser.add_argument('--dataroot', type=str, default="../data", help='path to dataset')
-parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", help='path to checkpoint')
+parser.add_argument('--dataroot', type=str,
+                    default="../data", help='path to dataset')
+parser.add_argument('--ckptroot', type=str,
+                    default="../checkpoint/ckpt.t7", help='path to checkpoint')
 
 # hyperparameters settings
 parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
-parser.add_argument('--momentum', type=float,
-                    default=0.9, help='momentum factor')
-parser.add_argument('--weight_decay', type=float, default=1e-5, help='weight decay (L2 penalty)')
-parser.add_argument('--epochs', type=int, default=500, help='number of epochs to train')
-parser.add_argument('--batch_size_train', type=int, default=64, help='training set input batch size')
-parser.add_argument('--batch_size_test', type=int, default=64, help='test set input batch size')
+parser.add_argument('--weight_decay', type=float,
+                    default=1e-5, help='weight decay (L2 penalty)')
+parser.add_argument('--epochs', type=int, default=500,
+                    help='number of epochs to train')
+parser.add_argument('--batch_size_train', type=int,
+                    default=64, help='training set input batch size')
+parser.add_argument('--batch_size_test', type=int,
+                    default=64, help='test set input batch size')
 
 # training settings
-parser.add_argument('--resume', type=bool, default=True, help='whether re-training from ckpt')
-parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
+parser.add_argument('--resume', type=bool, default=True,
+                    help='whether re-training from ckpt')
+parser.add_argument('--is_gpu', type=bool, default=True,
+                    help='whether training using GPU')
 
 # model_urls
-parser.add_argument('--model_url', type=str, default="https://download.pytorch.org/models/resnet18-5c106cde.pth", help='model url for pretrained model')
+parser.add_argument('--model_url', type=str, default="https://download.pytorch.org/models/resnet18-5c106cde.pth",
+                    help='model url for pretrained model')
 
 # parse the arguments
 args = parser.parse_args()
@@ -55,7 +62,8 @@ def main():
     if args.resume:
         # Load checkpoint
         print('==> Resuming from checkpoint ...')
-        assert os.path.isdir('../checkpoint'), 'Error: no checkpoint directory found!'
+        assert os.path.isdir(
+            '../checkpoint'), 'Error: no checkpoint directory found!'
         checkpoint = torch.load(args.ckptroot)
         net = checkpoint['net']
         start_epoch = checkpoint['epoch']
@@ -80,11 +88,20 @@ def main():
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
 
     # data loader for CIFAR100
-    trainloader, testloader = data_loader(args.dataroot, args.batch_size_train, args.batch_size_test)
+    trainloader, testloader = data_loader(args.dataroot,
+                                          args.batch_size_train,
+                                          args.batch_size_test)
 
     # train pre-trained model on CIFAR100
-    model = train_model(net, optimizer, scheduler, criterion, trainloader, testloader, start_epoch, args.epochs, args.is_gpu)
-
+    train_model(net,
+                optimizer,
+                scheduler,
+                criterion,
+                trainloader,
+                testloader,
+                start_epoch,
+                args.epochs,
+                args.is_gpu)
 
 
 if __name__ == '__main__':

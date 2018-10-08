@@ -11,6 +11,7 @@ Due October 10 at 5:00 PM.
 import torch
 import torch.nn as nn
 
+
 class FineTune(nn.Module):
     """Fine-tune pre-trained ResNet model."""
 
@@ -29,8 +30,8 @@ class FineTune(nn.Module):
         # for param in self.features.parameters():
         #     param.requires_grad = False
 
-
     def forward(self, x):
+        """Forward pass of fint-tuned of ResNet-18 model."""
         out = self.features(x)
         out = out.view(out.size(0), -1)
         out = self.classifier(out)
