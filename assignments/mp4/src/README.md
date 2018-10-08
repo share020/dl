@@ -13,7 +13,7 @@
 ### Result
 
 <p align="center">
-    <img src="../fig/part-1-res.png">
+    <img src="../fig/part-1-res.png" width="80%">
 </p>
 
 ### References
