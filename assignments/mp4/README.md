@@ -1,6 +1,6 @@
 # HW4: Implement a Deep Residual Neural Network for CIFAR100
 
-> Due October 5 at 5:00 PM.
+> Due October 10 at 5:00 PM.
 
 
 ## Residual Networks
