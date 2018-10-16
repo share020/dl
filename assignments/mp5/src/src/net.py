@@ -43,24 +43,31 @@ def resnet101(pretrained=True):
 #     resnet = resnet101()
 
 
-class Tripletnet(nn.Module):
+class TripletNet(nn.Module):
     """Triplet Network."""
     def __init__(self, embeddingnet):
         """Triplet Network Builder."""
-        super(Tripletnet, self).__init__()
+        super(TripletNet, self).__init__()
         self.embeddingnet = embeddingnet
 
-    def forward(self, x, y, z):
+    def forward(self, a, p, n):
         """Forward pass."""
-        embedded_x = self.embeddingnet(x)
-        embedded_y = self.embeddingnet(y)
-        embedded_z = self.embeddingnet(z)
 
-        dist_a = F.pairwise_distance(embedded_x, embedded_y, 2)
-        dist_b = F.pairwise_distance(embedded_x, embedded_z, 2)
+        # anchor
+        embedded_a = self.embeddingnet(a)
 
-        return dist_a, dist_b, embedded_x, embedded_y, embedded_z
+        # positive examples
+        embedded_p = self.embeddingnet(p)
 
+        # negative examples
+        embedded_n = self.embeddingnet(n)
+
+        # dist_a = F.pairwise_distance(embedded_x, embedded_y, 2)
+        # dist_b = F.pairwise_distance(embedded_x, embedded_z, 2)
+        # dist_a, dist_b,
+
+        # return embedded_x, embedded_y, embedded_z
+        return embedded_a, embedded_p, embedded_n
 
 
 
@@ -115,7 +122,7 @@ class ConvNet(nn.Module):
     """ConvNet using ResNet model."""
 
     def __init__(self, resnet):
-        """Initialize Fine-tune ResNet model."""
+        """Initialize ResNet model."""
         super(ConvNet, self).__init__()
 
         # Everything except the last linear layer
