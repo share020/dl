@@ -117,7 +117,7 @@ def train(net, criterion, optimizer, trainloader,
 
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
-            print(i)
+
             # get the inputs
             inputs, labels = data
 
@@ -141,8 +141,6 @@ def train(net, criterion, optimizer, trainloader,
 
             # print statistics
             running_loss += loss.data[0]
-
-            print("running_loss: ", loss.data[0])
 
         # Normalizing the loss by the total number of train batches
         running_loss /= len(trainloader)
