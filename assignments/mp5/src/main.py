@@ -55,6 +55,8 @@ args = parser.parse_args()
 def main():
     """Main pipeline of Image Similarity using Deep Ranking."""
 
+    net = TripletNet(resnet101())
+
     # resume training from the last time
     if args.resume:
         # # Load checkpoint
