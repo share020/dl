@@ -11,68 +11,76 @@ import torch
 import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
+import torchvision.models as models
 import torchvision.transforms as transforms
 
 from torch.autograd import Variable
-from resnet import resnet_cifar
 
-import argparse
-parser = argparse.ArgumentParser()
-
-# model_urls
-parser.add_argument('--model_url', type=str, default="https://download.pytorch.org/models/resnet18-5c106cde.pth", help='model url for pretrained model')
-
-# parse the arguments
-args = parser.parse_args()
+model_urls = {
+    'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
+    'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth',
+    'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
+    'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
+    'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
+}
 
 
 def resnet18(model_urls, pretrained=True):
     """Load pre-trained ResNet-18 model in Pytorch."""
     model = torchvision.models.resnet.ResNet(torchvision.models.resnet.BasicBlock, [2, 2, 2, 2])
-
     if pretrained:
-        model.load_state_dict(torch.utils.model_zoo.load_url(model_urls, model_dir='../'))
-        model = ConvNet(model)
-    return model
+        model.load_state_dict(torch.utils.model_zoo.load_url(model_urls['resnet18'], model_dir='../resnet18'))
+    return EmbeddingNet(model)
 
 
-class ConvNet(nn.Module):
-    """Fine-tune pre-trained ResNet model."""
+def resnet101(pretrained=False, **kwargs):
+    """Constructs a ResNet-101 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = torchvision.models.resnet.ResNet(torchvision.models.resnet.BasicBlock, [3, 4, 23, 3])
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet101'], model_dir='../resnet101'))
+    return EmbeddingNet(model)
+
+
+class TripletNet(nn.Module):
+    """Triplet Network."""
+    def __init__(self, embeddingnet):
+        """Triplet Network Builder."""
+        super(TripletNet, self).__init__()
+        self.embeddingnet = embeddingnet
+
+    def forward(self, a, p, n):
+        """Forward pass."""
+        # anchor
+        embedded_a = self.embeddingnet(a)
+
+        # positive examples
+        embedded_p = self.embeddingnet(p)
+
+        # negative examples
+        embedded_n = self.embeddingnet(n)
+
+        return embedded_a, embedded_p, embedded_n
+
+
+class EmbeddingNet(nn.Module):
+    """EmbeddingNet using ResNet-101."""
 
     def __init__(self, resnet):
-        """Initialize Fine-tune ResNet model."""
-        super(ConvNet, self).__init__()
+        """Initialize ResNet model."""
+        super(EmbeddingNet, self).__init__()
 
         # Everything except the last linear layer
         self.features = nn.Sequential(*list(resnet.children())[:-1])
         num_ftrs = resnet.fc.in_features
         self.fc1 = nn.Linear(num_ftrs, 4096)
-        self.fc2 = nn.Linear(4096, 4096)
-        self.maxpool3x3 = nn.MaxPool2d(kernel_size=3)
-        self.maxpool7x7 = nn.MaxPool2d(kernel_size=7)
-        self.dropout = nn.Dropout()
-        self.relu = nn.ReLU()
 
     def forward(self, x):
-        """Forward pass of ResNet model."""
+        """Forward pass of EmbeddingNet."""
         out = self.features(x)
         out = out.view(out.size(0), -1)
         out = self.fc1(out)
-        out = self.relu(out)
-        out = self.dropout(out)
-        out = self.fc2(out)
-        out = self.relu(out)
-        out = self.dropout(out)
+
         return out
-
-
-def convnet():
-    """ConvNet in multiscale network structure in Fig 3."""
-    resnet = resnet18(model_urls)
-
-
-
-    F.normalize(x, p=2, dim=1)
-
-
-# TODO:
