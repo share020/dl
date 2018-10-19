@@ -1,34 +1,22 @@
 # HW6: Understanding CNNs and Generative Adversarial Networks
 
+> Mathjax/Latex is heavily used in this README file. Please download [MathJax Plugin for Github](https://chrome.google.com/webstore/detail/mathjax-plugin-for-github/ioemnmodlmafdkllaclgeombjnmnbima) in order to render Mathjax/Latex in Github correctly.
+
 ## Table of contents
 
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
-- []()
+- [Overview](#overview)
+- [Background](#background)
+    - [Discriminative vs Generative Models](#discriminative-vs-generative-models)
+    - [Understanding CNNs (What does a CNN actually learn?)](#understanding-cnns-what-does-a-cnn-actually-learn)
+    - [Receptive Field](#receptive-field)
+    - [Feature Visualization](#feature-visualization)
+    - [Tricking Networks](#tricking-networks)
+    - [Generative Adversarial Networks (GANs)](#generative-adversarial-networks-gans)
+    - [Transposed Convolution](#transposed-convolution)
+    - [Auxiliary Classifer GAN (ACGAN)](#auxiliary-classifer-gan-acgan)
+    - [Wasserstein GANs](#wasserstein-gans)
+    - [Layer Normalization](#layer-normalization)
+    - [Leaky ReLU](#leaky-relu)
 
 
 
