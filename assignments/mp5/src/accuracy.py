@@ -6,20 +6,26 @@ references: https://static.googleusercontent.com/media/research.google.com/en//p
 @author: Zhenye Na
 """
 
+import argparse
+
 import torch
 import numpy as np
 
 import torch
 import torchvision
+import torch.nn as nn
 import torch.utils.data
+import torch.backends.cudnn as cudnn
 import torchvision.transforms as transforms
 
 from numpy import linalg as LA
 from torch.autograd import Variable
+from utils import TinyImageNetLoader
+
+from net import *
 
 
-
-def calculate_accuracy(net, trainloader, testloader, is_gpu):
+def calculate_accuracy(trainloader, testloader, is_gpu):
     """
     Calculate accuracy for TripletNet model.
 
@@ -29,12 +35,23 @@ def calculate_accuracy(net, trainloader, testloader, is_gpu):
         4, Take L2 norm of the 2d array (after subtraction)
         5. Get the 30 min values (argmin might do the trick)
         6. Repeat for the rest of the embeddings in the test set
+
     """
+    net = TripletNet(resnet101())
+
+    # For training on GPU, we need to transfer net and data onto the GPU
+    # http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#training-on-gpu
+    if is_gpu:
+        net = torch.nn.DataParallel(net).cuda()
+        cudnn.benchmark = True
+
     print('==> Retrieve model parameters ...')
-    checkpoint = torch.load("../checkpoint/checkpoint.pth.tar")
-    # args.start_epoch = checkpoint['epoch']
+    checkpoint = torch.load("../checkpoint/checkpointcheckpoint.pth.tar")
+    start_epoch = checkpoint['epoch']
     # best_prec1 = checkpoint['best_prec1']
     net.load_state_dict(checkpoint['state_dict'])
+
+    net.eval()
 
     # dictionary of test images with class
     # val_1788.JPEG ==> n04532670
@@ -43,7 +60,7 @@ def calculate_accuracy(net, trainloader, testloader, is_gpu):
 
     # list of traning images names, e.g., "../tiny-imagenet-200/train/n01629819/images/n01629819_238.JPEG"
     training_images = []
-    for line in open(triplets_filename):
+    for line in open("../triplets.txt"):
         line_array = line.split(",")
         training_images.append(line_array[0])
 
@@ -60,6 +77,7 @@ def calculate_accuracy(net, trainloader, testloader, is_gpu):
         # compute output
         embedded_a, _, _ = net(data1, data2, data3)
         embedded_a_numpy = embedded_a.data.cpu().numpy()
+
         embedded_features.append(embedded_a_numpy)
 
     # TODO: 1. Form 2d array: Number of training images * size of embedding
@@ -68,12 +86,16 @@ def calculate_accuracy(net, trainloader, testloader, is_gpu):
     # TODO: 2. For a single test embedding, repeat the embedding so that it's the same size as the array in 1)
     for test_id, test_data in enumerate(testloader):
 
+        if test_id % 10 == 0:
+            print("Now processing {}th test image".format(test_id))
+
         if is_gpu:
             test_data = test_data.cuda()
         test_data = Variable(test_data)
 
         embedded_test, _, _ = net(test_data, test_data, test_data)
         embedded_test_numpy = embedded_test_numpy.data.cpu().numpy()
+
         embedded_features_test = np.tile(embedded_test_numpy, (embedded_features.shape[0], 1))
 
         # TODO: 3. Perform subtraction between the two 2D arrays
@@ -88,17 +110,20 @@ def calculate_accuracy(net, trainloader, testloader, is_gpu):
         # TODO: 6. Repeat for the rest of the embeddings in the test set
         accuracies = []
 
+        # get test image class
+        test_image_name = "val_" + str(test_id) + ".JPEG"
+        test_image_class = class_dict[test_image_name]
+
         # for each image results in min distance
         for idx in min_index:
+            if idx % 5 == 0:
+                print("Now processing {}th result of test image".format(idx))
+
             correct = 0
 
             # get result image class
             top_result_image_name = training_images[idx]
             top_result_image_name_class = top_result_image_name.split("/")[3]
-
-            # get test image class
-            test_image_name = "val_" + str(test_id) + ".JPEG"
-            test_image_class = class_dict[test_image_name]
 
             if test_image_class == top_result_image_name_class:
                 correct += 1
@@ -114,7 +139,6 @@ def get_classes(filename="../tiny-imagenet-200/val/val_annotations.txt"):
     """
     Get corresponding class name for each val image.
 
-
     Args:
         filename: txt file which contains image name and corresponding class name
 
@@ -129,9 +153,26 @@ def get_classes(filename="../tiny-imagenet-200/val/val_annotations.txt"):
     return class_dict
 
 
+def main():
+
+    # Instantiate the parser
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--dataroot', type=str, default="", help='train/val data root')
+    parser.add_argument('--batch_size_train', type=int, default=30, help='training set input batch size')
+    parser.add_argument('--batch_size_test', type=int, default=30, help='test set input batch size')
+
+    parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
+
+    # parse the arguments
+    args = parser.parse_args()
+
+    # load triplet dataset
+    trainloader, testloader = TinyImageNetLoader(args.dataroot, args.batch_size_train, args.batch_size_test)
+
+    # calculate test accuracy
+    calculate_accuracy(trainloader, testloader, args.is_gpu)
 
 
-
-
-
-#
+if __name__ == '__main__':
+    main()

@@ -109,6 +109,9 @@ def train(net, criterion, optimizer, scheduler, trainloader,
             # print statistics
             running_loss += loss.data[0]
 
+            if batch_idx % 30 == 0:
+                print("mini Batch Loss: {}".format(loss.data[0]))
+
         # Normalizing the loss by the total number of train batches
         running_loss /= len(trainloader)
 
