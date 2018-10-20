@@ -35,7 +35,7 @@ Use the table above to create a PyTorch model for the discriminator. This is sim
 
 
 
-Use the table above to create a PyTorch model for the discriminator. Unlike the discriminator, ReLU activation functions and batch normalization can be used. Use both of these after every layer except `conv8`. This last layer is outputting a $32 \times 32$ image with 3 channels representing the RGB channels. This is fake image generating from the $128$ dimensional input noise. During training, the real images will be scaled between $-1$ and $1$. Therefore, send the output of `conv8` through a hyperbolic tangent function (`tanh`). Also, take notice the transposed convolution layers. There is a built in PyTorch module for this.
+Use the table above to create a PyTorch model for the generator. Unlike the discriminator, ReLU activation functions and batch normalization can be used. Use both of these after every layer except `conv8`. This last layer is outputting a $32 \times 32$ image with $3$ channels representing the RGB channels. This is fake image generating from the $128$ dimensional input noise. During training, the real images will be scaled between $-1$ and $1$. Therefore, send the output of `conv8` through a hyperbolic tangent function (`tanh`). Also, take notice the transposed convolution layers. There is a built in PyTorch module for this.
 
 
 
@@ -181,7 +181,7 @@ def plot(samples):
 This function is used to plot a $10$ by $10$ grid of images scaled between $0$ and 1. After every epoch, we will use a batch of noise saved at the start of training to see how the generator improves over time.
 
 
-```
+```python
 aD =  discriminator()
 aD.cuda()
 
@@ -198,7 +198,7 @@ criterion = nn.CrossEntropyLoss()
 Create the two networks and an optimizer for each. Note the non-default beta parameters. The first moment decay rate is set to 0. This seems to help stabilize training.
 
 
-```
+```python
 np.random.seed(352)
 label = np.asarray(list(range(10))*10)
 noise = np.random.normal(0,1,(100,n_z))
@@ -215,12 +215,11 @@ save_noise = Variable(save_noise).cuda()
 This is a random batch of noise for the generator. $n_z$ is set to $128$ since this is the expected input for the generator. The noise is not entirely random as it follows the scheme described in section ACGAN. This creates an array label which is the repeated sequence 0-9 ten different times. This means the batch size is $100$ and there are $10$ examples for each class. The first 10 dimensions of the $128$ dimension noise are set to be the `one-hot` representation of the label. This means a $0$ is used in all spots except the index corresponding to a label where a $1$ is located.
 
 
-```
+```python
 start_time = time.time()
 
 # Train the model
 for epoch in range(0,num_epochs):
-
 
     aG.train()
     aD.train()
@@ -236,7 +235,7 @@ It is necessary to put the generator into train mode since it uses batch normali
 
 ```python
 # train G
-if((batch_idx%gen_train)==0):
+if batch_idx % gen_train == 0:
     for p in aD.parameters():
         p.requires_grad_(False)
 
@@ -253,7 +252,7 @@ if((batch_idx%gen_train)==0):
     fake_label = Variable(torch.from_numpy(label)).cuda()
 
     fake_data = aG(noise)
-    gen_source, gen_class  = aD(fake_data)
+    gen_source, gen_class = aD(fake_data)
 
     gen_source = gen_source.mean()
     gen_class = criterion(gen_class, fake_label)
@@ -265,12 +264,12 @@ if((batch_idx%gen_train)==0):
 ```
 
 
-The first portion of each iteration is for training the generator. Note the first if() statement. I set gen_train equal to 1 meaning the generator is trained every iteration just like the discriminator. Sometimes the discriminator is trained more frequently than the generator meaning gen_train can be set to something like 5. This seemed to matter more to stabilize training before the Wasserstein GAN loss function started getting used.
+The first portion of each iteration is for training the generator. Note the first `if()` statement. I set gen_train equal to `1` meaning the generator is trained every iteration just like the discriminator. Sometimes the discriminator is trained more frequently than the generator meaning `gen_train` can be set to something like 5. This seemed to matter more to stabilize training before the Wasserstein GAN loss function started getting used.
 
-The gradients for the discriminator parameters are turned off during the generator update as this saves GPU memory. Random noise is generated along with random labels to modify the noise. fake_data are the fake images coming from the generator. The discriminator provides two outputs: one from fc1 and one from fc10. The gen_source is the value from fc1 specifying if the discriminator thinks its input is real or fake. The discriminator wants this to be positive for real images and negative for fake images. Because of this, the generator wants to maximize this value (hence the negative since in the line calculating gen_cost). The gen_class output is from fc10 specifying which class the discriminator thinks the image is. Even though these are fake images, the noise contains a segment based on the label we want the generator to generate. Therefore, we combine these losses, perform a backward step, and update the parameters.
+The gradients for the discriminator parameters are turned off during the generator update as this saves GPU memory. Random noise is generated along with random labels to modify the noise. `fake_data` are the fake images coming from the generator. The discriminator provides two outputs: one from `fc1` and one from `fc10`. The gen_source is the value from `fc1` specifying if the discriminator thinks its input is real or fake. The discriminator wants this to be positive for real images and negative for fake images. Because of this, the generator wants to maximize this value (hence the negative since in the line calculating gen_cost). The gen_class output is from fc10 specifying which class the discriminator thinks the image is. Even though these are fake images, the noise contains a segment based on the label we want the generator to generate. Therefore, we combine these losses, perform a backward step, and update the parameters.
 
 
-```
+```python
 # train D
 for p in aD.parameters():
     p.requires_grad_(True)
@@ -319,6 +318,7 @@ optimizer_d.step()
 
 The discriminator is being trained on two separate batches of data. The first is on fake data coming from the generator. The second is on the real data. Lastly, the gradient penalty function is called based on the real and fake data. This results in $5$ separate terms for the loss function.
 
+
 ```python
 disc_cost = disc_fake_source - disc_real_source + disc_real_class + disc_fake_class + gradient_penalty
 ```
@@ -364,7 +364,7 @@ if((batch_idx%50) == 0):
 As mentioned previously, the discriminator is trying to minimize `disc_fake_source` and maximize `disc_real_source`. The generator is trying to maximize `disc_fake_source`. The output from `fc1` is unbounded meaning it may not necessarily hover around $0$ with negative values indicating a fake image and positive values indicating a positive image. It is possible for this value to always be negative or always be positive. The more important value is the difference between them on average. This could be used to determine a threshold for the discriminator considers to be real or fake.
 
 
-```
+```python
 # Test the model
 aD.eval()
 with torch.no_grad():
@@ -410,14 +410,13 @@ if(((epoch+1)%1)==0):
 After every epoch, the save_noise created before training can be used to generate samples to see how the generator improves over time. The samples from the generator are scaled between $-1$ and $1$. The plot function expects them to be scaled between $0$ and $1$ and also expects the order of the channels to be `(batch_size, w, h, 3)` as opposed to how PyTorch expects it. Make sure to create the `output/directory` before running your code.
 
 
-```
+```python
 torch.save(aG, 'generator.model')
 torch.save(aD, 'discriminator.model')
 ```
 
 
-
-Save your model to be used in part 2.
+**Save your model to be used in part 2.**
 
 As the model trains, it's possible to scp the generated images back over to your computer to view. Each column should slowly start to resemble a different class.
 
