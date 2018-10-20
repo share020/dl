@@ -1,9 +1,11 @@
-"""This script creates a PBS file that runs one hyperameter setting on a single node."""
+"""This script creates a PBS file that runs one hyperameter setting."""
 
 
-training_file = "main.py"
-walltime = "12:00:00"
-jobname = "cs598-mp5-image-ranking"
+# training_file = "main.py"
+training_file = "accuracy.py"
+walltime = "6:00:00"
+# jobname = "ResNet101-image-ranking-training"
+jobname = "ResNet101-image-ranking-accuracy"
 netid = "zna2"
 directory = "~/scratch/image-ranking/src/"
 
