@@ -47,7 +47,7 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
 
     print('==> Retrieve model parameters ...')
     checkpoint = torch.load("../checkpoint/checkpointcheckpoint.pth.tar")
-    start_epoch = checkpoint['epoch']
+    # start_epoch = checkpoint['epoch']
     # best_prec1 = checkpoint['best_prec1']
     net.load_state_dict(checkpoint['state_dict'])
 
@@ -57,6 +57,8 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
     # val_1788.JPEG ==> n04532670
     # val_8463.JPEG ==> n02917067
     class_dict = get_classes()
+    print("Get all test image classes, Done ...")
+
 
     # list of traning images names, e.g., "../tiny-imagenet-200/train/n01629819/images/n01629819_238.JPEG"
     training_images = []
@@ -64,9 +66,11 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
         line_array = line.split(",")
         training_images.append(line_array[0])
 
+    print("Get all training images, Done ...")
+
     # get embedded features of training
     embedded_features = []
-    for data1, data2, data3 in trainloader:
+    for batch_idx, (data1, data2, data3) in enumerate(trainloader):
 
         if is_gpu:
             data1, data2, data3 = data1.cuda(), data2.cuda(), data3.cuda()
@@ -80,13 +84,15 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
 
         embedded_features.append(embedded_a_numpy)
 
+    print("Get embedded_features, Done ...")
+
     # TODO: 1. Form 2d array: Number of training images * size of embedding
     embedded_features_train = np.concatenate(embedded_features, axis=0)
 
     # TODO: 2. For a single test embedding, repeat the embedding so that it's the same size as the array in 1)
     for test_id, test_data in enumerate(testloader):
 
-        if test_id % 10 == 0:
+        if test_id % 5 == 0:
             print("Now processing {}th test image".format(test_id))
 
         if is_gpu:
@@ -94,9 +100,13 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
         test_data = Variable(test_data)
 
         embedded_test, _, _ = net(test_data, test_data, test_data)
-        embedded_test_numpy = embedded_test_numpy.data.cpu().numpy()
+        embedded_test_numpy = embedded_test.data.cpu().numpy()
 
-        embedded_features_test = np.tile(embedded_test_numpy, (embedded_features.shape[0], 1))
+        repeat = 0
+        for array in embedded_features:
+            repeat += array.shape[0]
+
+        embedded_features_test = np.tile(embedded_test_numpy, (repeat, 1))
 
         # TODO: 3. Perform subtraction between the two 2D arrays
         embedding_diff = embedded_features_train - embedded_features_test
@@ -115,9 +125,9 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
         test_image_class = class_dict[test_image_name]
 
         # for each image results in min distance
-        for idx in min_index:
-            if idx % 5 == 0:
-                print("Now processing {}th result of test image".format(idx))
+        for i, idx in enumerate(min_index):
+            if i % 5 == 0:
+                print("    Now processing {}th result of test image".format(i))
 
             correct = 0
 
@@ -131,6 +141,12 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
         acc = correct / 30
         accuracies.append(acc)
 
+    with open('your_file.txt', 'w') as f:
+        for item in my_list:
+            f.write("%s\n" % item)
+
+    print(sum(accuracies))
+    print(len(accuracies))
     avg_acc = sum(accuracies) / len(accuracies)
     print("Test accuracy {}%".format(avg_acc))
 
@@ -159,8 +175,8 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--dataroot', type=str, default="", help='train/val data root')
-    parser.add_argument('--batch_size_train', type=int, default=30, help='training set input batch size')
-    parser.add_argument('--batch_size_test', type=int, default=30, help='test set input batch size')
+    parser.add_argument('--batch_size_train', type=int, default=1, help='training set input batch size')
+    parser.add_argument('--batch_size_test', type=int, default=1, help='test set input batch size')
 
     parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
 
