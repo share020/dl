@@ -23,4 +23,5 @@ def get_classes(filename="../tiny-imagenet-200/val/val_annotations.txt"):
 
     return class_dict
 
+
 get_classes()

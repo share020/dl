@@ -1,5 +1,5 @@
 """
-Image Similarity using Deep Ranking
+Image Similarity using Deep Ranking.
 
 references: https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/42945.pdf
 
@@ -70,19 +70,23 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
 
     # get embedded features of training
     embedded_features = []
-    for batch_idx, (data1, data2, data3) in enumerate(trainloader):
+    with torch.no_grad():
+        for batch_idx, (data1, data2, data3) in enumerate(trainloader):
 
-        if is_gpu:
-            data1, data2, data3 = data1.cuda(), data2.cuda(), data3.cuda()
+            if is_gpu:
+                data1, data2, data3 = data1.cuda(), data2.cuda(), data3.cuda()
 
-        # wrap in torch.autograd.Variable
-        data1, data2, data3 = Variable(data1), Variable(data2), Variable(data3)
+            # wrap in torch.autograd.Variable
+            data1, data2, data3 = Variable(data1), Variable(data2), Variable(data3)
 
-        # compute output
-        embedded_a, _, _ = net(data1, data2, data3)
-        embedded_a_numpy = embedded_a.data.cpu().numpy()
+            # compute output
+            embedded_a, _, _ = net(data1, data2, data3)
+            embedded_a_numpy = embedded_a.data.cpu().numpy()
 
-        embedded_features.append(embedded_a_numpy)
+            embedded_features.append(embedded_a_numpy)
+
+            if batch_idx > 1:
+                break
 
     print("Get embedded_features, Done ...")
 
@@ -90,60 +94,57 @@ def calculate_accuracy(trainloader, testloader, is_gpu):
     embedded_features_train = np.concatenate(embedded_features, axis=0)
 
     # TODO: 2. For a single test embedding, repeat the embedding so that it's the same size as the array in 1)
-    for test_id, test_data in enumerate(testloader):
+    with torch.no_grad():
+        for test_id, test_data in enumerate(testloader):
 
-        if test_id % 5 == 0:
-            print("Now processing {}th test image".format(test_id))
+            if test_id % 5 == 0:
+                print("Now processing {}th test image".format(test_id))
 
-        if is_gpu:
-            test_data = test_data.cuda()
-        test_data = Variable(test_data)
+            if is_gpu:
+                test_data = test_data.cuda()
+            test_data = Variable(test_data)
 
-        embedded_test, _, _ = net(test_data, test_data, test_data)
-        embedded_test_numpy = embedded_test.data.cpu().numpy()
+            embedded_test, _, _ = net(test_data, test_data, test_data)
+            embedded_test_numpy = embedded_test.data.cpu().numpy()
 
-        repeat = 0
-        for array in embedded_features:
-            repeat += array.shape[0]
+            embedded_features_test = np.tile(embedded_test_numpy, (embedded_features_train.shape[0], 1))
 
-        embedded_features_test = np.tile(embedded_test_numpy, (repeat, 1))
+            # TODO: 3. Perform subtraction between the two 2D arrays
+            embedding_diff = embedded_features_train - embedded_features_test
 
-        # TODO: 3. Perform subtraction between the two 2D arrays
-        embedding_diff = embedded_features_train - embedded_features_test
+            # TODO: 4, Take L2 norm of the 2d array (after subtraction)
+            embedding_norm = LA.norm(embedding_diff, axis=0)
 
-        # TODO: 4, Take L2 norm of the 2d array (after subtraction)
-        embedding_norm = LA.norm(embedding_diff, axis=0)
+            # TODO: 5. Get the 30 min values (argmin might do the trick)
+            min_index = embedding_norm.argsort()[:30]
 
-        # TODO: 5. Get the 30 min values (argmin might do the trick)
-        min_index = embedding_norm.argsort()[:30]
+            # TODO: 6. Repeat for the rest of the embeddings in the test set
+            accuracies = []
 
-        # TODO: 6. Repeat for the rest of the embeddings in the test set
-        accuracies = []
+            # get test image class
+            test_image_name = "val_" + str(test_id) + ".JPEG"
+            test_image_class = class_dict[test_image_name]
 
-        # get test image class
-        test_image_name = "val_" + str(test_id) + ".JPEG"
-        test_image_class = class_dict[test_image_name]
+            # for each image results in min distance
+            for i, idx in enumerate(min_index):
+                if i % 5 == 0:
+                    print("    Now processing {}th result of test image".format(i))
 
-        # for each image results in min distance
-        for i, idx in enumerate(min_index):
-            if i % 5 == 0:
-                print("    Now processing {}th result of test image".format(i))
+                correct = 0
 
-            correct = 0
+                # get result image class
+                top_result_image_name = training_images[idx]
+                top_result_image_name_class = top_result_image_name.split("/")[3]
 
-            # get result image class
-            top_result_image_name = training_images[idx]
-            top_result_image_name_class = top_result_image_name.split("/")[3]
+                if test_image_class == top_result_image_name_class:
+                    correct += 1
 
-            if test_image_class == top_result_image_name_class:
-                correct += 1
+            acc = correct / 30
+            accuracies.append(acc)
 
-        acc = correct / 30
-        accuracies.append(acc)
-
-    with open('your_file.txt', 'w') as f:
-        for item in my_list:
-            f.write("%s\n" % item)
+    with open('accuracies.txt', 'w') as f:
+        for acc in accuracies:
+            f.write("%s\n" % acc)
 
     print(sum(accuracies))
     print(len(accuracies))
@@ -175,8 +176,8 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--dataroot', type=str, default="", help='train/val data root')
-    parser.add_argument('--batch_size_train', type=int, default=1, help='training set input batch size')
-    parser.add_argument('--batch_size_test', type=int, default=1, help='test set input batch size')
+    parser.add_argument('--batch_size_train', type=int, default=25, help='training set input batch size')
+    parser.add_argument('--batch_size_test', type=int, default=25, help='test set input batch size')
 
     parser.add_argument('--is_gpu', type=bool, default=True, help='whether training using GPU')
 
