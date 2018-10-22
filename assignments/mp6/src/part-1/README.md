@@ -23,16 +23,15 @@ Use the table above to create a PyTorch model for the discriminator. This is sim
 
 |  name 	|       type      	| input_channels 	| output_channels 	| ksize 	| padding 	| stride 	| input 	| output 	|
 |:-----:	|:---------------:	|:--------------:	|:---------------:	|:-----:	|:-------:	|:------:	|:-----:	|:------:	|
-|  fc1  	|      linear     	|   128 (noise)  	|     196x4x4     	|       	|         	|        	|       	|        	|
-| conv1 	| convtranspose2d 	|       196      	|       196       	|   4   	|    0    	|    2   	|  4x4  	|   8x8  	|
+|  fc1  	|      linear     	|   100 (noise)  	|     196*4*4     	|       	|         	|        	|       	|        	|
+| conv1 	| convtranspose2d 	|       196      	|       196       	|   4   	|    1    	|    2   	|  4x4  	|   8x8  	|
 | conv2 	|      conv2d     	|       196      	|       196       	|   3   	|    1    	|    1   	|  8x8  	|   8x8  	|
 | conv3 	|      conv2d     	|       196      	|       196       	|   3   	|    1    	|    1   	|  8x8  	|   8x8  	|
 | conv4 	|      conv2d     	|       196      	|       196       	|   3   	|    1    	|    1   	|  8x8  	|   8x8  	|
-| conv5 	| convtranspose2d 	|       196      	|       196       	|   4   	|    0    	|    2   	|  8x8  	|  16x16 	|
+| conv5 	| convtranspose2d 	|       196      	|       196       	|   4   	|    1    	|    2   	|  8x8  	|  16x16 	|
 | conv6 	|      conv2d     	|       196      	|       196       	|   3   	|    1    	|    1   	| 16x16 	|  16x16 	|
-| conv7 	| convtranspose2d 	|       196      	|       196       	|   4   	|    0    	|    2   	| 16x16 	|  32x32 	|
+| conv7 	| convtranspose2d 	|       196      	|       196       	|   4   	|    1    	|    2   	| 16x16 	|  32x32 	|
 | conv8 	|      conv2d     	|       196      	|        3        	|   3   	|    1    	|    1   	| 32x32 	|  32x32 	|
-
 
 
 Use the table above to create a PyTorch model for the generator. Unlike the discriminator, ReLU activation functions and batch normalization can be used. Use both of these after every layer except `conv8`. This last layer is outputting a $32 \times 32$ image with $3$ channels representing the RGB channels. This is fake image generating from the $128$ dimensional input noise. During training, the real images will be scaled between $-1$ and $1$. Therefore, send the output of `conv8` through a hyperbolic tangent function (`tanh`). Also, take notice the transposed convolution layers. There is a built in PyTorch module for this.
