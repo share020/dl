@@ -20,15 +20,6 @@ class Discriminator(nn.Module):
         """
         super(Discriminator, self).__init__()
 
-        # self.conv1 = nn.Conv2d(in_channels=3, out_channels=196, kernel_size=3, padding=1, stride=2)
-        # self.conv2 = nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2)
-        # self.conv3 = nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1)
-        # self.conv4 = nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2)
-        # self.conv5 = nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1)
-        # self.conv6 = nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1)
-        # self.conv7 = nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1)
-        # self.conv8 = nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2)
-
         self.conv = nn.Sequential(
             # conv1
             nn.Conv2d(in_channels=3, out_channels=196, kernel_size=3, padding=1, stride=1),
@@ -72,17 +63,6 @@ class Discriminator(nn.Module):
 
             nn.MaxPool2d(kernel_size=4, stride=4, padding=0)
         )
-
-
-        # self.conv1_block = self._conv_ln_lrelu_block(in_channels=3, out_channels=196, stride=1, normalized_shape=[32,32])
-        # self.conv2_block = self._conv_ln_lrelu_block(in_channels=196, out_channels=196, stride=2, normalized_shape=[32,32])
-        # self.conv3_block = self._conv_ln_lrelu_block(in_channels=196, out_channels=196, stride=1, normalized_shape=[16,16])
-        # self.conv4_block = self._conv_ln_lrelu_block(in_channels=196, out_channels=196, stride=2, normalized_shape=[16,16])
-        # self.conv5_block = self._conv_ln_lrelu_block(in_channels=196, out_channels=196, stride=1, normalized_shape=[8,8])
-        # self.conv6_block = self._conv_ln_lrelu_block(in_channels=196, out_channels=196, stride=1, normalized_shape=[8,8])
-        # self.conv7_block = self._conv_ln_lrelu_block(in_channels=196, out_channels=196, stride=1, normalized_shape=[8,8])
-        # self.conv8_block = self._conv_ln_lrelu_block(in_channels=196, out_channels=196, stride=2, normalized_shape=[8,8])
-        # nn.MaxPool2d(kernel_size=4, stride=4)
 
         self.fc1 = nn.Linear(196, 1)
         self.fc10 = nn.Linear(196, 10)

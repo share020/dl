@@ -4,6 +4,7 @@ HW6: Understanding CNNs and Generative Adversarial Networks.
 @author: Zhenye Na
 """
 
+import os
 import time
 import torch
 
@@ -75,7 +76,9 @@ class Trainer_D(object):
 
             if epoch % 5 == 0:
                 print("==> Saving model at epoch: {}".format(epoch))
-                torch.save(model, '../model/cifar10.model')
+                if not os.path.isdir('../model'):
+                    os.mkdir('../model')
+                torch.save(self.model, '../model/cifar10.model')
 
 
 
