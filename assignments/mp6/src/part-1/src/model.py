@@ -9,24 +9,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-# def _conv_ln_lrelu_block(in_channels, out_channels, stride=1, normalized_shape=normalized_shape):
-#     """Con2d -> LN -> LeakyReLU"""
-#     return nn.Sequential(
-#         nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=3, stride=stride, padding=1),
-#         nn.LayerNorm(normalized_shape=normalized_shape),
-#         nn.LeakyReLU()
-#     )
-#
-#
-# def _tconv_bn_relu_block(in_channels, out_channels, kernel_size=3, stride=1, padding=0):
-#     """Con2d/tconv2d -> BN -> ReLU"""
-#     return nn.Sequential(
-#         nn.ConvTranspose2d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride, padding=padding),
-#         nn.BatchNorm2d(num_features=out_channels),
-#         nn.ReLU()
-#     )
-
-
 class Discriminator(nn.Module):
     """Discriminator."""
 

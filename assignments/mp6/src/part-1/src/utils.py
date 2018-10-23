@@ -53,12 +53,12 @@ def cifar10_loader(root, batch_size_train, batch_size_test):
     return trainloader, testloader
 
 
-def calculate_accuracy(net, loader, is_gpu):
+def calculate_accuracy(model, loader, cuda):
     """
     Calculate accuracy.
     Args:
         loader (torch.utils.data.DataLoader): training / test set loader
-        is_gpu (bool): whether to run on GPU
+        cuda (bool): whether to initialize cudatoolkit
     Returns:
         tuple: overall accuracy
     """
@@ -67,10 +67,10 @@ def calculate_accuracy(net, loader, is_gpu):
 
     for data in loader:
         images, labels = data
-        if is_gpu:
-            images = images.cuda()
-            labels = labels.cuda()
-        _, outputs = net(Variable(images))
+        if cuda:
+            images = Variable(images).cuda()
+            labels = Variable(labels).cuda()
+        _, outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
 
         total += labels.size(0)

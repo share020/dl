@@ -16,21 +16,21 @@ class Trainer_D(object):
     def __init__(self, model, criterion, optimizer, trainloader, testloader, start_epoch, epochs, cuda, batch_size, learning_rate):
         super(Trainer_D, self).__init__()
 
-        self.model = model
-        self.criterion = criterion
-        self.optimizer = optimizer
-        self.trainloader = trainloader
-        self.testloader = testloader
-        self.start_epoch = start_epoch
-        self.epochs = epochs
-        self.cuda = cuda
-        self.batch_size = batch_size
+        self.cuda          = cuda
+        self.model         = model
+        self.epochs        = epochs
+        self.criterion     = criterion
+        self.optimizer     = optimizer
+        self.batch_size    = batch_size
+        self.testloader    = testloader
+        self.trainloader   = trainloader
+        self.start_epoch   = start_epoch
         self.learning_rate = learning_rate
-
 
     def train(self):
         """Training process."""
-
+        print("==> Start training ...")
+        running_loss = 0.0
         for epoch in range(self.start_epoch, self.start_epoch + self.epochs):
             # learning rate decay
             if epoch == 40:
@@ -61,6 +61,12 @@ class Trainer_D(object):
                         if('step' in state and state['step']>=1024):
                             state['step'] = 1000
                 self.optimizer.step()
+
+                # print statistics
+                running_loss += loss.data[0]
+
+            # Normalizing the loss by the total number of train batches
+            running_loss /= len(self.trainloader)
 
             # Calculate training/test set accuracy of the existing model
             train_accuracy = calculate_accuracy(self.model, self.trainloader, self.cuda)

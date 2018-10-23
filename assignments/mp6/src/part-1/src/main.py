@@ -86,24 +86,12 @@ def main():
 
         criterion = nn.CrossEntropyLoss()
 
-
-
-    # # train
-    # trainer = Trainer()
-    # trainer.train()
-
+        # train
+        trainer = Trainer()
+        trainer.train()
 
 
 
-    # # customized ----------
-    #
-    # # For training on GPU, we need to transfer net and data onto the GPU
-    # # http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#training-on-gpu
-    # if args.is_gpu:
-    #     print("==> Initialize CUDA support for TripletNet model ...")
-    #     model = torch.nn.DataParallel(model).cuda()
-    #     cudnn.benchmark = True
-    #
     # # resume training from the last time
     # if args.resume:
     #     # Load checkpoint
