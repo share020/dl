@@ -99,7 +99,7 @@ class Generator(nn.Module):
         """Generator Builder."""
         super(Generator, self).__init__()
 
-        self.fc1 = nn.Linear(128, 196 * 4 * 4)
+        self.fc1 = nn.Linear(100, 196 * 4 * 4)
 
         self.tconv = nn.Sequential(
             # conv1
@@ -138,7 +138,8 @@ class Generator(nn.Module):
             nn.ReLU(),
 
             # conv8
-            nn.Conv2d(in_channels=196, out_channels=3, kernel_size=3, stride=1, padding=1)
+            nn.Conv2d(in_channels=196, out_channels=3, kernel_size=3, stride=1, padding=1),
+            nn.Tanh()
         )
 
         # self.conv1_block = self._tconv_bn_relu_block(in_channels=196, out_channels=196, kernel_size=4, stride=2, padding=0)
@@ -152,6 +153,7 @@ class Generator(nn.Module):
     def forward(self, x):
         """Forward pass of Genrator."""
         out = self.fc1(x)
-        out = F.tanh(self.tconv(out))
+        out = out.view(-1, 196, 4, 4)
+        out = self.tconv(out)
 
         return out
