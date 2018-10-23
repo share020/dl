@@ -9,11 +9,13 @@ import torchvision
 import torch.utils.data
 import torchvision.transforms as transforms
 
+from torch.autograd import Variable
 
-def cifar10_loader(batch_size_train, batch_size_test):
+def cifar10_loader(root, batch_size_train, batch_size_test):
     """CIFAR10 dataset Loader.
 
     Args:
+        root
         batch_size_train
         batch_size_test
 
@@ -39,36 +41,61 @@ def cifar10_loader(batch_size_train, batch_size_test):
     ])
 
     trainset = torchvision.datasets.CIFAR10(
-        root='./', train=True, download=True, transform=transform_train)
+        root=root, train=True, download=True, transform=transform_train)
     trainloader = torch.utils.data.DataLoader(
         trainset, batch_size=batch_size_train, shuffle=True, num_workers=8)
 
     testset = torchvision.datasets.CIFAR10(
-        root='./', train=False, download=False, transform=transform_test)
+        root=root, train=False, download=False, transform=transform_test)
     testloader = torch.utils.data.DataLoader(
         testset, batch_size=batch_size_test, shuffle=False, num_workers=8)
 
     return trainloader, testloader
 
 
+def calculate_accuracy(net, loader, is_gpu):
+    """
+    Calculate accuracy.
+    Args:
+        loader (torch.utils.data.DataLoader): training / test set loader
+        is_gpu (bool): whether to run on GPU
+    Returns:
+        tuple: overall accuracy
+    """
+    correct = 0.
+    total = 0.
+
+    for data in loader:
+        images, labels = data
+        if is_gpu:
+            images = images.cuda()
+            labels = labels.cuda()
+        _, outputs = net(Variable(images))
+        _, predicted = torch.max(outputs.data, 1)
+
+        total += labels.size(0)
+        correct += (predicted == labels).sum()
+
+    return 100 * correct / total
 
 
+def calc_gradient_penalty(netD, real_data, fake_data, batch_size):
+    """
+    Gradient penalty calculation.
 
-
-
-
-
-
-
-
-def calc_gradient_penalty(netD, real_data, fake_data):
+    Args:
+        netD: Discriminator
+        real_data: real images
+        fake_data: generated images
+        batch_size: batch size
+    """
     DIM = 32
     LAMBDA = 10
     alpha = torch.rand(batch_size, 1)
-    alpha = alpha.expand(batch_size, int(real_data.nelement()/batch_size)).contiguous()
+    alpha = alpha.expand(batch_size, int(real_data.nelement() / batch_size)).contiguous()
     alpha = alpha.view(batch_size, 3, DIM, DIM)
     alpha = alpha.cuda()
-    
+
     fake_data = fake_data.view(batch_size, 3, DIM, DIM)
     interpolates = alpha * real_data.detach() + ((1 - alpha) * fake_data.detach())
 
@@ -81,8 +108,9 @@ def calc_gradient_penalty(netD, real_data, fake_data):
                               grad_outputs=torch.ones(disc_interpolates.size()).cuda(),
                               create_graph=True, retain_graph=True, only_inputs=True)[0]
 
-    gradients = gradients.view(gradients.size(0), -1)                              
+    gradients = gradients.view(gradients.size(0), -1)
     gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * LAMBDA
+
     return gradient_penalty
 
 
@@ -105,4 +133,4 @@ def calc_gradient_penalty(netD, real_data, fake_data):
 
 
 
-# 
+#
