@@ -401,8 +401,8 @@ I have created a file named [`sampler.py`]() which is aimed to random sampling p
 $ python3 sampler.py
 Input Directory: ../tiny-imagenet-200/train
 Output Directory: ../
-Number of Positive image per Query image:  3
-Number of Negative image per Query image:  3
+Number of Positive image per Query image:  1
+Number of Negative image per Query image:  1
 ==> Sampling Done ... Now Writing ...
 ```
 
@@ -434,5 +434,4 @@ I planned to create visulization in [Visdom](https://github.com/facebookresearch
 
 [1] Jiang Wang, Yang song, Thomas Leung, Chuck Rosenberg, Jinbin Wang, James Philbin, Bo Chen, Ying Wu. [*"Learning Fine-grained Image Similarity with Deep Ranking"*](https://arxiv.org/abs/1404.4661). arXiv:1404.4661  
 [2] Akarsh Zingade [*"Image Similarity using Deep Ranking"*](https://medium.com/@akarshzingade/image-similarity-using-deep-ranking-c1bd83855978)  
-[3] Pytorch Discussion. [Feedback on PyTorch for Kaggle competitions](https://discuss.pytorch.org/t/feedback-on-pytorch-for-kaggle-competitions/2252)  
-[4] 
+[3] Pytorch Discussion. [Feedback on PyTorch for Kaggle competitions](https://discuss.pytorch.org/t/feedback-on-pytorch-for-kaggle-competitions/2252)
