@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+Part-1: Training a GAN on CIFAR10
 
 @author: Zhenye Na
 """
@@ -105,9 +106,9 @@ def calc_gradient_penalty(netD, real_data, fake_data, batch_size, cuda):
     interpolates.requires_grad_(True)
 
     disc_interpolates, _ = netD(interpolates)
-# .cuda()
+
     gradients = torch.autograd.grad(outputs=disc_interpolates, inputs=interpolates,
-                                    grad_outputs=torch.ones(disc_interpolates.size()),
+                                    grad_outputs=torch.ones(disc_interpolates.size()).cuda(),
                                     create_graph=True, retain_graph=True, only_inputs=True)[0]
 
     gradients = gradients.view(gradients.size(0), -1)

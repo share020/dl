@@ -1,12 +1,12 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+Part-1: Training a GAN on CIFAR10
 
 @author: Zhenye Na
 """
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class Discriminator(nn.Module):

@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+Part-1: Training a GAN on CIFAR10
 
 @author: Zhenye Na
 """
@@ -25,7 +26,7 @@ def parse_args():
 
     # directory
     parser.add_argument('--dataroot', type=str, default="../../../data", help='path to dataset')
-    parser.add_argument('--ckptroot', type=str, default="../checkpoint/ckpt.t7", help='path to checkpoint')
+    parser.add_argument('--ckptroot', type=str, default="../model/", help='path to checkpoint')
 
     # hyperparameters settings
     parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
@@ -46,7 +47,7 @@ def parse_args():
 
     # training settings
     parser.add_argument('--resume', type=bool, default=False, help='whether re-training from ckpt')
-    parser.add_argument('--cuda', type=bool, default=False, help='whether training using cudatoolkit')
+    parser.add_argument('--cuda', type=bool, default=True, help='whether training using cudatoolkit')
 
     # parse the arguments
     args = parser.parse_args()
@@ -80,8 +81,28 @@ def main():
 
     # Train the Discriminator with the Generator
     else:
-        print("Train the Discriminator with the Generator ...")
+        # instantiate discriminator and generator
         aD, aG = Discriminator(), Generator()
+
+        # resume training from the last time
+        if args.resume:
+            # Load checkpoint
+            print('==> Resuming training from checkpoint ...')
+            g_ckpt_pth = os.path.join(args.ckptroot, "tempG.model")
+            d_ckpt_pth = os.path.join(args.ckptroot, "tempD.model")
+
+            checkpoint_g = torch.load(g_ckpt_pth)
+            checkpoint_d = torch.load(d_ckpt_pth)
+
+            args.start_epoch = checkpoint_d['epoch']
+
+            aG.load_state_dict(checkpoint_g['state_dict'])
+            aD.load_state_dict(checkpoint_d['state_dict'])
+
+        else:
+            # start over
+            print("Train the Discriminator with the Generator ...")
+
         if args.cuda:
             aD, aG = nn.DataParallel(aD).cuda(), nn.DataParallel(aG).cuda()
             cudnn.benchmark=True
@@ -98,26 +119,6 @@ def main():
         # train
         trainer_gd = Trainer_GD(aD, aG, criterion, optimizer_d, optimizer_g, trainloader, testloader, args.batch_size_train, args.gen_train, args.cuda, args.n_z, args.start_epoch, args.epochs2)
         trainer_gd.train()
-
-
-
-    # # resume training from the last time
-    # if args.resume:
-    #     # Load checkpoint
-    #     print('==> Resuming training from checkpoint ...')
-    #     checkpoint = torch.load(args.ckptroot)
-    #     args.start_epoch = checkpoint['epoch']
-    #     best_prec1 = checkpoint['best_prec1']
-    #     net.load_state_dict(checkpoint['state_dict'])
-    #     print("==> Loaded checkpoint '{}' (epoch {})".format(args.ckptroot, checkpoint['epoch']))
-    #
-    # else:
-    #     # start over
-    #     print('==> Building new TripletNet model ...')
-    #     net = TripletNet(resnet101())
-
-
-
 
 
 

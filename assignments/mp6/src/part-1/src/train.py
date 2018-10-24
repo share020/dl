@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+Part-1: Training a GAN on CIFAR10
 
 @author: Zhenye Na
 """
@@ -8,6 +9,11 @@ import os
 import time
 import torch
 import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 from torch.autograd import Variable
 from utils import calc_gradient_penalty, calculate_accuracy
@@ -115,15 +121,26 @@ class Trainer_GD(object):
         loss3 = []
         loss4 = []
         loss5 = []
-        acc1 = []
+        acc1  = []
+
+        np.random.seed(352)
+        label = np.asarray(list(range(10)) * 10)
+        noise = np.random.normal(0, 1, (100, self.n_z))
+        label_onehot = np.zeros((100, n_classes))
+        label_onehot[np.arange(100), label] = 1
+        noise[np.arange(100), :n_classes] = label_onehot[np.arange(100)]
+        noise = noise.astype(np.float32)
+
+        save_noise = torch.from_numpy(noise)
+        if self.cuda:
+            save_noise = save_noise.cuda()
+        save_noise = Variable(save_noise)
 
         # Train the model
         for epoch in range(self.start_epoch, self.start_epoch + self.epochs):
             # turn models to `train` mode
             self.aG.train()
             self.aD.train()
-
-            print("Start first epoch")
 
             for batch_idx, (X_train_batch, Y_train_batch) in enumerate(self.trainloader):
 
@@ -237,14 +254,14 @@ class Trainer_GD(object):
                 loss5.append(disc_fake_class.item())
                 acc1.append(accuracy)
                 if batch_idx % 50 == 0:
-                    print(epoch, batch_idx, "%.2f" % np.mean(loss1),
-                                            "%.2f" % np.mean(loss2),
-                                            "%.2f" % np.mean(loss3),
-                                            "%.2f" % np.mean(loss4),
-                                            "%.2f" % np.mean(loss5),
-                                            "%.2f" % np.mean(acc1))
+                    # print(epoch, batch_idx, "%.2f" % np.mean(loss1),
+                    #                         "%.2f" % np.mean(loss2),
+                    #                         "%.2f" % np.mean(loss3),
+                    #                         "%.2f" % np.mean(loss4),
+                    #                         "%.2f" % np.mean(loss5),
+                    #                         "%.2f" % np.mean(acc1))
+                    print("Trainig epoch: {} | Accuracy: {} | Batch: {} | Gradient penalty: {} | Discriminator fake source: {} | Discriminator real source: {} | Discriminator real class: {} | Discriminator fake class: {}".format(epoch, np.mean(acc1), batch_idx, np.mean(loss1), np.mean(loss2), np.mean(loss3), np.mean(loss4), np.mean(loss5)))
 
-            print("First epoch no problem")
             # Test the model
             self.aD.eval()
             with torch.no_grad():
@@ -262,7 +279,8 @@ class Trainer_GD(object):
                     accuracy = (float(prediction.eq(Y_test_batch.data).sum()) / float(self.batch_size)) * 100.0
                     test_accu.append(accuracy)
                     accuracy_test = np.mean(test_accu)
-            print('Testing', accuracy_test, time.time() - start_time)
+            # print('Testing', accuracy_test, time.time() - start_time)
+            print("Testing accuracy: {} | Eplased time: {}".format(accuracy_test, time.time() - start_time))
 
             # save output
             with torch.no_grad():
@@ -281,5 +299,5 @@ class Trainer_GD(object):
             plt.close(fig)
 
             if (epoch + 1) % 1 == 0:
-                torch.save(self.aG, '../tempG.model')
-                torch.save(self.aD, '../tempD.model')
+                torch.save(self.aG, '../model/tempG.model')
+                torch.save(self.aD, '../model/tempD.model')
