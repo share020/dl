@@ -1,0 +1,146 @@
+Files already downloaded and verified
+==> Start training ...
+Iteration: 1 | Loss: 1.8983300924301147 | Training accuracy: 46% | Test accuracy: 47%
+==> Saving model at epoch: 0
+Iteration: 2 | Loss: 1.3751730918884277 | Training accuracy: 59% | Test accuracy: 60%
+Iteration: 3 | Loss: 1.104788899421692 | Training accuracy: 65% | Test accuracy: 65%
+Iteration: 4 | Loss: 0.92426997423172 | Training accuracy: 70% | Test accuracy: 71%
+Iteration: 5 | Loss: 0.811055600643158 | Training accuracy: 75% | Test accuracy: 75%
+Iteration: 6 | Loss: 0.7256948351860046 | Training accuracy: 77% | Test accuracy: 76%
+==> Saving model at epoch: 5
+Iteration: 7 | Loss: 0.6628280282020569 | Training accuracy: 79% | Test accuracy: 77%
+Iteration: 8 | Loss: 0.6113499999046326 | Training accuracy: 80% | Test accuracy: 79%
+Iteration: 9 | Loss: 0.5713631510734558 | Training accuracy: 83% | Test accuracy: 80%
+Iteration: 10 | Loss: 0.536948561668396 | Training accuracy: 82% | Test accuracy: 80%
+Iteration: 11 | Loss: 0.4973854720592499 | Training accuracy: 84% | Test accuracy: 81%
+==> Saving model at epoch: 10
+Iteration: 12 | Loss: 0.4674152731895447 | Training accuracy: 83% | Test accuracy: 79%
+Iteration: 13 | Loss: 0.4505581557750702 | Training accuracy: 86% | Test accuracy: 81%
+Iteration: 14 | Loss: 0.4238375127315521 | Training accuracy: 87% | Test accuracy: 82%
+Iteration: 15 | Loss: 0.39993107318878174 | Training accuracy: 87% | Test accuracy: 83%
+Iteration: 16 | Loss: 0.38059002161026 | Training accuracy: 88% | Test accuracy: 83%
+==> Saving model at epoch: 15
+Iteration: 17 | Loss: 0.35729774832725525 | Training accuracy: 88% | Test accuracy: 84%
+Iteration: 18 | Loss: 0.34879106283187866 | Training accuracy: 88% | Test accuracy: 83%
+Iteration: 19 | Loss: 0.3319723606109619 | Training accuracy: 90% | Test accuracy: 84%
+Iteration: 20 | Loss: 0.31898295879364014 | Training accuracy: 90% | Test accuracy: 84%
+Iteration: 21 | Loss: 0.300360769033432 | Training accuracy: 91% | Test accuracy: 84%
+==> Saving model at epoch: 20
+Iteration: 22 | Loss: 0.28845658898353577 | Training accuracy: 92% | Test accuracy: 85%
+Iteration: 23 | Loss: 0.2746756970882416 | Training accuracy: 92% | Test accuracy: 85%
+Iteration: 24 | Loss: 0.2661633789539337 | Training accuracy: 91% | Test accuracy: 85%
+Iteration: 25 | Loss: 0.2480195164680481 | Training accuracy: 92% | Test accuracy: 84%
+Iteration: 26 | Loss: 0.24692508578300476 | Training accuracy: 92% | Test accuracy: 85%
+==> Saving model at epoch: 25
+Iteration: 27 | Loss: 0.2373090386390686 | Training accuracy: 93% | Test accuracy: 85%
+Iteration: 28 | Loss: 0.22020629048347473 | Training accuracy: 92% | Test accuracy: 85%
+Iteration: 29 | Loss: 0.21711212396621704 | Training accuracy: 94% | Test accuracy: 86%
+Iteration: 30 | Loss: 0.20784056186676025 | Training accuracy: 94% | Test accuracy: 86%
+Iteration: 31 | Loss: 0.1955522745847702 | Training accuracy: 94% | Test accuracy: 85%
+==> Saving model at epoch: 30
+Iteration: 32 | Loss: 0.18846242129802704 | Training accuracy: 94% | Test accuracy: 86%
+Iteration: 33 | Loss: 0.185333713889122 | Training accuracy: 94% | Test accuracy: 86%
+Iteration: 34 | Loss: 0.1789952516555786 | Training accuracy: 94% | Test accuracy: 86%
+Iteration: 35 | Loss: 0.17086942493915558 | Training accuracy: 95% | Test accuracy: 86%
+Iteration: 36 | Loss: 0.15911883115768433 | Training accuracy: 95% | Test accuracy: 86%
+==> Saving model at epoch: 35
+Iteration: 37 | Loss: 0.15631979703903198 | Training accuracy: 95% | Test accuracy: 86%
+Iteration: 38 | Loss: 0.1513087898492813 | Training accuracy: 95% | Test accuracy: 86%
+Iteration: 39 | Loss: 0.14890001714229584 | Training accuracy: 94% | Test accuracy: 85%
+Iteration: 40 | Loss: 0.1429152637720108 | Training accuracy: 96% | Test accuracy: 87%
+Iteration: 41 | Loss: 0.09624847024679184 | Training accuracy: 97% | Test accuracy: 87%
+==> Saving model at epoch: 40
+Iteration: 42 | Loss: 0.08043625205755234 | Training accuracy: 97% | Test accuracy: 88%
+Iteration: 43 | Loss: 0.075667604804039 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 44 | Loss: 0.07365554571151733 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 45 | Loss: 0.06967940926551819 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 46 | Loss: 0.06643623858690262 | Training accuracy: 98% | Test accuracy: 88%
+==> Saving model at epoch: 45
+Iteration: 47 | Loss: 0.06572382152080536 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 48 | Loss: 0.0642557144165039 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 49 | Loss: 0.062637560069561 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 50 | Loss: 0.06114360690116882 | Training accuracy: 98% | Test accuracy: 87%
+Iteration: 51 | Loss: 0.057381052523851395 | Training accuracy: 98% | Test accuracy: 88%
+==> Saving model at epoch: 50
+Iteration: 52 | Loss: 0.055825259536504745 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 53 | Loss: 0.05619307607412338 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 54 | Loss: 0.05656351521611214 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 55 | Loss: 0.05369369685649872 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 56 | Loss: 0.052905645221471786 | Training accuracy: 98% | Test accuracy: 88%
+==> Saving model at epoch: 55
+Iteration: 57 | Loss: 0.05218908190727234 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 58 | Loss: 0.04968854784965515 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 59 | Loss: 0.0500386506319046 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 60 | Loss: 0.05005393177270889 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 61 | Loss: 0.04590848088264465 | Training accuracy: 98% | Test accuracy: 88%
+==> Saving model at epoch: 60
+Iteration: 62 | Loss: 0.047404468059539795 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 63 | Loss: 0.04545897990465164 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 64 | Loss: 0.046061962842941284 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 65 | Loss: 0.04669296368956566 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 66 | Loss: 0.043453048914670944 | Training accuracy: 98% | Test accuracy: 88%
+==> Saving model at epoch: 65
+Iteration: 67 | Loss: 0.04462451860308647 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 68 | Loss: 0.042873527854681015 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 69 | Loss: 0.04102036729454994 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 70 | Loss: 0.04140368103981018 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 71 | Loss: 0.04095854237675667 | Training accuracy: 98% | Test accuracy: 88%
+==> Saving model at epoch: 70
+Iteration: 72 | Loss: 0.0417998805642128 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 73 | Loss: 0.0405348464846611 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 74 | Loss: 0.03911839798092842 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 75 | Loss: 0.03967510163784027 | Training accuracy: 98% | Test accuracy: 88%
+Iteration: 76 | Loss: 0.03961993753910065 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 75
+Iteration: 77 | Loss: 0.03819910064339638 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 78 | Loss: 0.036126017570495605 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 79 | Loss: 0.03666691482067108 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 80 | Loss: 0.036297764629125595 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 81 | Loss: 0.034135852009058 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 80
+Iteration: 82 | Loss: 0.03248922899365425 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 83 | Loss: 0.03351584076881409 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 84 | Loss: 0.03280358389019966 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 85 | Loss: 0.033107269555330276 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 86 | Loss: 0.033773329108953476 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 85
+Iteration: 87 | Loss: 0.03277675062417984 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 88 | Loss: 0.030513467267155647 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 89 | Loss: 0.03280997276306152 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 90 | Loss: 0.03151090815663338 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 91 | Loss: 0.0320439338684082 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 90
+Iteration: 92 | Loss: 0.03139688819646835 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 93 | Loss: 0.03191876411437988 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 94 | Loss: 0.031107861548662186 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 95 | Loss: 0.03143233060836792 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 96 | Loss: 0.031220292672514915 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 95
+Iteration: 97 | Loss: 0.03169814869761467 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 98 | Loss: 0.03069954738020897 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 99 | Loss: 0.030817145481705666 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 100 | Loss: 0.03031010553240776 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 101 | Loss: 0.03137832134962082 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 100
+Iteration: 102 | Loss: 0.029715515673160553 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 103 | Loss: 0.03119947761297226 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 104 | Loss: 0.030282264575362206 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 105 | Loss: 0.031365226954221725 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 106 | Loss: 0.03048238717019558 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 105
+Iteration: 107 | Loss: 0.03084409050643444 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 108 | Loss: 0.02960382215678692 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 109 | Loss: 0.030069522559642792 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 110 | Loss: 0.029931945726275444 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 111 | Loss: 0.030176488682627678 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 110
+Iteration: 112 | Loss: 0.031016750261187553 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 113 | Loss: 0.02995910309255123 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 114 | Loss: 0.02906465344130993 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 115 | Loss: 0.030395884066820145 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 116 | Loss: 0.02933293953537941 | Training accuracy: 99% | Test accuracy: 88%
+==> Saving model at epoch: 115
+Iteration: 117 | Loss: 0.029903272166848183 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 118 | Loss: 0.02967444434762001 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 119 | Loss: 0.030497124418616295 | Training accuracy: 99% | Test accuracy: 88%
+Iteration: 120 | Loss: 0.030752010643482208 | Training accuracy: 99% | Test accuracy: 88%
