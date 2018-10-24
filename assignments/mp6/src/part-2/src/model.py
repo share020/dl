@@ -7,6 +7,7 @@ Part-1: Training a GAN on CIFAR10
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class Discriminator(nn.Module):
@@ -67,14 +68,8 @@ class Discriminator(nn.Module):
         self.fc1 = nn.Linear(196, 1)
         self.fc10 = nn.Linear(196, 10)
 
-    def forward(self, x, extract_features=0):
-        """Forward pass of discriminator."""
-        if extract_features == 8:
-            h = F.max_pool2d(h,4,4)
-            h = h.view(-1, x.size(1))
-            return h
 
-    def forward_pass(self, x):
+    def forward(self, x):
         """
         Forward pass of discriminator.
 
@@ -94,8 +89,7 @@ class Discriminator(nn.Module):
         # auxiliary classifier
         out2 = self.fc10(out)
 
-        return out1, out2
-
+        return out, out1, out2
 
 
 class Generator(nn.Module):

@@ -48,7 +48,7 @@ def syn_features(testloader, modelroot, batch_size, cuda):
         # first column has actual prob
         prediction = output.data.max(1)[1]
         accuracy = (float(prediction.eq(Y.data).sum()) / float(batch_size)) * 100.0
-        print("Ieration: {} | Accuracy: {} | Loss: {}".format(i, accuracy, -loss))
+        print("Ieration: {} | Accuracy: {} | Loss: {}".format(i, accuracy, -loss.data[0]))
 
         X = X - lr * gradients.data - weight_decay * X.data * torch.abs(X.data)
         X[X > 1.0] = 1.0

@@ -51,8 +51,6 @@ def parse_args():
     return args
 
 
-
-
 def main():
     """Main pipeline for GAN Visualization."""
     args = parse_args()
@@ -71,6 +69,8 @@ def main():
         # Synthetic Features Maximizing Features at Various Layers
         syn_features(testloader, args.modelroot, args.batch_size_test, args.cuda)
         print("==> Synthetic Features Maximizing Features at Various Layers done ...")
+    else:
+        print("==> No such option ...")
 
 
 if __name__ == '__main__':
