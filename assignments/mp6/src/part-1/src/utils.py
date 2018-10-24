@@ -16,12 +16,13 @@ def cifar10_loader(root, batch_size_train, batch_size_test):
     """CIFAR10 dataset Loader.
 
     Args:
-        root
-        batch_size_train
-        batch_size_test
+        root: path to save dataset
+        batch_size_train: training set input batch size
+        batch_size_test: test set input batch size
 
     Returns:
-
+        trainloader (torch.utils.data.DataLoader): DataLoader for training set
+        testloader (torch.utils.data.DataLoader): DataLoader for test set
     """
     transform_train = transforms.Compose([
         transforms.RandomResizedCrop(32, scale=(0.7, 1.0), ratio=(1.0, 1.0)),
@@ -85,7 +86,7 @@ def calc_gradient_penalty(netD, real_data, fake_data, batch_size, cuda):
     Gradient penalty.
 
     Args:
-        netD: Discriminator
+        netD: Discriminator model
         real_data: real images
         fake_data: generated images
         batch_size: batch size
@@ -115,25 +116,3 @@ def calc_gradient_penalty(netD, real_data, fake_data, batch_size, cuda):
     gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * LAMBDA
 
     return gradient_penalty
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#

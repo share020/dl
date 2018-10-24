@@ -142,13 +142,6 @@ class Generator(nn.Module):
             nn.Tanh()
         )
 
-        # self.conv1_block = self._tconv_bn_relu_block(in_channels=196, out_channels=196, kernel_size=4, stride=2, padding=0)
-        # self.conv2_block = self._tconv_bn_relu_block(in_channels=196, out_channels=196, kernel_size=3, stride=1, padding=1)
-        # self.conv3_block = self._tconv_bn_relu_block(in_channels=196, out_channels=196, kernel_size=3, stride=1, padding=1)
-        # self.conv4_block = self._tconv_bn_relu_block(in_channels=196, out_channels=196, kernel_size=3, stride=1, padding=1)
-        # self.conv5_block = self._tconv_bn_relu_block(in_channels=196, out_channels=196, kernel_size=4, stride=2, padding=0)
-        # self.conv6_block = self._tconv_bn_relu_block(in_channels=196, out_channels=196, kernel_size=3, stride=1, padding=1)
-
 
     def forward(self, x):
         """Forward pass of Genrator."""

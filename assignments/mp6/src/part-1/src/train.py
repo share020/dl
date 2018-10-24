@@ -95,19 +95,19 @@ class Trainer_GD(object):
     def __init__(self, aD, aG, criterion, optimizer_d, optimizer_g, trainloader, testloader, batch_size, gen_train, cuda, n_z, start_epoch, epochs):
         super(Trainer_GD, self).__init__()
 
-        self.aD = aD
-        self.aG = aG
-        self.criterion = criterion
+        self.aD          = aD
+        self.aG          = aG
+        self.n_z         = n_z
+        self.cuda        = cuda
+        self.epochs      = epochs
+        self.gen_train   = gen_train
+        self.criterion   = criterion
+        self.testloader  = testloader
+        self.trainloader = trainloader
+        self.start_epoch = start_epoch
+        self.batch_size  = batch_size
         self.optimizer_d = optimizer_d
         self.optimizer_g = optimizer_g
-        self.trainloader = trainloader
-        self.testloader = testloader
-        self.batch_size = batch_size
-        self.gen_train = gen_train
-        self.cuda = cuda
-        self.n_z = n_z
-        self.start_epoch = start_epoch
-        self.epochs = epochs
 
 
     def train(self):
@@ -254,12 +254,6 @@ class Trainer_GD(object):
                 loss5.append(disc_fake_class.item())
                 acc1.append(accuracy)
                 if batch_idx % 50 == 0:
-                    # print(epoch, batch_idx, "%.2f" % np.mean(loss1),
-                    #                         "%.2f" % np.mean(loss2),
-                    #                         "%.2f" % np.mean(loss3),
-                    #                         "%.2f" % np.mean(loss4),
-                    #                         "%.2f" % np.mean(loss5),
-                    #                         "%.2f" % np.mean(acc1))
                     print("Trainig epoch: {} | Accuracy: {} | Batch: {} | Gradient penalty: {} | Discriminator fake source: {} | Discriminator real source: {} | Discriminator real class: {} | Discriminator fake class: {}".format(epoch, np.mean(acc1), batch_idx, np.mean(loss1), np.mean(loss2), np.mean(loss3), np.mean(loss4), np.mean(loss5)))
 
             # Test the model
