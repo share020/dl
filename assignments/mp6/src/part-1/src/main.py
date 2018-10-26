@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+
 Part-1: Training a GAN on CIFAR10
 
 @author: Zhenye Na
@@ -105,7 +106,7 @@ def main():
 
         if args.cuda:
             aD, aG = nn.DataParallel(aD).cuda(), nn.DataParallel(aG).cuda()
-            cudnn.benchmark=True
+            cudnn.benchmark = True
 
         optimizer_g = torch.optim.Adam(aG.parameters(),
                                        lr=args.lr,
