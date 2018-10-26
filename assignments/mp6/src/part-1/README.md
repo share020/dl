@@ -1,7 +1,10 @@
 # Part 1 - Training a GAN on CIFAR10
 
+> ![](./output/gan.gif)
+
 ## Defining the Generator and Discriminator
 
+### Discriminator architecture
 
 |  name 	|  type  	| input_channels 	| output_channels 	| ksize 	| padding 	| stride 	| input 	| output 	|
 |:-----:	|:------:	|:--------------:	|:---------------:	|:-----:	|:-------:	|:------:	|:-----:	|:------:	|
@@ -18,12 +21,14 @@
 |  fc10 	| linear 	|       196      	|        10       	|       	|         	|        	|       	|        	|
 
 
-Use the table above to create a PyTorch model for the discriminator. This is similar to classification networks created in previous homeworks. Use Layer Normalization after every convolution operation followed by a Leaky ReLU. There are built in PyTorch implementations for both of these. Unlike batch normalization, layer normalization needs the width and height of its input as well as the number of features. Notice there are two fully connected layers. Both have the same input (the output from the pool operation). fc1 is considered the output of the *critic* which is a score determining of the input is real or a fake image coming from the generator. fc10 is considered the auxiliary classifier which corresponds to the class label. Return both of these outputs in the forward call.
+I used Layer Normalization after every convolution operation followed by a Leaky ReLU. There are two fully connected layers. Both have the same input (the output from the pool operation). `fc1` is considered the output of the *critic* which is a score determining of the input is real or a fake image coming from the generator. `fc10` is considered the auxiliary classifier which corresponds to the class label. Return both of these outputs in the forward call.
 
+
+### Generator architecture
 
 |  name 	|       type      	| input_channels 	| output_channels 	| ksize 	| padding 	| stride 	| input 	| output 	|
 |:-----:	|:---------------:	|:--------------:	|:---------------:	|:-----:	|:-------:	|:------:	|:-----:	|:------:	|
-|  fc1  	|      linear     	|   100 (noise)  	|     196*4*4     	|       	|         	|        	|       	|        	|
+|  fc1  	|      linear     	|   100 (noise)  	|     196x4x4     	|       	|         	|        	|       	|        	|
 | conv1 	| convtranspose2d 	|       196      	|       196       	|   4   	|    1    	|    2   	|  4x4  	|   8x8  	|
 | conv2 	|      conv2d     	|       196      	|       196       	|   3   	|    1    	|    1   	|  8x8  	|   8x8  	|
 | conv3 	|      conv2d     	|       196      	|       196       	|   3   	|    1    	|    1   	|  8x8  	|   8x8  	|
@@ -34,8 +39,7 @@ Use the table above to create a PyTorch model for the discriminator. This is sim
 | conv8 	|      conv2d     	|       196      	|        3        	|   3   	|    1    	|    1   	| 32x32 	|  32x32 	|
 
 
-Use the table above to create a PyTorch model for the generator. Unlike the discriminator, ReLU activation functions and batch normalization can be used. Use both of these after every layer except `conv8`. This last layer is outputting a $32 \times 32$ image with $3$ channels representing the RGB channels. This is fake image generating from the $128$ dimensional input noise. During training, the real images will be scaled between $-1$ and $1$. Therefore, send the output of `conv8` through a hyperbolic tangent function (`tanh`). Also, take notice the transposed convolution layers. There is a built in PyTorch module for this.
-
+Unlike the discriminator, ReLU activation functions and batch normalization can be used. Use both of these after every layer except `conv8`. This last layer is outputting a $32 \times 32$ image with $3$ channels representing the RGB channels. This is fake image generating from the $128$ dimensional input noise. During training, the real images will be scaled between $-1$ and $1$. Therefore, send the output of `conv8` through a hyperbolic tangent function (`tanh`). Also, take notice the transposed convolution layers. There is a built in PyTorch module for this.
 
 
 ## Train the Discriminator without the Generator
@@ -85,12 +89,12 @@ Create a train and test loop as done in homework 3. I trained the model for $100
 
 
 ```python
-if(epoch == 50):
+if epoch == 50:
     for param_group in optimizer.param_groups:
-        param_group['lr'] = learning_rate/10.0
-if(epoch == 75):
+        param_group['lr'] = learning_rate / 10.0
+if epoch == 75:
     for param_group in optimizer.param_groups:
-        param_group['lr'] = learning_rate/100.0
+        param_group['lr'] = learning_rate / 100.0
 ```
 
 
@@ -158,8 +162,11 @@ The above function is the gradient penalty described in the `Wasserstein GAN` se
 
 
 ```python
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import os
 
 def plot(samples):
     fig = plt.figure(figsize=(10, 10))
@@ -434,4 +441,3 @@ Final generated images
 
 
 ![](../fig/part-1/final.png)
-
