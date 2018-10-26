@@ -1,0 +1,21 @@
+----------------------------------------
+Begin Torque Prologue on nid25434
+at Tue Oct 23 19:14:19 CDT 2018
+Job Id:			9136604.bw
+Username:		traXXX
+Group:			TRAIN_bauh
+Job name:		gan-visualization
+Requested resources:	nodes=1:ppn=16:xk,walltime=06:00:00,neednodes=1:ppn=16:xk
+Queue:			normal
+Account:		bauh
+End Torque Prologue:  0.199 elapsed
+----------------------------------------
+
+
+
+
+Files already downloaded and verified
+Original Image | Accuracy: 86.71875
+Jitter Input Image | Accuracy: 14.0625
+==> Perturb Real Images done ...
+Application 70348902 resources: utime ~26s, stime ~23s, Rss ~1526968, inblocks ~847075, outblocks ~2986
