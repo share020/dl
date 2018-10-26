@@ -24,9 +24,9 @@ def syn_features(testloader, modelroot, batch_size, cuda):
     """Synthetic Features Maximizing Features at Various Layers."""
     testloader = enumerate(testloader)
     # if train D without G
-    # model_pth = os.path.join(modelroot, "cifar10.model")
+    model_pth = os.path.join(modelroot, "cifar10.model")
     # else if train D with G
-    model_pth = os.path.join(modelroot, "tempD.model")
+    # model_pth = os.path.join(modelroot, "tempD.model")
     model = torch.load(model_pth, map_location=lambda storage, loc: storage)
 
     # conv6
@@ -39,10 +39,10 @@ def syn_features(testloader, modelroot, batch_size, cuda):
 
     X = X_batch.mean(dim=0)
     X = X.repeat(batch_size,1,1,1)
-    X = Variable(X, requires_grad=True)#.cuda()
+    X = Variable(X, requires_grad=True).cuda()
 
     Y = torch.arange(batch_size).type(torch.int64)
-    Y = Variable(Y)# .cuda()
+    Y = Variable(Y).cuda()
 
     lr = 0.1
     weight_decay = 0.001
@@ -54,10 +54,10 @@ def syn_features(testloader, modelroot, batch_size, cuda):
 
         loss = -output[torch.arange(batch_size).type(torch.int64), torch.arange(batch_size).type(torch.int64)]
         gradients = torch.autograd.grad(outputs=loss, inputs=X,
-                                        grad_outputs=torch.ones(loss.size()),
+                                        grad_outputs=torch.ones(loss.size()).cuda(),
                                         create_graph=True, retain_graph=False, only_inputs=True)[0]
 
-        # first column has actual prob  .cuda()
+        # first column has actual prob
         prediction = output.data.max(1)[1]
         accuracy = (float(prediction.eq(Y.data).sum()) / float(batch_size)) * 100.0
         print("Ieration: {} | Accuracy: {} | Loss: {}".format(i, accuracy, -loss.data[0]))
