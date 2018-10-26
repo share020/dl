@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+
 Part 2: Visualization
 
 @author: Zhenye Na
@@ -13,33 +14,20 @@ from perturb_real_img import perturb_real_images
 from syn_img import syn_img
 from syn_features import syn_features
 
+
 def parse_args():
+    """Parse arguments."""
     parser = argparse.ArgumentParser()
 
     # trainig command
-    parser.add_argument('--option', type=str, default="option1", help='Perturb Real Images')
+    parser.add_argument('--option', type=str, default="option3", help='Perturb Real Images')
 
     # directory
     parser.add_argument('--dataroot', type=str, default="../../../data", help='path to dataset')
-    parser.add_argument('--modelroot', type=str, default="../../model", help='path to model of discriminator without generator')
-    parser.add_argument('--ckptroot', type=str, default="../model/", help='path to checkpoint')
+    parser.add_argument('--modelroot', type=str, default="../../model", help='path to saved model')
 
     # hyperparameters settings
-    parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
-    parser.add_argument('--beta1', type=float, default=0., help='beta1')
-    parser.add_argument('--beta2', type=float, default=0.9, help='beta2')
-    parser.add_argument('--weight_decay', type=float, default=1e-5, help='weight decay (L2 penalty)')
-
-    parser.add_argument('--epochs1', type=int, default=120, help='number of epochs to train without generator')
-    parser.add_argument('--epochs2', type=int, default=200, help='number of epochs to train with generator')
-
-    parser.add_argument('--start_epoch', type=int, default=0, help='pre-trained epochs')
-    parser.add_argument('--batch_size_train', type=int, default=128, help='training set input batch size')
     parser.add_argument('--batch_size_test', type=int, default=128, help='test set input batch size')
-
-    # parameters for training discriminator and generator gen_train
-    parser.add_argument('--n_z', type=int, default=100, help='number of hidden units')
-    parser.add_argument('--gen_train', type=int, default=5, help='number of epochs that trains generator while training discriminator')
 
     # training settings
     parser.add_argument('--resume', type=bool, default=False, help='whether re-training from ckpt')

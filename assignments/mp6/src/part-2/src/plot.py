@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+
 Part 2: Visualization
 
 @author: Zhenye Na

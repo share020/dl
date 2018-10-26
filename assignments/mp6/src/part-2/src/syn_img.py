@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+
 Part 2: Visualization
 
 @author: Zhenye Na
@@ -21,7 +22,8 @@ from torch.autograd import Variable
 def syn_img(testloader, modelroot, cuda):
     """Synthetic Images Maximizing Classification Output."""
     testloader = enumerate(testloader)
-    model_pth = os.path.join(modelroot, "cifar10.model")
+    # model_pth = os.path.join(modelroot, "cifar10.model")
+    model_pth = os.path.join(modelroot, "tempD.model")
     model = torch.load(model_pth)
     if cuda:
         model.cuda()
@@ -38,7 +40,7 @@ def syn_img(testloader, modelroot, cuda):
     lr = 0.1
     weight_decay = 0.001
     for i in range(200):
-        _, output = model(X)
+        _, _, output = model(X)
 
         loss = -output[torch.arange(10).type(torch.int64),torch.arange(10).type(torch.int64)]
         gradients = torch.autograd.grad(outputs=loss, inputs=X,
@@ -54,7 +56,7 @@ def syn_img(testloader, modelroot, cuda):
         X[X > 1.0] = 1.0
         X[X < -1.0] = -1.0
 
-    ## save new images
+    # save new images
     samples = X.data.cpu().numpy()
     samples += 1.0
     samples /= 2.0

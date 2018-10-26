@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+
 Part 2: Visualization
 
 @author: Zhenye Na
@@ -18,6 +19,7 @@ import os
 from torch.autograd import Variable
 from plot import plot
 
+
 def perturb_real_images(testloader, modelroot, batch_size, cuda):
     """Perturb Real Images."""
     testloader = enumerate(testloader)
@@ -34,7 +36,7 @@ def perturb_real_images(testloader, modelroot, batch_size, cuda):
     Y_batch_alternate = Variable(Y_batch_alternate).cuda()
     Y_batch = Variable(Y_batch).cuda()
 
-    # ------------------------------------------------------------------------ #
+    # ----------------------------------------------------------------------- #
     # save real images
     samples = X_batch.data.cpu().numpy()
     samples += 1.0
@@ -50,10 +52,10 @@ def perturb_real_images(testloader, modelroot, batch_size, cuda):
     _, output = model(X_batch)
     # first column has actual prob.
     prediction = output.data.max(1)[1]
-    accuracy = (float(prediction.eq(Y_batch.data).sum()) /float(batch_size)) * 100.0
+    accuracy = (float(prediction.eq(Y_batch.data).sum()) / float(batch_size)) * 100.0
     print("Original Image | Accuracy: {}%".format(accuracy))
 
-    # ------------------------------------------------------------------------ #
+    # ----------------------------------------------------------------------- #
     # slightly jitter all input images
     criterion = nn.CrossEntropyLoss(reduce=False)
     loss = criterion(output, Y_batch_alternate)
@@ -70,7 +72,7 @@ def perturb_real_images(testloader, modelroot, batch_size, cuda):
     plt.savefig('../visualization/gradient_image.png', bbox_inches='tight')
     plt.close(fig)
 
-    # ------------------------------------------------------------------------ #
+    # ----------------------------------------------------------------------- #
     # jitter input image
     gradients[gradients > 0.0] = 1.0
     gradients[gradients < 0.0] = -1.0
@@ -80,13 +82,14 @@ def perturb_real_images(testloader, modelroot, batch_size, cuda):
     X_batch_modified[X_batch_modified > 1.0] = 1.0
     X_batch_modified[X_batch_modified < -1.0] = -1.0
 
-    ## evaluate new fake images
+    # evaluate new fake images
     _, output = model(X_batch_modified)
-    prediction = output.data.max(1)[1] # first column has actual prob.
-    accuracy = (float(prediction.eq(Y_batch.data).sum()) /float(batch_size)) * 100.0
+    # first column has actual prob
+    prediction = output.data.max(1)[1]
+    accuracy = (float(prediction.eq(Y_batch.data).sum()) / float(batch_size)) * 100.0
     print("Jitter Input Image | Accuracy: {}%".format(accuracy))
 
-    ## save fake images
+    # save fake images
     samples = X_batch_modified.data.cpu().numpy()
     samples += 1.0
     samples /= 2.0

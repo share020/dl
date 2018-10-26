@@ -1,5 +1,6 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
+
 Part-1: Training a GAN on CIFAR10
 
 @author: Zhenye Na
@@ -68,7 +69,6 @@ class Discriminator(nn.Module):
         self.fc1 = nn.Linear(196, 1)
         self.fc10 = nn.Linear(196, 10)
 
-
     def forward(self, x):
         """
         Forward pass of discriminator.
@@ -90,6 +90,26 @@ class Discriminator(nn.Module):
         out2 = self.fc10(out)
 
         return out, out1, out2
+
+
+class DiscriminatorBottom(nn.Module):
+    """Discriminator Bottom layers."""
+
+    def __init__(self, model):
+        """Discriminator Bottom layers Builder."""
+        super(DiscriminatorBottom, self).__init__()
+        self.features = nn.Sequential(*(list(model.children())[0:10]))
+
+        # print(list(model.children())[0].conv.modules()[:10])
+        print("=========")
+        print(self.features.modules())
+
+    def forward(self, x):
+        """Forward pass."""
+        h = F.max_pool2d(self.features(x), 8, 8)
+        print(h.size())
+        h = h.view(h.size(0), -1)
+        return h
 
 
 class Generator(nn.Module):
@@ -141,7 +161,6 @@ class Generator(nn.Module):
             nn.Conv2d(in_channels=196, out_channels=3, kernel_size=3, stride=1, padding=1),
             nn.Tanh()
         )
-
 
     def forward(self, x):
         """Forward pass of Genrator."""
