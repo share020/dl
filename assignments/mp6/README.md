@@ -1,5 +1,7 @@
 # HW6: Understanding CNNs and Generative Adversarial Networks
 
+> Credited by Logan Courtney, Raj Kataria
+>
 > Mathjax/Latex is heavily used in this README file. Please download [MathJax Plugin for Github](https://chrome.google.com/webstore/detail/mathjax-plugin-for-github/ioemnmodlmafdkllaclgeombjnmnbima) in order to render Mathjax/Latex in Github correctly.
 
 ## Table of contents
@@ -17,7 +19,7 @@
     - [Wasserstein GANs](#wasserstein-gans)
     - [Layer Normalization](#layer-normalization)
     - [Leaky ReLU](#leaky-relu)
-
+- [References](#references)
 
 
 ## Overview
@@ -98,7 +100,7 @@ The features of each layer as the input passes deeper into the network start off
 
 ### Receptive Field
 
-The receptive field is the region of the input image that went into the calculation of a particular feature. The output of a convolution layer applied to an image is technically another image. Each pixel in this new image can only see a portion of the previous image. It is easy to see how after applying a kernel of size 3 would result in a new image where each pixel has a receptive field of 3x3. A subsequent convolution would result in another image with a receptive field of 5x5 compared to the original input.
+The receptive field is the region of the input image that went into the calculation of a particular feature. The output of a convolution layer applied to an image is technically another image. Each pixel in this new image can only see a portion of the previous image. It is easy to see how after applying a kernel of size $3$ would result in a new image where each pixel has a receptive field of $3 \times 3$. A subsequent convolution would result in another image with a receptive field of $5 \times 5$compared to the original input.
 
 
 <p align="center">
@@ -106,11 +108,11 @@ The receptive field is the region of the input image that went into the calculat
 </p>
 
 
-The image above shows how the receptive field grows when an input image of size 5x5 gets passed through a convolution layer with a kernel of 3, padding of 1, and a stride of 2. The left column shows the feature maps after each convolution. The right column adds blank spots in to show the stride with the color shaded regions signifying the size of the receptive field.
+The image above shows how the receptive field grows when an input image of size $5 \times 5$ gets passed through a convolution layer with a kernel of `3`, padding of `1`, and a stride of `2`. The left column shows the feature maps after each convolution. The right column adds blank spots in to show the stride with the color shaded regions signifying the size of the receptive field.
 
-Convolutions, strided convolutions, and pooling layers affect the receptive field in different ways. Near the output of the network, the receptive field should be relative to the �size� of the objects of interest within the image.
+Convolutions, strided convolutions, and pooling layers affect the receptive field in different ways. Near the output of the network, the receptive field should be relative to the `size` of the objects of interest within the image.
 
-This link here provides a more in depth explanation and is where the above picture is pulled from. It also shows explicit equations for how to calculate the receptive field. This link shows how the receptive field grows as the network gets deeper. The particular network shown in the link is the one you will create for this homework. Note the receptive field is 45x45 at the output which is larger than the CIFAR10 images (32x32). This means the features should be capable of capturing full objects.
+This link here provides a more in depth explanation and is where the above picture is pulled from. It also shows explicit equations for how to calculate the receptive field. This link shows how the receptive field grows as the network gets deeper. The particular network shown in the link is the one you will create for this homework. Note the receptive field is $45 \times 45$ at the output which is larger than the CIFAR10 images ($32 \times 32$). This means the features should be capable of capturing full objects.
 
 ### Feature Visualization
 
@@ -214,4 +216,3 @@ It is typically easier to train GANs when a leaky ReLU is used in place of all R
 <p align="center">
     <img src="./fig/leaky_relu.jpeg" width="80%">
 </p>
-
