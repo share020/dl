@@ -13,6 +13,7 @@ import torchvision.transforms as transforms
 
 from torch.autograd import Variable
 
+
 def cifar10_loader(root, batch_size_train, batch_size_test):
     """CIFAR10 dataset Loader.
 
@@ -59,6 +60,7 @@ def cifar10_loader(root, batch_size_train, batch_size_test):
 def calculate_accuracy(model, loader, cuda):
     """
     Calculate accuracy.
+
     Args:
         loader (torch.utils.data.DataLoader): training / test set loader
         cuda (bool): whether to initialize cudatoolkit
@@ -95,7 +97,8 @@ def calc_gradient_penalty(netD, real_data, fake_data, batch_size, cuda):
     DIM = 32
     LAMBDA = 10
     alpha = torch.rand(batch_size, 1)
-    alpha = alpha.expand(batch_size, int(real_data.nelement() / batch_size)).contiguous()
+    alpha = alpha.expand(batch_size, int(
+        real_data.nelement() / batch_size)).contiguous()
     alpha = alpha.view(batch_size, 3, DIM, DIM)
     if cuda:
         alpha = alpha.cuda()
@@ -110,7 +113,8 @@ def calc_gradient_penalty(netD, real_data, fake_data, batch_size, cuda):
     disc_interpolates, _ = netD(interpolates)
 
     gradients = torch.autograd.grad(outputs=disc_interpolates, inputs=interpolates,
-                                    grad_outputs=torch.ones(disc_interpolates.size()).cuda(),
+                                    grad_outputs=torch.ones(
+                                        disc_interpolates.size()).cuda(),
                                     create_graph=True, retain_graph=True, only_inputs=True)[0]
 
     gradients = gradients.view(gradients.size(0), -1)

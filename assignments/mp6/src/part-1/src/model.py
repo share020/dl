@@ -24,42 +24,42 @@ class Discriminator(nn.Module):
         self.conv = nn.Sequential(
             # conv1
             nn.Conv2d(in_channels=3, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[32,32]),
+            nn.LayerNorm(normalized_shape=[32, 32]),
             nn.LeakyReLU(),
 
             # conv2
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2),
-            nn.LayerNorm(normalized_shape=[16,16]),
+            nn.LayerNorm(normalized_shape=[16, 16]),
             nn.LeakyReLU(),
 
             # conv3
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[16,16]),
+            nn.LayerNorm(normalized_shape=[16, 16]),
             nn.LeakyReLU(),
 
             # conv4
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2),
-            nn.LayerNorm(normalized_shape=[8,8]),
+            nn.LayerNorm(normalized_shape=[8, 8]),
             nn.LeakyReLU(),
 
             # conv5
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[8,8]),
+            nn.LayerNorm(normalized_shape=[8, 8]),
             nn.LeakyReLU(),
 
             # conv6
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[8,8]),
+            nn.LayerNorm(normalized_shape=[8, 8]),
             nn.LeakyReLU(),
 
             # conv7
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[8,8]),
+            nn.LayerNorm(normalized_shape=[8, 8]),
             nn.LeakyReLU(),
 
             # conv8
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2),
-            nn.LayerNorm(normalized_shape=[4,4]),
+            nn.LayerNorm(normalized_shape=[4, 4]),
             nn.LeakyReLU(),
 
             nn.MaxPool2d(kernel_size=4, stride=4, padding=0)
