@@ -1,11 +1,11 @@
 """
 HW6: Understanding CNNs and Generative Adversarial Networks.
-Part-1: Training a GAN on CIFAR10
+
+Part 2: Visualization
 
 @author: Zhenye Na
 """
 
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -24,42 +24,42 @@ class Discriminator(nn.Module):
         self.conv = nn.Sequential(
             # conv1
             nn.Conv2d(in_channels=3, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[32,32]),
+            nn.LayerNorm(normalized_shape=[32, 32]),
             nn.LeakyReLU(),
 
             # conv2
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2),
-            nn.LayerNorm(normalized_shape=[16,16]),
+            nn.LayerNorm(normalized_shape=[16, 16]),
             nn.LeakyReLU(),
 
             # conv3
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[16,16]),
+            nn.LayerNorm(normalized_shape=[16, 16]),
             nn.LeakyReLU(),
 
             # conv4
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2),
-            nn.LayerNorm(normalized_shape=[8,8]),
+            nn.LayerNorm(normalized_shape=[8, 8]),
             nn.LeakyReLU(),
 
             # conv5
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[8,8]),
+            nn.LayerNorm(normalized_shape=[8, 8]),
             nn.LeakyReLU(),
 
             # conv6
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[8,8]),
+            nn.LayerNorm(normalized_shape=[8, 8]),
             nn.LeakyReLU(),
 
             # conv7
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=1),
-            nn.LayerNorm(normalized_shape=[8,8]),
+            nn.LayerNorm(normalized_shape=[8, 8]),
             nn.LeakyReLU(),
 
             # conv8
             nn.Conv2d(in_channels=196, out_channels=196, kernel_size=3, padding=1, stride=2),
-            nn.LayerNorm(normalized_shape=[4,4]),
+            nn.LayerNorm(normalized_shape=[4, 4]),
             nn.LeakyReLU(),
 
             nn.MaxPool2d(kernel_size=4, stride=4, padding=0)
@@ -67,7 +67,6 @@ class Discriminator(nn.Module):
 
         self.fc1 = nn.Linear(196, 1)
         self.fc10 = nn.Linear(196, 10)
-
 
     def forward(self, x):
         """
@@ -91,6 +90,7 @@ class Discriminator(nn.Module):
 
         return out1, out2
 
+
 class DiscriminatorBottom(nn.Module):
     """Discriminator Bottom layers."""
 
@@ -99,10 +99,6 @@ class DiscriminatorBottom(nn.Module):
         super(DiscriminatorBottom, self).__init__()
         # 4th conv blocks
         self.features = nn.Sequential(*(list(model.modules())[2][:10]))
-        # print()
-        # # print(list(model.children())[0].conv.modules()[:10])
-        # print("=========")
-        print(self.features)
 
     def forward(self, x):
         """Forward pass."""
@@ -161,7 +157,6 @@ class Generator(nn.Module):
             nn.Conv2d(in_channels=196, out_channels=3, kernel_size=3, stride=1, padding=1),
             nn.Tanh()
         )
-
 
     def forward(self, x):
         """Forward pass of Genrator."""

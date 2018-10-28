@@ -20,7 +20,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     # trainig command
-    parser.add_argument('--option', type=str, default="option3", help='Perturb Real Images')
+    parser.add_argument('--option', type=str, default="option3", help='Perturb Real Images / Synthetic Images Maximizing Classification Output / Synthetic Features Maximizing Features at Various Layers')
 
     # directory
     parser.add_argument('--dataroot', type=str, default="../../../data", help='path to dataset')

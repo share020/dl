@@ -41,7 +41,7 @@ def perturb_real_images(testloader, modelroot, batch_size, cuda):
     samples = X_batch.data.cpu().numpy()
     samples += 1.0
     samples /= 2.0
-    samples = samples.transpose(0,2,3,1)
+    samples = samples.transpose(0, 2, 3, 1)
 
     fig = plot(samples[0:100])
     if not os.path.isdir('../visualization'):
@@ -52,7 +52,8 @@ def perturb_real_images(testloader, modelroot, batch_size, cuda):
     _, output = model(X_batch)
     # first column has actual prob.
     prediction = output.data.max(1)[1]
-    accuracy = (float(prediction.eq(Y_batch.data).sum()) / float(batch_size)) * 100.0
+    accuracy = (float(prediction.eq(Y_batch.data).sum()) /
+                float(batch_size)) * 100.0
     print("Original Image | Accuracy: {}%".format(accuracy))
 
     # ----------------------------------------------------------------------- #
@@ -61,13 +62,15 @@ def perturb_real_images(testloader, modelroot, batch_size, cuda):
     loss = criterion(output, Y_batch_alternate)
 
     gradients = torch.autograd.grad(outputs=loss, inputs=X_batch,
-                                    grad_outputs=torch.ones(loss.size()).cuda(),
+                                    grad_outputs=torch.ones(
+                                        loss.size()).cuda(),
                                     create_graph=True, retain_graph=False, only_inputs=True)[0]
 
     # save gradient jitter
     gradient_image = gradients.data.cpu().numpy()
-    gradient_image = (gradient_image - np.min(gradient_image)) / (np.max(gradient_image) - np.min(gradient_image))
-    gradient_image = gradient_image.transpose(0,2,3,1)
+    gradient_image = (gradient_image - np.min(gradient_image)) / \
+        (np.max(gradient_image) - np.min(gradient_image))
+    gradient_image = gradient_image.transpose(0, 2, 3, 1)
     fig = plot(gradient_image[0:100])
     plt.savefig('../visualization/gradient_image.png', bbox_inches='tight')
     plt.close(fig)
@@ -86,20 +89,16 @@ def perturb_real_images(testloader, modelroot, batch_size, cuda):
     _, output = model(X_batch_modified)
     # first column has actual prob
     prediction = output.data.max(1)[1]
-    accuracy = (float(prediction.eq(Y_batch.data).sum()) / float(batch_size)) * 100.0
+    accuracy = (float(prediction.eq(Y_batch.data).sum()) /
+                float(batch_size)) * 100.0
     print("Jitter Input Image | Accuracy: {}%".format(accuracy))
 
     # save fake images
     samples = X_batch_modified.data.cpu().numpy()
     samples += 1.0
     samples /= 2.0
-    samples = samples.transpose(0,2,3,1)
+    samples = samples.transpose(0, 2, 3, 1)
 
     fig = plot(samples[0:100])
     plt.savefig('../visualization/jittered_images.png', bbox_inches='tight')
     plt.close(fig)
-
-
-
-
-#
