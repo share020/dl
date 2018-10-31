@@ -8,12 +8,11 @@ Part 1 - Bag of Words
 """
 
 
-import numpy as np
 import torch
+import numpy as np
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torch.autograd import Variable
+import torch.nn.functional as F
 import torch.distributed as dist
 
 import time
@@ -22,6 +21,7 @@ import sys
 import io
 
 from BOW_model import BOW_model
+from torch.autograd import Variable
 
 
 glove_embeddings = np.load('../preprocessed_data/glove_embeddings.npy')
@@ -67,8 +67,26 @@ y_test[0:12500] = 1
 vocab_size += 1
 
 model = BOW_model(500)  # try 300 as well
-
 model.cuda()
+
+
+# opt = 'sgd'
+# LR = 0.01
+opt = 'adam'
+LR = 0.001
+
+if opt == 'adam':
+    optimizer = optim.Adam(model.parameters(), lr=LR)
+elif opt == 'sgd':
+    optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9)
+
+
+batch_size = 200
+no_of_epochs = 6
+L_Y_train = len(y_train)
+L_Y_test = len(y_test)
+
+model.train()
 
 
 train_loss = []
@@ -93,8 +111,8 @@ for epoch in range(no_of_epochs):
     for i in range(0, L_Y_train, batch_size):
 
         # within the training loop
-        x_input = x_train[I_permutation[i:i+batch_size]]
-        y_input = y_train[I_permutation[i:i+batch_size]]
+        x_input = x_train[I_permutation[i:i + batch_size]]
+        y_input = y_train[I_permutation[i:i + batch_size]]
 
         data = Variable(torch.FloatTensor(x_input)).cuda()
         target = Variable(torch.FloatTensor(y_input)).cuda()
@@ -135,13 +153,15 @@ for epoch in range(no_of_epochs):
 
     for i in range(0, L_Y_test, batch_size):
 
-        x_input = [x_test[j] for j in I_permutation[i:i + batch_size]]
-        y_input = np.asarray(
-            [y_test[j] for j in I_permutation[i:i + batch_size]], dtype=np.int)
+        # within the training loop
+        x_input = x_train[I_permutation[i:i + batch_size]]
+        y_input = y_train[I_permutation[i:i + batch_size]]
+
+        data = Variable(torch.FloatTensor(x_input)).cuda()
         target = Variable(torch.FloatTensor(y_input)).cuda()
 
         with torch.no_grad():
-            loss, pred = model(x_input, target)
+            loss, pred = model(data, target)
 
         prediction = pred >= 0.0
         truth = target >= 0.5
