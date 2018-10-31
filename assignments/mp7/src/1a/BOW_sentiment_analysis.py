@@ -7,13 +7,11 @@ Part 1 - Bag of Words
 @author: Zhenye Na
 """
 
-
-import numpy as np
 import torch
+import numpy as np
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torch.autograd import Variable
+import torch.nn.functional as F
 import torch.distributed as dist
 
 import time
@@ -22,6 +20,7 @@ import sys
 import io
 
 from BOW_model import BOW_model
+from torch.autograd import Variable
 
 
 # imdb_dictionary = np.load('../preprocessed_data/imdb_dictionary.npy')
@@ -69,9 +68,9 @@ model.cuda()
 opt = 'adam'
 LR = 0.001
 
-if(opt == 'adam'):
+if opt == 'adam':
     optimizer = optim.Adam(model.parameters(), lr=LR)
-elif(opt == 'sgd'):
+elif opt == 'sgd':
     optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9)
 
 
@@ -130,7 +129,7 @@ for epoch in range(no_of_epochs):
     print(epoch, "%.2f" % (epoch_acc * 100.0), "%.4f" %
           epoch_loss, "%.4f" % float(time.time() - time1))
 
-    # ## test
+    # test
     model.eval()
 
     epoch_acc = 0.0
@@ -167,7 +166,8 @@ for epoch in range(no_of_epochs):
     time2 = time.time()
     time_elapsed = time2 - time1
 
-    print("  ", "%.2f" % (epoch_acc * 100.0), "%.4f" % epoch_loss)
+    print("  ", "%.2f" % (epoch_acc * 100.0), "%.4f" %
+          epoch_loss, "%.4f" % float(time_elapsed))
 
 torch.save(model, 'BOW.model')
 data = [train_loss, train_accu, test_accu]

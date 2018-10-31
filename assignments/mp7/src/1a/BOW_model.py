@@ -7,14 +7,14 @@ Part 1 - Bag of Words
 @author: Zhenye Na
 """
 
-
-import numpy as np
 import torch
+import numpy as np
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torch.autograd import Variable
+import torch.nn.functional as F
 import torch.distributed as dist
+
+from torch.autograd import Variable
 
 
 class BOW_model(nn.Module):
@@ -28,7 +28,7 @@ class BOW_model(nn.Module):
 
         self.fc_hidden = nn.Linear(no_of_hidden_units, no_of_hidden_units)
         self.bn_hidden = nn.BatchNorm1d(no_of_hidden_units)
-        self.dropout = torch.nn.Dropout(p=0.5)
+        self.dropout = nn.Dropout(p=0.5)
 
         self.fc_output = nn.Linear(no_of_hidden_units, 1)
 
