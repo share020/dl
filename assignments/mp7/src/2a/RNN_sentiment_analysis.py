@@ -11,7 +11,6 @@ Part 2 - Recurrent Neural Network
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 import torch.distributed as dist
@@ -61,7 +60,7 @@ y_test[0:12500] = 1
 vocab_size += 1
 
 # no_of_hidden_units is 500
-model = RNN_model(500)
+model = RNN_model(vocab_size, 500)
 model.cuda()
 
 # opt = 'sgd'
@@ -69,14 +68,14 @@ model.cuda()
 opt = 'adam'
 LR = 0.001
 
-if(opt == 'adam'):
+if opt == 'adam':
     optimizer = optim.Adam(model.parameters(), lr=LR)
-elif(opt == 'sgd'):
+elif opt == 'sgd':
     optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9)
 
 
 batch_size = 200
-no_of_epochs = 6
+no_of_epochs = 25
 L_Y_train = len(y_train)
 L_Y_test = len(y_test)
 
@@ -104,19 +103,8 @@ for epoch in range(no_of_epochs):
 
     for i in range(0, L_Y_train, batch_size):
 
-        # x_input = [x_train[j] for j in I_permutation[i:i + batch_size]]
-        # y_input = np.asarray(
-        #     [y_train[j] for j in I_permutation[i:i + batch_size]], dtype=np.int)
-        # target = Variable(torch.FloatTensor(y_input)).cuda()
-
-        # optimizer.zero_grad()
-        # loss, pred = model(x_input, target)
-        # loss.backward()
-
-        # optimizer.step()   # update weights
-
         x_input2 = [x_train[j] for j in I_permutation[i:i+batch_size]]
-        sequence_length = 100
+        sequence_length = 250
         x_input = np.zeros((batch_size, sequence_length), dtype=np.int)
         for j in range(batch_size):
             x = np.asarray(x_input2[j])
@@ -134,7 +122,7 @@ for epoch in range(no_of_epochs):
         optimizer.zero_grad()
         loss, pred = model(data, target, train=True)
         loss.backward()
-        optimizer.step()   # update weights
+        optimizer.step()  # update weights
 
         prediction = pred >= 0.0
         truth = target >= 0.5
@@ -153,8 +141,8 @@ for epoch in range(no_of_epochs):
           epoch_loss, "%.4f" % float(time.time() - time1))
 
     if epoch + 1 % 3 == 0:
-        # do testing loop
         # test
+        sequence_length = 200
         model.eval()
 
         epoch_acc = 0.0
@@ -168,9 +156,8 @@ for epoch in range(no_of_epochs):
 
         for i in range(0, L_Y_test, batch_size):
 
-            x_input = [x_test[j] for j in I_permutation[i:i + batch_size]]
-            y_input = np.asarray(
-                [y_test[j] for j in I_permutation[i:i + batch_size]], dtype=np.int)
+            x_input = [x_test[j] for j in I_permutation[i:i+batch_size]]
+            y_input = np.asarray([y_test[j] for j in I_permutation[i:i+batch_size]],dtype=np.int)
             target = Variable(torch.FloatTensor(y_input)).cuda()
 
             with torch.no_grad():
@@ -193,10 +180,8 @@ for epoch in range(no_of_epochs):
 
         print("  ", "%.2f" % (epoch_acc * 100.0), "%.4f" % epoch_loss)
 
-    torch.save(rnn, 'rnn.model')
 
-
-torch.save(model, 'BOW.model')
+torch.save(model, 'rnn.model')
 data = [train_loss, train_accu, test_accu]
 data = np.asarray(data)
 np.save('data.npy', data)

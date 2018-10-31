@@ -9,6 +9,9 @@ Part 2 - Recurrent Neural Network
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
+import torch.distributed as dist
 
 
 class StatefulLSTM(nn.Module):
@@ -48,7 +51,7 @@ class LockedDropout(nn.Module):
     def forward(self, x, dropout=0.5, train=True):
         if train == False:
             return x
-        if(self.m is None):
+        if self.m is None:
             self.m = x.data.new(x.size()).bernoulli_(1 - dropout)
         mask = Variable(self.m, requires_grad=False) / (1 - dropout)
 
@@ -72,7 +75,7 @@ class RNN_model(nn.Module):
 
         self.fc_output = nn.Linear(no_of_hidden_units, 1)
 
-        #self.loss = nn.CrossEntropyLoss()
+        # self.loss = nn.CrossEntropyLoss()
         self.loss = nn.BCEWithLogitsLoss()
 
     def reset_state(self):
@@ -102,13 +105,13 @@ class RNN_model(nn.Module):
 
             outputs.append(h)
 
-        outputs = torch.stack(outputs)  # (time_steps,batch_size,features)
-        outputs = outputs.permute(1, 2, 0)  # (batch_size,features,time_steps)
+        outputs = torch.stack(outputs)  # (time_steps, batch_size, features)
+        outputs = outputs.permute(1, 2, 0)  # (batch_size, features, time_steps)
 
         pool = nn.MaxPool1d(no_of_timesteps)
         h = pool(outputs)
         h = h.view(h.size(0), -1)
-        #h = self.dropout(h)
+        # h = self.dropout(h)
 
         h = self.fc_output(h)
 
