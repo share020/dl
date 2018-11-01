@@ -37,7 +37,7 @@ class BOW_model(nn.Module):
         self.loss = nn.BCEWithLogitsLoss()
 
     def forward(self, x, t):
-
+        """Forward pass."""
         h = self.dropout1(F.relu(self.bn_hidden1(self.fc_hidden1(x))))
         # h = self.dropout2(F.relu(self.bn_hidden2(self.fc_hidden2(h))))
         h = self.fc_output(h)
