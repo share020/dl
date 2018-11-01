@@ -1,19 +1,21 @@
 """
 HW7: Sentiment Analysis for IMDB Movie Reviews.
 
-Preprocessing the Data.
+Data Preprocessing.
 
 @author: Zhenye Na
 """
 
-import numpy as np
+
+import io
 import os
 import nltk
 import itertools
-import io
+import numpy as np
+
 
 # create directory to store preprocessed data
-if(not os.path.isdir('preprocessed_data')):
+if not os.path.isdir('preprocessed_data'):
     os.mkdir('preprocessed_data')
 
 # get all of the training reviews (including unlabeled reviews)
@@ -155,11 +157,12 @@ for line in lines:
     embedding = np.asarray(line[1:], dtype=np.float)
     glove_embeddings.append(embedding)
     count += 1
-    if(count >= 100000):
+    if count >= 100000:
         break
 
 glove_dictionary = np.asarray(glove_dictionary)
 glove_embeddings = np.asarray(glove_embeddings)
+
 # added a vector of zeros for the unknown tokens
 glove_embeddings = np.concatenate((np.zeros((1, 300)), glove_embeddings))
 
