@@ -97,7 +97,6 @@ for epoch in range(no_of_epochs):
 
     epoch_acc = 0.0
     epoch_loss = 0.0
-
     epoch_counter = 0
 
     time1 = time.time()
@@ -106,7 +105,7 @@ for epoch in range(no_of_epochs):
 
     for i in range(0, L_Y_test, batch_size):
 
-        x_input2 = [x_train[j] for j in I_permutation[i:i+batch_size]]
+        x_input2 = [x_train[j] for j in I_permutation[i:i + batch_size]]
         sequence_length = (epoch + 1) * 50
         x_input = np.zeros((batch_size, sequence_length), dtype=np.int)
         for j in range(batch_size):
@@ -115,9 +114,9 @@ for epoch in range(no_of_epochs):
             if(sl < sequence_length):
                 x_input[j, 0:sl] = x
             else:
-                start_index = np.random.randint(sl-sequence_length+1)
-                x_input[j, :] = x[start_index:(start_index+sequence_length)]
-        y_input = y_train[I_permutation[i:i+batch_size]]
+                start_index = np.random.randint(sl - sequence_length + 1)
+                x_input[j, :] = x[start_index:(start_index + sequence_length)]
+        y_input = y_train[I_permutation[i:i + batch_size]]
 
         data = Variable(torch.LongTensor(x_input)).cuda()
         target = Variable(torch.FloatTensor(y_input)).cuda()

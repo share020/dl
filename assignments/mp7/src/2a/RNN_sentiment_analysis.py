@@ -79,7 +79,6 @@ no_of_epochs = 25
 L_Y_train = len(y_train)
 L_Y_test = len(y_test)
 
-model.train()
 
 train_loss = []
 train_accu = []
@@ -94,7 +93,6 @@ for epoch in range(no_of_epochs):
 
     epoch_acc = 0.0
     epoch_loss = 0.0
-
     epoch_counter = 0
 
     time1 = time.time()
@@ -103,7 +101,7 @@ for epoch in range(no_of_epochs):
 
     for i in range(0, L_Y_train, batch_size):
 
-        x_input2 = [x_train[j] for j in I_permutation[i:i+batch_size]]
+        x_input2 = [x_train[j] for j in I_permutation[i:i + batch_size]]
         sequence_length = 250
         x_input = np.zeros((batch_size, sequence_length), dtype=np.int)
         for j in range(batch_size):
@@ -112,9 +110,9 @@ for epoch in range(no_of_epochs):
             if(sl < sequence_length):
                 x_input[j, 0:sl] = x
             else:
-                start_index = np.random.randint(sl-sequence_length+1)
-                x_input[j, :] = x[start_index:(start_index+sequence_length)]
-        y_input = y_train[I_permutation[i:i+batch_size]]
+                start_index = np.random.randint(sl - sequence_length + 1)
+                x_input[j, :] = x[start_index:(start_index + sequence_length)]
+        y_input = y_train[I_permutation[i:i + batch_size]]
 
         data = Variable(torch.LongTensor(x_input)).cuda()
         target = Variable(torch.FloatTensor(y_input)).cuda()
@@ -122,7 +120,7 @@ for epoch in range(no_of_epochs):
         optimizer.zero_grad()
         loss, pred = model(data, target, train=True)
         loss.backward()
-        optimizer.step()  # update weights
+        optimizer.step()
 
         prediction = pred >= 0.0
         truth = target >= 0.5
@@ -156,8 +154,9 @@ for epoch in range(no_of_epochs):
 
         for i in range(0, L_Y_test, batch_size):
 
-            x_input = [x_test[j] for j in I_permutation[i:i+batch_size]]
-            y_input = np.asarray([y_test[j] for j in I_permutation[i:i+batch_size]],dtype=np.int)
+            x_input = [x_test[j] for j in I_permutation[i:i + batch_size]]
+            y_input = np.asarray(
+                [y_test[j] for j in I_permutation[i:i + batch_size]], dtype=np.int)
             target = Variable(torch.FloatTensor(y_input)).cuda()
 
             with torch.no_grad():
