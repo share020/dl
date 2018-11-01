@@ -7,12 +7,19 @@ Part 2 - Recurrent Neural Network
 @author: Zhenye Na
 """
 
+import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
+import torch.distributed as dist
 
 
 class StatefulLSTM(nn.Module):
+    """Stateful LSTM."""
+
     def __init__(self, in_size, out_size):
+        """Stateful LSTM Builder."""
         super(StatefulLSTM, self).__init__()
 
         self.lstm = nn.LSTMCell(in_size, out_size)
@@ -22,11 +29,12 @@ class StatefulLSTM(nn.Module):
         self.c = None
 
     def reset_state(self):
+        """Reset hidden state."""
         self.h = None
         self.c = None
 
     def forward(self, x):
-
+        """Forward pass."""
         batch_size = x.data.size()[0]
         if self.h is None:
             state_size = [batch_size, self.out_size]
@@ -38,14 +46,19 @@ class StatefulLSTM(nn.Module):
 
 
 class LockedDropout(nn.Module):
+    """Locked Dropout layer."""
+
     def __init__(self):
+        """Locked Dropout Builder."""
         super(LockedDropout, self).__init__()
         self.m = None
 
     def reset_state(self):
+        """Reset hidden state."""
         self.m = None
 
     def forward(self, x, dropout=0.5, train=True):
+        """Forward pass."""
         if train == False:
             return x
         if(self.m is None):
@@ -56,7 +69,10 @@ class LockedDropout(nn.Module):
 
 
 class RNN_model(nn.Module):
+    """RNN LSTM model."""
+
     def __init__(self, no_of_hidden_units):
+        """RNN LSTM model Builder."""
         super(RNN_model, self).__init__()
 
         self.lstm1 = StatefulLSTM(300, no_of_hidden_units)
@@ -69,17 +85,18 @@ class RNN_model(nn.Module):
 
         self.fc_output = nn.Linear(no_of_hidden_units, 1)
 
-        #self.loss = nn.CrossEntropyLoss()
+        # self.loss = nn.CrossEntropyLoss()
         self.loss = nn.BCEWithLogitsLoss()
 
     def reset_state(self):
+        """Reset hidden state."""
         self.lstm1.reset_state()
         self.dropout1.reset_state()
         # self.lstm2.reset_state()
         # self.dropout2.reset_state()
 
     def forward(self, x, t, train=True):
-
+        """Forward pass."""
         no_of_timesteps = x.shape[1]
 
         self.reset_state()

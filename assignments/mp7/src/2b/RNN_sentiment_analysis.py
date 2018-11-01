@@ -66,14 +66,14 @@ model.cuda()
 opt = 'adam'
 LR = 0.001
 
-if(opt == 'adam'):
+if opt == 'adam':
     optimizer = optim.Adam(model.parameters(), lr=LR)
-elif(opt == 'sgd'):
+elif opt == 'sgd':
     optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9)
 
 
 batch_size = 200
-no_of_epochs = 6
+no_of_epochs = 25
 L_Y_train = len(y_train)
 L_Y_test = len(y_test)
 
@@ -101,18 +101,7 @@ for epoch in range(no_of_epochs):
 
     for i in range(0, L_Y_train, batch_size):
 
-        # x_input = [x_train[j] for j in I_permutation[i:i + batch_size]]
-        # y_input = np.asarray(
-        #     [y_train[j] for j in I_permutation[i:i + batch_size]], dtype=np.int)
-        # target = Variable(torch.FloatTensor(y_input)).cuda()
-
-        # optimizer.zero_grad()
-        # loss, pred = model(x_input, target)
-        # loss.backward()
-
-        # optimizer.step()   # update weights
-
-        x_input2 = [x_train[j] for j in I_permutation[i:i+batch_size]]
+        x_input2 = [x_train[j] for j in I_permutation[i:i + batch_size]]
         sequence_length = 100
         x_input = np.zeros((batch_size, sequence_length), dtype=np.int)
         for j in range(batch_size):
@@ -121,10 +110,10 @@ for epoch in range(no_of_epochs):
             if(sl < sequence_length):
                 x_input[j, 0:sl] = x
             else:
-                start_index = np.random.randint(sl-sequence_length+1)
-                x_input[j, :] = x[start_index:(start_index+sequence_length)]
+                start_index = np.random.randint(sl - sequence_length + 1)
+                x_input[j, :] = x[start_index:(start_index + sequence_length)]
         x_input = glove_embeddings[x_input]
-        y_input = y_train[I_permutation[i:i+batch_size]]
+        y_input = y_train[I_permutation[i:i + batch_size]]
 
         data = Variable(torch.FloatTensor(x_input)).cuda()
         target = Variable(torch.FloatTensor(y_input)).cuda()
@@ -191,10 +180,8 @@ for epoch in range(no_of_epochs):
 
         print("  ", "%.2f" % (epoch_acc * 100.0), "%.4f" % epoch_loss)
 
-    torch.save(rnn, 'rnn.model')
 
-
-torch.save(model, 'BOW.model')
+torch.save(model, 'rnn.model')
 data = [train_loss, train_accu, test_accu]
 data = np.asarray(data)
 np.save('data.npy', data)
