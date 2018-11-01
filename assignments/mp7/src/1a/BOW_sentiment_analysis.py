@@ -86,6 +86,7 @@ train_accu = []
 test_accu = []
 
 # training
+print("==> Start training ...")
 for epoch in range(no_of_epochs):
 
     # training
@@ -169,6 +170,7 @@ for epoch in range(no_of_epochs):
     print("  ", "%.2f" % (epoch_acc * 100.0), "%.4f" %
           epoch_loss, "%.4f" % float(time_elapsed))
 
+print("==> Training done ...")
 torch.save(model, 'BOW.model')
 data = [train_loss, train_accu, test_accu]
 data = np.asarray(data)
