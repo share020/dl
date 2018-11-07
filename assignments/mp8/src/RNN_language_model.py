@@ -9,13 +9,15 @@ Part 3 - Language Model
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+
 from torch.autograd import Variable
-import torch.distributed as dist
 
 
 class StatefulLSTM(nn.Module):
+    """Stateful LSTM."""
+
     def __init__(self, in_size, out_size):
+        """Stateful LSTM Builder."""
         super(StatefulLSTM, self).__init__()
 
         self.lstm = nn.LSTMCell(in_size, out_size)
@@ -25,11 +27,12 @@ class StatefulLSTM(nn.Module):
         self.c = None
 
     def reset_state(self):
+        """Reset hidden state."""
         self.h = None
         self.c = None
 
     def forward(self, x):
-
+        """Forward pass."""
         batch_size = x.data.size()[0]
         if self.h is None:
             state_size = [batch_size, self.out_size]
@@ -41,16 +44,22 @@ class StatefulLSTM(nn.Module):
 
 
 class LockedDropout(nn.Module):
+    """Locked Dropout layer."""
+
     def __init__(self):
+        """Locked Dropout Builder."""
         super(LockedDropout, self).__init__()
         self.m = None
 
     def reset_state(self):
+        """Reset hidden state."""
         self.m = None
 
     def forward(self, x, dropout=0.5, train=True):
-        if train == False:
+        """Forward pass."""
+        if not train:
             return x
+
         if self.m is None:
             self.m = x.data.new(x.size()).bernoulli_(1 - dropout)
         mask = Variable(self.m, requires_grad=False) / (1 - dropout)
@@ -59,7 +68,10 @@ class LockedDropout(nn.Module):
 
 
 class RNN_language_model(nn.Module):
+    """RNN language model."""
+
     def __init__(self, vocab_size, no_of_hidden_units):
+        """RNN language model Builder ."""
         super(RNN_language_model, self).__init__()
 
         self.embedding = nn.Embedding(
@@ -84,6 +96,7 @@ class RNN_language_model(nn.Module):
         self.vocab_size = vocab_size
 
     def reset_state(self):
+        """Reset hidden state."""
         self.lstm1.reset_state()
         self.dropout1.reset_state()
         self.lstm2.reset_state()
@@ -92,10 +105,10 @@ class RNN_language_model(nn.Module):
         self.dropout3.reset_state()
 
     def forward(self, x, train=True):
-
+        """Forward pass."""
         embed = self.embedding(x)  # batch_size, time_steps, features
 
-        no_of_timesteps = embed.shape[1]-1
+        no_of_timesteps = embed.shape[1] - 1
 
         self.reset_state()
 
@@ -123,12 +136,10 @@ class RNN_language_model(nn.Module):
         # (batch_size,vocab_size,time_steps)
         outputs = outputs.permute(1, 2, 0)
 
-        if(train == True):
-
+        if train:
             target_prediction = target_prediction.contiguous().view(-1, self.vocab_size)
             target = x[:, 1:].contiguous().view(-1)
             loss = self.loss(target_prediction, target)
-
             return loss, outputs
         else:
             return outputs

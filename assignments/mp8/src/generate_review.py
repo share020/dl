@@ -7,18 +7,8 @@ Part 3 - Language Model
 @author: Zhenye Na
 """
 
-import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-import torch.distributed as dist
-
-import h5py
-import time
-import os
-import io
-import sys
+import numpy as np
 
 from torch.autograd import Variable
 from RNN_language_model import RNN_language_model
