@@ -9,9 +9,8 @@ Part 2 - Recurrent Neural Network
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+
 from torch.autograd import Variable
-import torch.distributed as dist
 
 
 class StatefulLSTM(nn.Module):
@@ -58,8 +57,9 @@ class LockedDropout(nn.Module):
 
     def forward(self, x, dropout=0.5, train=True):
         """Forward pass."""
-        if train == False:
+        if not train:
             return x
+
         if self.m is None:
             self.m = x.data.new(x.size()).bernoulli_(1 - dropout)
         mask = Variable(self.m, requires_grad=False) / (1 - dropout)

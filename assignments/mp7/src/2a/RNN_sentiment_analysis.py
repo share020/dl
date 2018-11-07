@@ -10,17 +10,13 @@ Part 2 - Recurrent Neural Network
 
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.optim as optim
-from torch.autograd import Variable
-import torch.distributed as dist
 
 import time
-import os
-import sys
 import io
 
 from RNN_model import RNN_model
+from torch.autograd import Variable
 
 
 # imdb_dictionary = np.load('../preprocessed_data/imdb_dictionary.npy')
