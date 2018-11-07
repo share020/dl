@@ -8,19 +8,14 @@ Part 2 - Recurrent Neural Network
 """
 
 
-import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
+import numpy as np
 import torch.optim as optim
-from torch.autograd import Variable
-import torch.distributed as dist
 
 import time
-import os
-import sys
 import io
 
+from torch.autograd import Variable
 from RNN_model import RNN_model
 
 
