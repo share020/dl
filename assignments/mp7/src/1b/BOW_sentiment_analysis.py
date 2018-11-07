@@ -10,14 +10,9 @@ Part 1 - Bag of Words
 
 import torch
 import numpy as np
-import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
-import torch.distributed as dist
 
 import time
-import os
-import sys
 import io
 
 from BOW_model import BOW_model
@@ -66,9 +61,8 @@ y_test[0:12500] = 1
 
 vocab_size += 1
 
-model = BOW_model(500)  # try 300 as well
+model = BOW_model(500)
 model.cuda()
-
 
 # opt = 'sgd'
 # LR = 0.01
