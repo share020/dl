@@ -8,11 +8,8 @@ Part 1 - Bag of Words
 """
 
 import torch
-import numpy as np
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
-import torch.distributed as dist
 
 from torch.autograd import Variable
 

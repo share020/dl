@@ -11,17 +11,12 @@ import torch
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
-import torch.distributed as dist
 
 import time
-import os
-import sys
 import io
 
 from BOW_model import BOW_model
 from torch.autograd import Variable
-
 
 # imdb_dictionary = np.load('../preprocessed_data/imdb_dictionary.npy')
 vocab_size = 8000
