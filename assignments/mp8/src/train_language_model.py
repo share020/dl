@@ -5,6 +5,7 @@ Part 3 - Language Model
     3a - Training the Language Model
 
 @author: Zhenye Na
+@credit: Logan Courtney
 """
 
 import numpy as np

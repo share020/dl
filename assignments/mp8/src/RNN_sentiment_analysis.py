@@ -5,6 +5,7 @@ Part 3 - Language Model
     3c - Learning Sentiment
 
 @author: Zhenye Na
+@credit: Logan Courtney
 """
 
 

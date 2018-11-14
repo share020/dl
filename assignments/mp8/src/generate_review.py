@@ -5,6 +5,7 @@ Part 3 - Language Model
     3b - Generating Fake Reviews
 
 @author: Zhenye Na
+@credit: Logan Courtney
 """
 
 import torch

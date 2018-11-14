@@ -5,6 +5,7 @@ Part 3 - Language Model
     3a - Training the Language Model
 
 @author: Zhenye Na
+@credit: Logan Courtney
 """
 
 import torch
@@ -71,7 +72,7 @@ class RNN_language_model(nn.Module):
     """RNN language model."""
 
     def __init__(self, vocab_size, no_of_hidden_units):
-        """RNN language model Builder ."""
+        """RNN language model Builder."""
         super(RNN_language_model, self).__init__()
 
         self.embedding = nn.Embedding(
