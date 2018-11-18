@@ -13,28 +13,25 @@ import os
 import sys
 import time
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-# from torchvision import datasets, transforms
-from torch.autograd import Variable
-import torch.distributed as dist
-import torchvision
-
-from helperFunctions import getUCF101
-from helperFunctions import loadFrame
-
 import h5py
 import cv2
 import argparse
 
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision
 
+from helperFunctions import getUCF101
+from helperFunctions import loadFrame
+from torch.autograd import Variable
 from multiprocessing import Pool
 
 parser = argparse.ArgumentParser()
 
 # hyperparameters settings
+parser.add_argument('--data_directory', type=str,
+                    default='/projects/training/bauh/AR/', help='data directory')
 parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
 parser.add_argument('--IMAGE_SIZE', type=int, default=224, help='beta1')
 parser.add_argument('--NUM_CLASSES', type=int, default=101, help='beta2')
@@ -50,11 +47,9 @@ NUM_CLASSES = args.NUM_CLASSES
 batch_size = args.batch_size
 lr = args.lr
 num_of_epochs = args.num_of_epochs
+data_directory = args.data_directory
 
-
-data_directory = '/projects/training/bauh/AR/'
 class_list, train, test = getUCF101(base_directory=data_directory)
-
 
 model = torchvision.models.resnet50(pretrained=True)
 model.fc = nn.Linear(2048, NUM_CLASSES)
@@ -116,7 +111,8 @@ for epoch in range(0, num_of_epochs):
 
         next_batch = 0
         for video in data:
-            if video.size == 0:  # there was an exception, skip this
+            # there was an exception, skip this
+            if video.size == 0:
                 next_batch = 1
         if next_batch == 1:
             continue
@@ -138,45 +134,23 @@ for epoch in range(0, num_of_epochs):
         prediction = output.data.max(1)[1]
         accuracy = (float(prediction.eq(y.data).sum()) /
                     float(batch_size)) * 100.0
-        if(epoch == 0):
-            print(i, accuracy)
+        if epoch == 0:
+            print(">>>    Batch: {} | Accuracy: {}".format(i, accuracy))
         train_accu.append(accuracy)
     accuracy_epoch = np.mean(train_accu)
-    print(epoch, accuracy_epoch, time.time() - start_time)
+    print(">>> Training | Epoch: {} | Accuracy : {} | Elapsed time: {}".format(
+        epoch, accuracy_epoch, time.time() - start_time))
 
-torch.save(model, 'single_frame.model')
-pool_threads.close()
-pool_threads.terminate()
+    torch.save(model, 'single_frame.model')
 
-augment = True
-video_list = [(train[0][k], augment) for k in random_indices[i:(batch_size + i)]]
-data = pool_threads.map(loadFrame, video_list)
-
-next_batch = 0
-for video in data:
-    # there was an exception, skip this
-    if video.size == 0:
-        next_batch = 1
-    # if next_batch == 1:
-    #     continue
-
-x = np.asarray(data, dtype=np.float32)
-x = Variable(torch.FloatTensor(x)).cuda().contiguous()
-
-# TEST
-model.eval()
-test_accu = []
-random_indices = np.random.permutation(len(test[0]))
-t1 = time.time()
-for i in range(0, len(test[0]) - batch_size, batch_size):
-    augment = False
-    video_list = [(test[0][k], augment)
+    augment = True
+    video_list = [(train[0][k], augment)
                   for k in random_indices[i:(batch_size + i)]]
     data = pool_threads.map(loadFrame, video_list)
 
     next_batch = 0
     for video in data:
-        # there was an exception, skip this batch
+        # there was an exception, skip this
         if video.size == 0:
             next_batch = 1
     if next_batch == 1:
@@ -185,19 +159,46 @@ for i in range(0, len(test[0]) - batch_size, batch_size):
     x = np.asarray(data, dtype=np.float32)
     x = Variable(torch.FloatTensor(x)).cuda().contiguous()
 
-    y = test[1][random_indices[i:(batch_size + i)]]
-    y = torch.from_numpy(y).cuda()
+    # ---------------------------------------------------------------------- #
+    # TEST
+    model.eval()
+    test_accu = []
+    random_indices = np.random.permutation(len(test[0]))
+    t1 = time.time()
+    for i in range(0, len(test[0]) - batch_size, batch_size):
+        augment = False
+        video_list = [(test[0][k], augment)
+                      for k in random_indices[i:(batch_size + i)]]
+        data = pool_threads.map(loadFrame, video_list)
 
-    output = model(x)
+        next_batch = 0
+        for video in data:
+            # there was an exception, skip this batch
+            if video.size == 0:
+                next_batch = 1
+        if next_batch == 1:
+            continue
 
-    prediction = output.data.max(1)[1]
-    accuracy = (float(prediction.eq(y.data).sum()) / float(batch_size)) * 100.0
-    test_accu.append(accuracy)
-    accuracy_test = np.mean(test_accu)
-print('Testing', accuracy_test, time.time() - t1)
+        x = np.asarray(data, dtype=np.float32)
+        x = Variable(torch.FloatTensor(x)).cuda().contiguous()
+
+        y = test[1][random_indices[i:(batch_size + i)]]
+        y = torch.from_numpy(y).cuda()
+
+        output = model(x)
+
+        prediction = output.data.max(1)[1]
+        accuracy = (float(prediction.eq(y.data).sum()) /
+                    float(batch_size)) * 100.0
+        test_accu.append(accuracy)
+        accuracy_test = np.mean(test_accu)
+    print(">>> Testing | Test Accuracy: {} | Elapsed time: {}".format(
+        accuracy_test, time.time() - t1))
 
 # -------------------------------------------------------------------------- #
 # Testing
+pool_threads.close()
+pool_threads.terminate()
 
 model = torch.load('single_frame.model')
 model.cuda()
@@ -224,7 +225,6 @@ model.eval()
 for i in range(len(test[0])):
 
     t1 = time.time()
-
     index = random_indices[i]
 
     filename = test[0][index]
@@ -257,7 +257,6 @@ for i in range(len(test[0])):
         with torch.no_grad():
             x = np.asarray(data_batch, dtype=np.float32)
             x = Variable(torch.FloatTensor(x)).cuda().contiguous()
-
             output = model(x)
 
         prediction[loop_i[j]:loop_i[j + 1]] = output.cpu().numpy()
@@ -266,7 +265,7 @@ for i in range(len(test[0])):
 
     filename = filename.replace(
         data_directory + 'UCF-101-hdf5/', prediction_directory)
-    if(not os.path.isfile(filename)):
+    if not os.path.isfile(filename):
         with h5py.File(filename, 'w') as h:
             h.create_dataset('predictions', data=prediction)
 
@@ -279,14 +278,14 @@ for i in range(len(test[0])):
 
     label = test[1][index]
     confusion_matrix[label, argsort_pred[0]] += 1
-    if(label == argsort_pred[0]):
+    if label == argsort_pred[0]:
         acc_top1 += 1.0
-    if(np.any(argsort_pred[0:5] == label)):
+    if np.any(argsort_pred[0:5] == label):
         acc_top5 += 1.0
-    if(np.any(argsort_pred[:] == label)):
+    if np.any(argsort_pred[:] == label):
         acc_top10 += 1.0
 
-    print('i:%d nFrames:%d t:%f (%f,%f,%f)'
+    print('>>> i:%d nFrames:%d t:%f (%f, %f, %f)'
           % (i, nFrames, time.time() - t1, acc_top1 / (i + 1), acc_top5 / (i + 1), acc_top10 / (i + 1)))
 
 

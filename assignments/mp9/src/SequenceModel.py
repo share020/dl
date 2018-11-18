@@ -34,6 +34,8 @@ from multiprocessing import Pool
 parser = argparse.ArgumentParser()
 
 # hyperparameters settings
+parser.add_argument('--data_directory', type=str,
+                    default='/projects/training/bauh/AR/', help='data directory')
 parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
 parser.add_argument('--IMAGE_SIZE', type=int, default=224, help='beta1')
 parser.add_argument('--NUM_CLASSES', type=int, default=101, help='beta2')
@@ -49,9 +51,8 @@ NUM_CLASSES = args.NUM_CLASSES
 batch_size = args.batch_size
 lr = args.lr
 num_of_epochs = args.num_of_epochs
+data_directory = args.data_directory
 
-
-data_directory = '/projects/training/bauh/AR/'
 class_list, train, test = getUCF101(base_directory=data_directory)
 
 model = resnet_3d.resnet50(sample_size=IMAGE_SIZE, sample_duration=16)
@@ -120,7 +121,8 @@ for epoch in range(0, num_of_epochs):
 
         next_batch = 0
         for video in data:
-            if video.size == 0:  # there was an exception, skip this
+            # there was an exception, skip this
+            if video.size == 0:
                 next_batch = 1
         if next_batch == 1:
             continue
@@ -159,10 +161,11 @@ for epoch in range(0, num_of_epochs):
         accuracy = (float(prediction.eq(y.data).sum()) /
                     float(batch_size)) * 100.0
         if epoch == 0:
-            print(i, accuracy)
+            print(">>>    Batch: {} | Accuracy: {}".format(i, accuracy))
         train_accu.append(accuracy)
     accuracy_epoch = np.mean(train_accu)
-    print(epoch, accuracy_epoch, time.time() - start_time)
+    print(">>> Training | Epoch: {} | Accuracy : {} | Elapsed time: {}".format(
+        epoch, accuracy_epoch, time.time() - start_time))
 
     # TEST
     model.eval()
@@ -214,7 +217,8 @@ for epoch in range(0, num_of_epochs):
         test_accu.append(accuracy)
         accuracy_test = np.mean(test_accu)
 
-    print('Testing', accuracy_test, time.time() - t1)
+    print(">>> Testing | Test Accuracy: {} | Elapsed time: {}".format(
+        accuracy_test, time.time() - t1))
 
 torch.save(model, '3d_resnet.model')
 pool_threads.close()
@@ -237,9 +241,7 @@ with torch.no_grad():
     h = model.layer2(h)
     h = model.layer3(h)
 h = model.layer4[0](h)
-
 h = model.avgpool(h)
-
 h = h.view(h.size(0), -1)
 output = model.fc(h)
 
@@ -305,7 +307,6 @@ for i in range(len(test[0])):
         with torch.no_grad():
             x = np.asarray(data_batch, dtype=np.float32)
             x = Variable(torch.FloatTensor(x)).cuda().contiguous()
-
             output = model(x)
 
         prediction[loop_i[j]:loop_i[j + 1]] = output.cpu().numpy()
@@ -327,16 +328,15 @@ for i in range(len(test[0])):
 
     label = test[1][index]
     confusion_matrix[label, argsort_pred[0]] += 1
-    if(label == argsort_pred[0]):
+    if label == argsort_pred[0]:
         acc_top1 += 1.0
-    if(np.any(argsort_pred[0:5] == label)):
+    if np.any(argsort_pred[0:5] == label):
         acc_top5 += 1.0
-    if(np.any(argsort_pred[:] == label)):
+    if np.any(argsort_pred[:] == label):
         acc_top10 += 1.0
 
-    print('i: %d nFrames: %d t: %f (%f,%f,%f)'
+    print('>>> i: %d nFrames: %d t: %f (%f, %f, %f)'
           % (i, nFrames, time.time() - t1, acc_top1 / (i + 1), acc_top5 / (i + 1), acc_top10 / (i + 1)))
-
 
 number_of_examples = np.sum(confusion_matrix, axis=1)
 for i in range(NUM_CLASSES):
@@ -353,4 +353,4 @@ sorted_results = results[indices]
 for i in range(NUM_CLASSES):
     print(sorted_list[i], sorted_results[i], number_of_examples[indices[i]])
 
-np.save('single_frame_confusion_matrix.npy', confusion_matrix)
+np.save('3d_resnet_confusion_matrix.npy', confusion_matrix)
