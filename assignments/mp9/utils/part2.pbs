@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -l nodes=1:ppn=16:xk
+#PBS -N mp9-part2
+#PBS -l walltime=10:00:00
+#PBS -e $PBS_JOBNAME.$PBS_JOBID.err
+#PBS -o $PBS_JOBNAME.$PBS_JOBID.out
+#PBS -M zna2@illinois.edu
+cd ~/scratch/mp9/src
+. /opt/modules/default/init/bash
+module load bwpy/2.0.0-pre2
+module load cudatoolkit
+aprun -n 1 -N 1 python SequenceModel.py

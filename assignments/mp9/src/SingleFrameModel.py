@@ -118,8 +118,8 @@ for epoch in range(0, num_of_epochs):
         for video in data:
             if video.size == 0:  # there was an exception, skip this
                 next_batch = 1
-            if next_batch == 1:
-                continue
+        if next_batch == 1:
+            continue
 
         x = np.asarray(data, dtype=np.float32)
         x = Variable(torch.FloatTensor(x)).cuda().contiguous()
@@ -157,8 +157,8 @@ for video in data:
     # there was an exception, skip this
     if video.size == 0:
         next_batch = 1
-    if next_batch == 1:
-        continue
+    # if next_batch == 1:
+    #     continue
 
 x = np.asarray(data, dtype=np.float32)
 x = Variable(torch.FloatTensor(x)).cuda().contiguous()
@@ -179,8 +179,8 @@ for i in range(0, len(test[0]) - batch_size, batch_size):
         # there was an exception, skip this batch
         if video.size == 0:
             next_batch = 1
-        if next_batch == 1:
-            continue
+    if next_batch == 1:
+        continue
 
     x = np.asarray(data, dtype=np.float32)
     x = Variable(torch.FloatTensor(x)).cuda().contiguous()

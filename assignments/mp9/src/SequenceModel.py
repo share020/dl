@@ -37,7 +37,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
 parser.add_argument('--IMAGE_SIZE', type=int, default=224, help='beta1')
 parser.add_argument('--NUM_CLASSES', type=int, default=101, help='beta2')
-parser.add_argument('--batch_size', type=int, default=32, help='batch size')
+parser.add_argument('--batch_size', type=int, default=16, help='batch size')
 parser.add_argument('--num_of_epochs', type=int, default=10,
                     help='number of epochs to train')
 
@@ -122,8 +122,8 @@ for epoch in range(0, num_of_epochs):
         for video in data:
             if video.size == 0:  # there was an exception, skip this
                 next_batch = 1
-            if next_batch == 1:
-                continue
+        if next_batch == 1:
+            continue
 
         x = np.asarray(data, dtype=np.float32)
         x = Variable(torch.FloatTensor(
@@ -180,8 +180,8 @@ for epoch in range(0, num_of_epochs):
             # there was an exception, skip this batch
             if video.size == 0:
                 next_batch = 1
-            if next_batch == 1:
-                continue
+        if next_batch == 1:
+            continue
 
         x = np.asarray(data, dtype=np.float32)
         x = Variable(torch.FloatTensor(x)).cuda().contiguous()
