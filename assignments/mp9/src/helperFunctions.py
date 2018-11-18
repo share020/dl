@@ -15,7 +15,16 @@ import h5py
 
 
 def getUCF101(base_directory=''):
+    """
+    Get UCF-101 dataset.
 
+    Returns:
+        class_list: a list of the action categories.
+        train: a tuple. The first element is a numpy array with the absolute
+            filepaths for the videos for training. The second element is a
+            numpy array of class indices (0-100).
+        test: a tuple in the same format as train but for the test dataset.
+    """
     # action class labels
     class_file = open(base_directory + 'ucfTrainTestlist/classInd.txt', 'r')
     lines = class_file.readlines()
@@ -27,7 +36,7 @@ def getUCF101(base_directory=''):
     train_file = open(base_directory + 'ucfTrainTestlist/trainlist01.txt', 'r')
     lines = train_file.readlines()
     filenames = ['UCF-101/' + line.split(' ')[0] for line in lines]
-    y_train = [int(line.split(' ')[1].strip())-1 for line in lines]
+    y_train = [int(line.split(' ')[1].strip()) - 1 for line in lines]
     y_train = np.asarray(y_train)
     filenames = [base_directory + filename for filename in filenames]
     train_file.close()
@@ -51,6 +60,18 @@ def getUCF101(base_directory=''):
 
 
 def loadFrame(args):
+    """
+    Load a single frame from a particular video in the dataset.
+
+    Args:
+        args: a tuple with the first argument being the location of a video
+            (which is in train[0] and test[0] from the getUCF101() function)
+            and the second argument specifies whether data augmentation should
+            be performed.
+
+    Returns:
+        data: numpy array of size [3,224,224] of type np.float32
+    """
     mean = np.asarray([0.485, 0.456, 0.406], np.float32)
     std = np.asarray([0.229, 0.224, 0.225], np.float32)
 
@@ -70,17 +91,17 @@ def loadFrame(args):
         frame_index = np.random.randint(nFrames)
         frame = h['video'][frame_index]
 
-        if(augment == True):
+        if augment:
             # RANDOM CROP - crop 70-100% of original size
             # don't maintain aspect ratio
             if(np.random.randint(2) == 0):
-                resize_factor_w = 0.3*np.random.rand()+0.7
-                resize_factor_h = 0.3*np.random.rand()+0.7
-                w1 = int(curr_w*resize_factor_w)
-                h1 = int(curr_h*resize_factor_h)
-                w = np.random.randint(curr_w-w1)
-                h = np.random.randint(curr_h-h1)
-                frame = frame[h:(h+h1), w:(w+w1)]
+                resize_factor_w = 0.3 * np.random.rand() + 0.7
+                resize_factor_h = 0.3 * np.random.rand() + 0.7
+                w1 = int(curr_w * resize_factor_w)
+                h1 = int(curr_h * resize_factor_h)
+                w = np.random.randint(curr_w - w1)
+                h = np.random.randint(curr_h - h1)
+                frame = frame[h:(h + h1), w:(w + w1)]
 
             # FLIP
             if(np.random.randint(2) == 0):
@@ -91,7 +112,7 @@ def loadFrame(args):
 
             # Brightness +/- 15
             brightness = 30
-            random_add = np.random.randint(brightness+1) - brightness/2.0
+            random_add = np.random.randint(brightness + 1) - brightness / 2.0
             frame += random_add
             frame[frame > 255] = 255.0
             frame[frame < 0] = 0.0
@@ -102,8 +123,8 @@ def loadFrame(args):
             frame = frame.astype(np.float32)
 
         # resnet model was trained on images with mean subtracted
-        frame = frame/255.0
-        frame = (frame - mean)/std
+        frame = frame / 255.0
+        frame = (frame - mean) / std
         frame = frame.transpose(2, 0, 1)
         data[:, :, :] = frame
 
@@ -115,6 +136,13 @@ def loadFrame(args):
 
 
 def loadSequence(args):
+    """
+    Grab a random subsequence of frames and augments them all in the exact same
+    way (this is important when performing data augmentation on videos).
+
+    Returns:
+        data: numpy array of size [3,16,224,224]
+    """
     mean = np.asarray([0.433, 0.4045, 0.3776], np.float32)
     std = np.asarray([0.1519876, 0.14855877, 0.156976], np.float32)
 
@@ -136,15 +164,15 @@ def loadSequence(args):
         frame_index = np.random.randint(nFrames - num_of_frames)
         video = h['video'][frame_index:(frame_index + num_of_frames)]
 
-        if(augment == True):
+        if augment:
             # RANDOM CROP - crop 70-100% of original size
             # don't maintain aspect ratio
-            resize_factor_w = 0.3*np.random.rand()+0.7
-            resize_factor_h = 0.3*np.random.rand()+0.7
-            w1 = int(curr_w*resize_factor_w)
-            h1 = int(curr_h*resize_factor_h)
-            w = np.random.randint(curr_w-w1)
-            h = np.random.randint(curr_h-h1)
+            resize_factor_w = 0.3 * np.random.rand() + 0.7
+            resize_factor_h = 0.3 * np.random.rand() + 0.7
+            w1 = int(curr_w * resize_factor_w)
+            h1 = int(curr_h * resize_factor_h)
+            w = np.random.randint(curr_w - w1)
+            h = np.random.randint(curr_h - h1)
             random_crop = np.random.randint(2)
 
             # Random Flip
@@ -152,12 +180,12 @@ def loadSequence(args):
 
             # Brightness +/- 15
             brightness = 30
-            random_add = np.random.randint(brightness+1) - brightness/2.0
+            random_add = np.random.randint(brightness + 1) - brightness / 2.0
 
             data = []
             for frame in video:
                 if(random_crop):
-                    frame = frame[h:(h+h1), w:(w+w1), :]
+                    frame = frame[h:(h + h1), w:(w + w1), :]
                 if(random_flip):
                     frame = cv2.flip(frame, 1)
                 frame = cv2.resize(frame, (width, height))
@@ -167,8 +195,8 @@ def loadSequence(args):
                 frame[frame > 255] = 255.0
                 frame[frame < 0] = 0.0
 
-                frame = frame/255.0
-                frame = (frame - mean)/std
+                frame = frame / 255.0
+                frame = (frame - mean) / std
                 data.append(frame)
             data = np.asarray(data)
 
@@ -178,16 +206,15 @@ def loadSequence(args):
             for frame in video:
                 frame = cv2.resize(frame, (width, height))
                 frame = frame.astype(np.float32)
-                frame = frame/255.0
-                frame = (frame - mean)/std
+                frame = frame / 255.0
+                frame = (frame - mean) / std
                 data.append(frame)
             data = np.asarray(data)
 
         data = data.transpose(3, 0, 1, 2)
+
     except:
         print("Exception: " + filename)
         data = np.array([])
+
     return data
-
-
-#
