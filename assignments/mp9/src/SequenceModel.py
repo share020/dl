@@ -106,6 +106,7 @@ pool_threads = Pool(8, maxtasksperchild=200)
 
 
 for epoch in range(0, num_of_epochs):
+
     # ---------------------------------------------------------------------- #
     # TRAIN
     train_accu = []
@@ -130,7 +131,6 @@ for epoch in range(0, num_of_epochs):
         x = np.asarray(data, dtype=np.float32)
         x = Variable(torch.FloatTensor(
             x), requires_grad=False).cuda().contiguous()
-
         y = train[1][random_indices[i:(batch_size + i)]]
         y = torch.from_numpy(y).cuda()
 
@@ -144,9 +144,7 @@ for epoch in range(0, num_of_epochs):
             h = model.layer2(h)
             h = model.layer3(h)
         h = model.layer4[0](h)
-
         h = model.avgpool(h)
-
         h = h.view(h.size(0), -1)
         output = model.fc(h)
 
@@ -160,14 +158,17 @@ for epoch in range(0, num_of_epochs):
         prediction = output.data.max(1)[1]
         accuracy = (float(prediction.eq(y.data).sum()) /
                     float(batch_size)) * 100.0
+
         if epoch == 0:
             print(">>>    Batch: {} | Accuracy: {}".format(i, accuracy))
         train_accu.append(accuracy)
+
     accuracy_epoch = np.mean(train_accu)
     print(">>> Training | Epoch: {} | Accuracy : {} | Elapsed time: {}".format(
         epoch, accuracy_epoch, time.time() - start_time))
 
-    # TEST
+    # ---------------------------------------------------------------------- #
+    # EVAL
     model.eval()
     test_accu = []
     random_indices = np.random.permutation(len(test[0]))
@@ -223,28 +224,6 @@ for epoch in range(0, num_of_epochs):
 torch.save(model, '3d_resnet.model')
 pool_threads.close()
 pool_threads.terminate()
-
-
-augment = True
-video_list = [(train[0][k], augment)
-              for k in random_indices[i:(batch_size + i)]]
-data = pool_threads.map(loadSequence, video_list)
-
-
-with torch.no_grad():
-    h = model.conv1(x)
-    h = model.bn1(h)
-    h = model.relu(h)
-    h = model.maxpool(h)
-
-    h = model.layer1(h)
-    h = model.layer2(h)
-    h = model.layer3(h)
-h = model.layer4[0](h)
-h = model.avgpool(h)
-h = h.view(h.size(0), -1)
-output = model.fc(h)
-
 
 # -------------------------------------------------------------------------- #
 # Testing
@@ -315,7 +294,7 @@ for i in range(len(test[0])):
 
     filename = filename.replace(
         data_directory + 'UCF-101-hdf5/', prediction_directory)
-    if(not os.path.isfile(filename)):
+    if not os.path.isfile(filename):
         with h5py.File(filename, 'w') as h:
             h.create_dataset('predictions', data=prediction)
 

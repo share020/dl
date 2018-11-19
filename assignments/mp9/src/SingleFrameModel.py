@@ -27,6 +27,7 @@ from helperFunctions import loadFrame
 from torch.autograd import Variable
 from multiprocessing import Pool
 
+# parse arguments
 parser = argparse.ArgumentParser()
 
 # hyperparameters settings
@@ -41,7 +42,6 @@ parser.add_argument('--num_of_epochs', type=int, default=10,
 
 # parse the arguments
 args = parser.parse_args()
-
 IMAGE_SIZE = args.IMAGE_SIZE
 NUM_CLASSES = args.NUM_CLASSES
 batch_size = args.batch_size
@@ -52,6 +52,9 @@ data_directory = args.data_directory
 class_list, train, test = getUCF101(base_directory=data_directory)
 
 model = torchvision.models.resnet50(pretrained=True)
+
+# overwrite the last fully connected layer such that it has the number of
+# outputs equal to the number of classes
 model.fc = nn.Linear(2048, NUM_CLASSES)
 
 for param in model.parameters():
@@ -89,12 +92,11 @@ for param in model.fc.parameters():
     params.append(param)
 
 model.cuda()
-
 optimizer = optim.Adam(params, lr=lr)
 criterion = nn.CrossEntropyLoss()
 
+# leverage multiple CPU cores using a Pool() object
 pool_threads = Pool(8, maxtasksperchild=200)
-
 for epoch in range(0, num_of_epochs):
     # ---------------------------------------------------------------------- #
     # TRAIN
@@ -102,8 +104,8 @@ for epoch in range(0, num_of_epochs):
     model.train()
     random_indices = np.random.permutation(len(train[0]))
     start_time = time.time()
-    for i in range(0, len(train[0]) - batch_size, batch_size):
 
+    for i in range(0, len(train[0]) - batch_size, batch_size):
         augment = True
         video_list = [(train[0][k], augment)
                       for k in random_indices[i:(batch_size + i)]]
@@ -119,30 +121,30 @@ for epoch in range(0, num_of_epochs):
 
         x = np.asarray(data, dtype=np.float32)
         x = Variable(torch.FloatTensor(x)).cuda().contiguous()
-
         y = train[1][random_indices[i:(batch_size + i)]]
         y = torch.from_numpy(y).cuda()
-
         output = model(x)
 
         loss = criterion(output, y)
         optimizer.zero_grad()
-
         loss.backward()
         optimizer.step()
 
         prediction = output.data.max(1)[1]
         accuracy = (float(prediction.eq(y.data).sum()) /
                     float(batch_size)) * 100.0
+
         if epoch == 0:
             print(">>>    Batch: {} | Accuracy: {}".format(i, accuracy))
         train_accu.append(accuracy)
+
     accuracy_epoch = np.mean(train_accu)
     print(">>> Training | Epoch: {} | Accuracy : {} | Elapsed time: {}".format(
         epoch, accuracy_epoch, time.time() - start_time))
 
     torch.save(model, 'single_frame.model')
 
+    # data augmentation
     augment = True
     video_list = [(train[0][k], augment)
                   for k in random_indices[i:(batch_size + i)]]
@@ -160,7 +162,7 @@ for epoch in range(0, num_of_epochs):
     x = Variable(torch.FloatTensor(x)).cuda().contiguous()
 
     # ---------------------------------------------------------------------- #
-    # TEST
+    # EVAL
     model.eval()
     test_accu = []
     random_indices = np.random.permutation(len(test[0]))
@@ -181,10 +183,8 @@ for epoch in range(0, num_of_epochs):
 
         x = np.asarray(data, dtype=np.float32)
         x = Variable(torch.FloatTensor(x)).cuda().contiguous()
-
         y = test[1][random_indices[i:(batch_size + i)]]
         y = torch.from_numpy(y).cuda()
-
         output = model(x)
 
         prediction = output.data.max(1)[1]
@@ -192,8 +192,10 @@ for epoch in range(0, num_of_epochs):
                     float(batch_size)) * 100.0
         test_accu.append(accuracy)
         accuracy_test = np.mean(test_accu)
+
     print(">>> Testing | Test Accuracy: {} | Elapsed time: {}".format(
         accuracy_test, time.time() - t1))
+
 
 # -------------------------------------------------------------------------- #
 # Testing
