@@ -5,6 +5,7 @@ Part 1 - Bag of Words
     1a - Without GloVe Features
 
 @author: Zhenye Na
+@credit: Logan Courtney
 """
 
 import torch
