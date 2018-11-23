@@ -5,6 +5,7 @@ Part 2 - Recurrent Neural Network
     2b - With GloVe Features
 
 @author: Zhenye Na
+@credit: Logan Courtney
 """
 
 
