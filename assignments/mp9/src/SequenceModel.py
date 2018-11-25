@@ -13,14 +13,11 @@ import sys
 import time
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-# from torchvision import datasets, transforms
-from torch.autograd import Variable
-import torch.distributed as dist
 import torchvision
+import torch.nn as nn
+import torch.optim as optim
 
+from torch.autograd import Variable
 from helperFunctions import getUCF101
 from helperFunctions import loadSequence
 import resnet_3d
@@ -189,7 +186,6 @@ for epoch in range(0, num_of_epochs):
 
         x = np.asarray(data, dtype=np.float32)
         x = Variable(torch.FloatTensor(x)).cuda().contiguous()
-
         y = test[1][random_indices[i:(batch_size + i)]]
         y = torch.from_numpy(y).cuda()
 
@@ -205,11 +201,10 @@ for epoch in range(0, num_of_epochs):
             h = model.layer2(h)
             h = model.layer3(h)
             h = model.layer4[0](h)
-            # h = model.layer4[1](h)
 
             h = model.avgpool(h)
-
             h = h.view(h.size(0), -1)
+
             output = model.fc(h)
 
         prediction = output.data.max(1)[1]
@@ -218,7 +213,7 @@ for epoch in range(0, num_of_epochs):
         test_accu.append(accuracy)
         accuracy_test = np.mean(test_accu)
 
-    print(">>> Testing | Test Accuracy: {} | Elapsed time: {}".format(
+    print(">>> Validation | Val Accuracy: {} | Elapsed time: {}".format(
         accuracy_test, time.time() - t1))
 
 torch.save(model, '3d_resnet.model')
@@ -226,8 +221,7 @@ pool_threads.close()
 pool_threads.terminate()
 
 # -------------------------------------------------------------------------- #
-# Testing
-
+# TEST
 model = torch.load('3d_resnet.model')
 model.cuda()
 
@@ -249,7 +243,7 @@ mean = np.asarray([0.485, 0.456, 0.406], np.float32)
 std = np.asarray([0.229, 0.224, 0.225], np.float32)
 model.eval()
 
-
+num_of_frames = 16
 for i in range(len(test[0])):
 
     t1 = time.time()
@@ -262,23 +256,25 @@ for i in range(len(test[0])):
 
     h = h5py.File(filename, 'r')
     nFrames = len(h['video'])
+    frame_index = np.random.randint(nFrames - num_of_frames)
+    video = h['video'][frame_index:(frame_index + num_of_frames)]
 
-    data = np.zeros((nFrames, 3, IMAGE_SIZE, IMAGE_SIZE), dtype=np.float32)
-
-    for j in range(nFrames):
-        frame = h['video'][j]
-        frame = frame.astype(np.float32)
+    data = []
+    for frame in video:
         frame = cv2.resize(frame, (IMAGE_SIZE, IMAGE_SIZE))
+        frame = frame.astype(np.float32)
         frame = frame / 255.0
         frame = (frame - mean) / std
-        frame = frame.transpose(2, 0, 1)
-        data[j, :, :, :] = frame
+        data.append(frame)
+    data = np.asarray(data)
+    data = data.transpose(3, 0, 1, 2)
+
     h.close()
 
-    prediction = np.zeros((nFrames, NUM_CLASSES), dtype=np.float32)
+    prediction = np.zeros((num_of_frames, NUM_CLASSES), dtype=np.float32)
 
-    loop_i = list(range(0, nFrames, 200))
-    loop_i.append(nFrames)
+    loop_i = list(range(0, num_of_frames, len(data)))
+    loop_i.append(num_of_frames)
 
     for j in range(len(loop_i) - 1):
         data_batch = data[loop_i[j]:loop_i[j + 1]]
@@ -286,12 +282,27 @@ for i in range(len(test[0])):
         with torch.no_grad():
             x = np.asarray(data_batch, dtype=np.float32)
             x = Variable(torch.FloatTensor(x)).cuda().contiguous()
-            output = model(x)
+            y = test[1][random_indices[i:(batch_size + i)]]
+            y = torch.from_numpy(y).cuda()
+
+            h = model.conv1(x)
+            h = model.bn1(h)
+            h = model.relu(h)
+            h = model.maxpool(h)
+
+            h = model.layer1(h)
+            h = model.layer2(h)
+            h = model.layer3(h)
+            h = model.layer4[0](h)
+
+            h = model.avgpool(h)
+            h = h.view(h.size(0), -1)
+
+            output = model.fc(h)
 
         prediction[loop_i[j]:loop_i[j + 1]] = output.cpu().numpy()
 
     # saves the `prediction` array in hdf5 format
-
     filename = filename.replace(
         data_directory + 'UCF-101-hdf5/', prediction_directory)
     if not os.path.isfile(filename):

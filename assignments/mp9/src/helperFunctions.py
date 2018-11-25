@@ -7,10 +7,8 @@ Helper functions.
 @credit: Logan Courtney
 """
 
-import os
 import numpy as np
 import cv2
-import time
 import h5py
 
 
@@ -94,7 +92,7 @@ def loadFrame(args):
         if augment:
             # RANDOM CROP - crop 70-100% of original size
             # don't maintain aspect ratio
-            if(np.random.randint(2) == 0):
+            if np.random.randint(2) == 0:
                 resize_factor_w = 0.3 * np.random.rand() + 0.7
                 resize_factor_h = 0.3 * np.random.rand() + 0.7
                 w1 = int(curr_w * resize_factor_w)
@@ -104,7 +102,7 @@ def loadFrame(args):
                 frame = frame[h:(h + h1), w:(w + w1)]
 
             # FLIP
-            if(np.random.randint(2) == 0):
+            if np.random.randint(2) == 0:
                 frame = cv2.flip(frame, 1)
 
             frame = cv2.resize(frame, (width, height))
@@ -139,6 +137,12 @@ def loadSequence(args):
     """
     Grab a random subsequence of frames and augments them all in the exact same
     way (this is important when performing data augmentation on videos).
+
+    Args:
+        args: a tuple with the first argument being the location of a video
+            (which is in train[0] and test[0] from the getUCF101() function)
+            and the second argument specifies whether data augmentation should
+            be performed.
 
     Returns:
         data: numpy array of size [3,16,224,224]
@@ -184,9 +188,9 @@ def loadSequence(args):
 
             data = []
             for frame in video:
-                if(random_crop):
+                if random_crop:
                     frame = frame[h:(h + h1), w:(w + w1), :]
-                if(random_flip):
+                if random_flip:
                     frame = cv2.flip(frame, 1)
                 frame = cv2.resize(frame, (width, height))
                 frame = frame.astype(np.float32)

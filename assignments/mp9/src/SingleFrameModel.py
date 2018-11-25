@@ -18,9 +18,9 @@ import cv2
 import argparse
 
 import torch
+import torchvision
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
 
 from helperFunctions import getUCF101
 from helperFunctions import loadFrame
@@ -193,15 +193,13 @@ for epoch in range(0, num_of_epochs):
         test_accu.append(accuracy)
         accuracy_test = np.mean(test_accu)
 
-    print(">>> Testing | Test Accuracy: {} | Elapsed time: {}".format(
+    print(">>> Validation | Val Accuracy: {} | Elapsed time: {}".format(
         accuracy_test, time.time() - t1))
-
-
-# -------------------------------------------------------------------------- #
-# Testing
 pool_threads.close()
 pool_threads.terminate()
 
+# -------------------------------------------------------------------------- #
+# TEST
 model = torch.load('single_frame.model')
 model.cuda()
 
@@ -264,7 +262,6 @@ for i in range(len(test[0])):
         prediction[loop_i[j]:loop_i[j + 1]] = output.cpu().numpy()
 
     # saves the `prediction` array in hdf5 format
-
     filename = filename.replace(
         data_directory + 'UCF-101-hdf5/', prediction_directory)
     if not os.path.isfile(filename):
