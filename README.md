@@ -1,16 +1,5 @@
-```
-    ____                     __                          _            
-   / __ \___  ___  ____     / /   ___  ____ __________  (_)___  ____ _
-  / / / / _ \/ _ \/ __ \   / /   / _ \/ __ `/ ___/ __ \/ / __ \/ __ `/
- / /_/ /  __/  __/ /_/ /  / /___/  __/ /_/ / /  / / / / / / / / /_/ / 
-/_____/\___/\___/ .___/  /_____/\___/\__,_/_/  /_/ /_/_/_/ /_/\__, /  
-               /_/                                           /____/   
-```
+# CS598 / IE 534: Deep Learning in Fall 2018, UIUC
 
-
-# Deep Learning
-
-> CS598 / IE 534, Fall 2018
 
 **Instructor**: [Justin Sirignano](https://jasirign.github.io/)  
 **Teaching Assistants**: Logan Courtney, Raj Kataria, Xiaobo Dong 
@@ -43,12 +32,12 @@ IE 534 Deep Learning is cross-listed with CS 598. This course is part of the Dee
 
 ## Homeworks
 
-- [x] [HW1: Implement and train a neural network from scratch in Python for the MNIST dataset (no PyTorch).]()
-- [x] [HW2: Implement and train a convolution neural network from scratch in Python for the MNIST dataset (no PyTorch).]()
-- [x] [HW3: Train a deep convolution network on a GPU with PyTorch for the CIFAR10 dataset.]()
-- [x] [HW4: Implement a deep residual neural network for CIFAR100.]()
-- [x] [HW5: Implement a deep learning model for image ranking.]()
-- [x] [HW6: Generative adversarial networks (GANs).]()
-- [x] [HW7: Natural Language Processing A.]()
-- [x] [HW8: Natural Language Processing B.]()
-- [x] [HW9: Video recognition I.]()
+- [x] HW1: Implement and train a neural network from scratch in Python for the MNIST dataset (no PyTorch).
+- [x] HW2: Implement and train a convolution neural network from scratch in Python for the MNIST dataset (no PyTorch).
+- [x] HW3: Train a deep convolution network on a GPU with PyTorch for the CIFAR10 dataset.
+- [x] HW4: Implement a deep residual neural network for CIFAR100.]()
+- [x] HW5: Implement a deep learning model for image ranking.]()
+- [x] HW6: Generative adversarial networks (GANs).
+- [x] HW7: Natural Language Processing A.
+- [x] HW8: Natural Language Processing B.
+- [x] HW9: Video recognition I.
