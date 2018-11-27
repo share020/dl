@@ -110,28 +110,28 @@ End Torque Prologue:  0.334 elapsed
 >>>    Batch: 9300 | Accuracy: 55.00000000000001
 >>>    Batch: 9400 | Accuracy: 57.99999999999999
 >>> Training | Epoch: 0 | Accuracy : 35.93684210526316 | Elapsed time: 175.1790783405304
->>> Testing | Test Accuracy: 53.37837837837838 | Elapsed time: 63.79424691200256
+>>> Validation | Val Accuracy: 53.37837837837838 | Elapsed time: 63.79424691200256
 >>> Training | Epoch: 1 | Accuracy : 69.90526315789474 | Elapsed time: 161.94624423980713
->>> Testing | Test Accuracy: 65.91891891891892 | Elapsed time: 59.69928812980652
+>>> Validation | Val Accuracy: 65.91891891891892 | Elapsed time: 59.69928812980652
 >>> Training | Epoch: 2 | Accuracy : 80.6 | Elapsed time: 163.82888102531433
->>> Testing | Test Accuracy: 69.0 | Elapsed time: 60.381502628326416
+>>> Validation | Val Accuracy: 69.0 | Elapsed time: 60.381502628326416
 >>> Training | Epoch: 3 | Accuracy : 86.94736842105263 | Elapsed time: 169.55197072029114
->>> Testing | Test Accuracy: 71.51351351351352 | Elapsed time: 61.57758712768555
+>>> Validation | Val Accuracy: 71.51351351351352 | Elapsed time: 61.57758712768555
 Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c06.hdf5
 >>> Training | Epoch: 4 | Accuracy : 90.93617021276596 | Elapsed time: 164.3756341934204
->>> Testing | Test Accuracy: 71.83783783783784 | Elapsed time: 61.421936988830566
+>>> Validation | Val Accuracy: 71.83783783783784 | Elapsed time: 61.421936988830566
 Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c06.hdf5
 >>> Training | Epoch: 5 | Accuracy : 92.88297872340425 | Elapsed time: 164.8644437789917
->>> Testing | Test Accuracy: 72.29729729729729 | Elapsed time: 59.33846378326416
+>>> Validation | Val Accuracy: 72.29729729729729 | Elapsed time: 59.33846378326416
 Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c06.hdf5
 >>> Training | Epoch: 6 | Accuracy : 94.6063829787234 | Elapsed time: 165.7866291999817
->>> Testing | Test Accuracy: 72.83783783783784 | Elapsed time: 60.41454005241394
+>>> Validation | Val Accuracy: 72.83783783783784 | Elapsed time: 60.41454005241394
 >>> Training | Epoch: 7 | Accuracy : 95.92631578947369 | Elapsed time: 168.7867078781128
->>> Testing | Test Accuracy: 73.43243243243244 | Elapsed time: 59.49274730682373
+>>> Validation | Val Accuracy: 73.43243243243244 | Elapsed time: 59.49274730682373
 >>> Training | Epoch: 8 | Accuracy : 96.83157894736843 | Elapsed time: 168.44766426086426
->>> Testing | Test Accuracy: 74.29729729729729 | Elapsed time: 60.47151565551758
+>>> Validation | Val Accuracy: 74.29729729729729 | Elapsed time: 60.47151565551758
 >>> Training | Epoch: 9 | Accuracy : 96.88421052631578 | Elapsed time: 166.51369047164917
->>> Testing | Test Accuracy: 73.62162162162163 | Elapsed time: 60.83818483352661
+>>> Validation | Val Accuracy: 73.62162162162163 | Elapsed time: 60.83818483352661
 >>> i:0 nFrames:186 t:1.999792 (1.000000, 1.000000, 1.000000)
 >>> i:1 nFrames:106 t:1.133710 (1.000000, 1.000000, 1.000000)
 >>> i:2 nFrames:216 t:2.865799 (1.000000, 1.000000, 1.000000)

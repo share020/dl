@@ -611,29 +611,29 @@ Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c03.hdf
 >>>    Batch: 9504 | Accuracy: 62.5
 >>>    Batch: 9520 | Accuracy: 75.0
 >>> Training | Epoch: 0 | Accuracy : 49.66386554621849 | Elapsed time: 2094.0717763900757
->>> Testing | Test Accuracy: 69.38559322033899 | Elapsed time: 812.3587124347687
+>>> Validation | Test Accuracy: 69.38559322033899 | Elapsed time: 812.3587124347687
 >>> Training | Epoch: 1 | Accuracy : 84.06040268456375 | Elapsed time: 2157.018546819687
->>> Testing | Test Accuracy: 79.44915254237289 | Elapsed time: 816.7393038272858
+>>> Validation | Test Accuracy: 79.44915254237289 | Elapsed time: 816.7393038272858
 >>> Training | Epoch: 2 | Accuracy : 93.25713087248322 | Elapsed time: 2171.143281698227
->>> Testing | Test Accuracy: 82.17690677966101 | Elapsed time: 819.4365606307983
+>>> Validation | Test Accuracy: 82.17690677966101 | Elapsed time: 819.4365606307983
 Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c06.hdf5
 >>> Training | Epoch: 3 | Accuracy : 96.23949579831933 | Elapsed time: 2171.53862285614
->>> Testing | Test Accuracy: 81.38241525423729 | Elapsed time: 821.8862180709839
+>>> Validation | Test Accuracy: 81.38241525423729 | Elapsed time: 821.8862180709839
 Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c06.hdf5
 >>> Training | Epoch: 4 | Accuracy : 97.6470588235294 | Elapsed time: 2225.854503393173
->>> Testing | Test Accuracy: 81.48834745762711 | Elapsed time: 857.4414393901825
+>>> Validation | Test Accuracy: 81.48834745762711 | Elapsed time: 857.4414393901825
 Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c03.hdf5
 >>> Training | Epoch: 5 | Accuracy : 98.30882352941177 | Elapsed time: 2276.8765444755554
->>> Testing | Test Accuracy: 82.52118644067797 | Elapsed time: 860.4512541294098
+>>> Validation | Test Accuracy: 82.52118644067797 | Elapsed time: 860.4512541294098
 >>> Training | Epoch: 6 | Accuracy : 98.6996644295302 | Elapsed time: 2281.453677415848
->>> Testing | Test Accuracy: 82.70656779661017 | Elapsed time: 856.08278465271
+>>> Validation | Test Accuracy: 82.70656779661017 | Elapsed time: 856.08278465271
 >>> Training | Epoch: 7 | Accuracy : 98.90939597315436 | Elapsed time: 2236.7062373161316
->>> Testing | Test Accuracy: 83.58050847457628 | Elapsed time: 837.0605325698853
+>>> Validation | Test Accuracy: 83.58050847457628 | Elapsed time: 837.0605325698853
 Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c03.hdf5
 >>> Training | Epoch: 8 | Accuracy : 98.97058823529412 | Elapsed time: 2226.507263660431
->>> Testing | Test Accuracy: 82.38877118644068 | Elapsed time: 839.3456795215607
+>>> Validation | Test Accuracy: 82.38877118644068 | Elapsed time: 839.3456795215607
 Exception: /projects/training/bauh/AR/UCF-101-hdf5/Surfing/v_Surfing_g08_c06.hdf5
 >>> Training | Epoch: 9 | Accuracy : 98.92857142857143 | Elapsed time: 2227.663163661957
->>> Testing | Test Accuracy: 83.81885593220339 | Elapsed time: 848.688366651535
+>>> Validation | Test Accuracy: 83.81885593220339 | Elapsed time: 848.688366651535
 Application 70894219 exit codes: 1
 Application 70894219 resources: utime ~24772s, stime ~5564s, Rss ~2436516, inblocks ~3385484809, outblocks ~2505212376
