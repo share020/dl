@@ -1,3 +1,14 @@
+assignments/mp3/data/
+assignments/mp4/src/part-1/data/
+assignments/mp4/src/part-2/data/
+assignments/mp4/src/part-2/resnet18-5c106cde.pth
+assignments/mp6/data/
+assignments/mp7/src/preprocessed_data/glove_dictionary.npy
+assignments/mp7/src/preprocessed_data/glove_embeddings.npy
+assignments/mp7/src/preprocessed_data/imdb_dictionary.npy
+assignments/mp9/outs/3d_resnet.model
+
+
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
