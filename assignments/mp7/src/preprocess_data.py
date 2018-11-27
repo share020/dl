@@ -4,6 +4,7 @@ HW7: Sentiment Analysis for IMDB Movie Reviews.
 Data Preprocessing.
 
 @author: Zhenye Na
+@credit: Logan Courtney
 """
 
 
