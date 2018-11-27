@@ -50,4 +50,4 @@ Probability, Linear Algebra, and proficiency in Python. CS446 or equivalent cour
 - [x] HW6: Generative adversarial networks (GANs).
 - [x] HW7: Natural Language Processing A.
 - [x] HW8: Natural Language Processing B.
-- [x] HW9: Video recognition I.
+- [ ] HW9: Video recognition I.
